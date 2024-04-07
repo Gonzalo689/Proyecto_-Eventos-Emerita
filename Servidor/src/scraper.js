@@ -1,82 +1,68 @@
-const request = require('request');
-const cheerio = require('cheerio');
 const axios = require('axios');
-//const router = require("express").Router();
+const cheerio = require('cheerio');
+const { generateFilename, saveEventJson } = require("./utils");
 
+// Esta función se encarga de procesar cada página individual.
+async function fetchAndProcessPage(pageNumber) {
+    const website = `https://merida.es/agenda/lista/p%C3%A1gina/${pageNumber}/`;
 
-// router.post("/scrape", async (req, res) => {
+    try {
+        const response = await axios.get(website);
+        if (response.status === 200) {
+            const $ = cheerio.load(response.data);
+            const events = [];
 
+            const eventPromises = $('div.tribe-events-calendar-list__event-wrapper.tribe-common-g-col').map(async (index, element) => {
+                let article = $(element).find('article');
 
-// });
-const website = "https://merida.es/agenda/lista/p%C3%A1gina/1/";
+                const imagenSrc = article.find('div > a > img').attr('src');
+                const descripcionBreve = article.find('div.tribe-events-calendar-list__event-description.tribe-common-b2.tribe-common-a11y-hidden p').text().trim();
+                const urlEvent = article.find('a.tribe-events-calendar-list__event-title-link.tribe-common-anchor-thin').attr('href');
 
-// Realizamos la petición a la página web
-axios.get(website)
-  .then((response) => {
-    if (response.status === 200) {
-      const $ = cheerio.load(response.data);
+                const eventResponse = await axios.get(urlEvent);
+                if (eventResponse.status === 200) {
+                    const eventPage = cheerio.load(eventResponse.data);
 
-      console.log("----");
+                    const titulo = eventPage('h1.tribe-events-single-event-title').text().trim();
+                    let image = eventPage('.tribe-events-single-event-description.tribe-events-content p a img').attr('src') || eventPage('.tribe-events-single-event-description.tribe-events-content div a img').first().attr('src');
+                    const fecha_inicio = eventPage('h2 span.tribe-event-date-start').text().trim();
+                    const fecha_final = eventPage('h2 span.tribe-event-date-end').text().trim();
+                    const direccion = eventPage('div.tribe-events-meta-group.tribe-events-meta-group-venue dl dd.tribe-venue').text().trim();
 
-      $('div.tribe-events-calendar-list__event-wrapper.tribe-common-g-col').each((index, element) => {
-        let article = $(element).find('article');
+                    let allParagraphsText = "";
+                    eventPage('.tribe-events-single-event-description.tribe-events-content p').each((i, elem) => {
+                      allParagraphsText += $(elem).text().trim();
+                    });
 
-        const imagenDiv = article.find('div > a > img');
-        const imagenSrc = imagenDiv.attr('src');
-        
-        const descripcionDiv = article.find('div.tribe-events-calendar-list__event-description.tribe-common-b2.tribe-common-a11y-hidden');
-        const descripcionBreve = descripcionDiv.find('p').text().trim();
+                    return { titulo, imagenSrc, descripcionBreve, image, fecha_inicio, fecha_final, urlEvent, direccion, allParagraphsText};
+                }
+            }).get(); // Convertir a un array real para que Promise.all pueda manejarlo
 
-        const urlEvent = article.find('a.tribe-events-calendar-list__event-title-link.tribe-common-anchor-thin').attr('href');
+            const results = await Promise.all(eventPromises);
+            results.forEach(event => {
+                if (event) events.push(event);
+            });
 
-        axios.get(urlEvent)
-          .then((response) => {
-            if (response.status === 200) {
-              const $ = cheerio.load(response.data);
-              console.log("-----");
-              const titulo = $('h1.tribe-events-single-event-title').text().trim();
-              console.log("Imagen:", imagenSrc);
-              console.log("Titulo:", titulo);
-              console.log("Descripción Breve:", descripcionBreve);
-
-              let allParagraphsText = "";
-              $('.tribe-events-single-event-description.tribe-events-content p').each((i, elem) => {
-                allParagraphsText += $(elem).text().trim() + "\n";
-              });
-          
-              console.log(allParagraphsText);
-
-              let image = $('.tribe-events-single-event-description.tribe-events-content p a img').attr('src');
-              if (!image) {
-                image = $('.tribe-events-single-event-description.tribe-events-content div a img').first().attr('src');
-              } 
-              console.log("imagen:", image);
-
-              const fecha_inicio = $('h2 span.tribe-event-date-start').text().trim();
-              const fecha_final = $('h2 span.tribe-event-date-end').text().trim();
-              
-              console.log("Fecha de inicio:", fecha_inicio);
-              console.log("Fecha de finalización:", fecha_final);
-
-              const direccion = $('div.tribe-events-meta-group.tribe-events-meta-group-venue dl dd.tribe-venue').text().trim();
-              console.log("Dirección:", direccion);
-            } else {
-              console.error("Error al cargar la página del evento:", response.status);
-            }
-          })
-          .catch((error) => {
-            console.error("Error al cargar la página del evento:", error);
-          });
-
-      });
-
-    } else {
-      console.error("Error al cargar la página:", response.status);
+            return events;
+        } else {
+            console.error("Error al cargar la página:", response.status);
+            return [];
+        }
+    } catch (error) {
+        console.error("Error al realizar la solicitud:", error);
+        return [];
     }
-  })
-  .catch((error) => {
-    console.error("Error al realizar la solicitud:", error);
-  });
+}
 
+// Función principal que gestiona el bucle de las páginas.
+async function fetchEventsFromPages() {
+    let allEvents = [];
+    for (let i = 1; i <= 3; i++) {
+        const pageEvents = await fetchAndProcessPage(i);
+        allEvents = allEvents.concat(pageEvents);
+    }
+    saveEventJson(allEvents); // Guardar todos los eventos juntos
+}
 
-//module.exports = router;
+// Llamamos a la función principal para iniciar el proceso.
+fetchEventsFromPages();
