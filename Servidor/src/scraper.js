@@ -1,6 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const { generateFilename, saveEventJson } = require("./utils");
+//const {saveEventToMongoDB } = require("./utils");
+const { MongoClient } = require('mongodb');
 
 // Esta función se encarga de procesar cada página individual.
 async function fetchAndProcessPage(pageNumber) {
@@ -54,6 +55,35 @@ async function fetchAndProcessPage(pageNumber) {
     }
 }
 
+async function saveEventToMongoDB(event) {
+    const uri = 'mongodb://127.0.0.1:27017'; // Cambia esta URI por la URI de tu base de datos MongoDB
+    const dbName = 'Proyecto_Merida'; // Cambia esto por el nombre de tu base de datos
+  
+    const client = new MongoClient(uri);
+  
+    try {
+        await client.connect();
+        const database = client.db(dbName);
+        const collection = database.collection('Eventos');
+        // Inserta el evento en la colección de eventos
+        //await collection.insertOne(event);
+        const updateResult = await collection.updateOne(
+            { titulo: event.titulo }, // Criterio de búsqueda: título del evento
+            { $setOnInsert: event }, // Solo establece estos valores si se va a insertar
+            { upsert: true } // Inserta un nuevo documento si no se encuentra ninguno con el título
+        );
+
+        // Log de resultado
+        if (updateResult.upsertedCount > 0) {
+            console.log("Evento insertado:", event.titulo);
+        } else if (updateResult.matchedCount > 0) {
+            console.log("Evento duplicado, no insertado:", event.titulo);
+        }
+    } finally {
+        await client.close();
+    }
+  }
+
 // Función principal que gestiona el bucle de las páginas.
 async function fetchEventsFromPages() {
     let allEvents = [];
@@ -61,7 +91,11 @@ async function fetchEventsFromPages() {
         const pageEvents = await fetchAndProcessPage(i);
         allEvents = allEvents.concat(pageEvents);
     }
-    saveEventJson(allEvents); // Guardar todos los eventos juntos
+
+    allEvents.forEach(async event => {
+        await saveEventToMongoDB(event);
+    });
+    //saveEventJson(allEvents); // Guardar los eventos en un archivo JSON
 }
 
 // Llamamos a la función principal para iniciar el proceso.
