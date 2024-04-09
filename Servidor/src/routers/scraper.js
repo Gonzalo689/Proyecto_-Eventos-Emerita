@@ -1,7 +1,8 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-//const {saveEventToMongoDB } = require("./utils");
+const fs = require("fs");
 const { MongoClient } = require('mongodb');
+var newEvents = [];
 
 // Esta función se encarga de procesar cada página individual.
 async function fetchAndProcessPage(pageNumber) {
@@ -65,16 +66,14 @@ async function saveEventToMongoDB(event) {
         await client.connect();
         const database = client.db(dbName);
         const collection = database.collection('Eventos');
-        // Inserta el evento en la colección de eventos
-        //await collection.insertOne(event);
         const updateResult = await collection.updateOne(
             { titulo: event.titulo }, // Criterio de búsqueda: título del evento
             { $setOnInsert: event }, // Solo establece estos valores si se va a insertar
             { upsert: true } // Inserta un nuevo documento si no se encuentra ninguno con el título
         );
 
-        // Log de resultado
         if (updateResult.upsertedCount > 0) {
+            newEvents.push(event);
             console.log("Evento insertado:", event.titulo);
         } else if (updateResult.matchedCount > 0) {
             console.log("Evento duplicado, no insertado:", event.titulo);
@@ -82,7 +81,7 @@ async function saveEventToMongoDB(event) {
     } finally {
         await client.close();
     }
-  }
+}
 
 // Función principal que gestiona el bucle de las páginas.
 async function fetchEventsFromPages() {
@@ -92,11 +91,20 @@ async function fetchEventsFromPages() {
         allEvents = allEvents.concat(pageEvents);
     }
 
-    allEvents.forEach(async event => {
-        await saveEventToMongoDB(event);
-    });
-    //saveEventJson(allEvents); // Guardar los eventos en un archivo JSON
+    // const insertarDatos = allEvents.forEach(async event => {
+    //     await saveEventToMongoDB(event);
+    // });
+
+    const insertarDatosPromesas = allEvents.map(event => saveEventToMongoDB(event));
+
+    // Espera a que todas las promesas se resuelvan
+    await Promise.all(insertarDatosPromesas);
+
+    console.log("Eventos insertados:", newEvents.length);
+    return newEvents;
 }
 
-// Llamamos a la función principal para iniciar el proceso.
-fetchEventsFromPages();
+//fetchEventsFromPages();
+module.exports = {
+    fetchEventsFromPages
+  };
