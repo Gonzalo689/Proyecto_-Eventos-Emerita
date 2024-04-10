@@ -1,7 +1,12 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const fs = require("fs");
 const { MongoClient } = require('mongodb');
+//Datos para conectarse a MongoDB
+const uri = 'mongodb://127.0.0.1:27017';
+const dbName = 'Proyecto_Merida'; 
+const collectionName = 'Eventos';
+const client = new MongoClient(uri);
+
 var newEvents = [];
 
 // Esta función se encarga de procesar cada página individual.
@@ -56,31 +61,25 @@ async function fetchAndProcessPage(pageNumber) {
     }
 }
 
-async function saveEventToMongoDB(event) {
-    const uri = 'mongodb://127.0.0.1:27017'; // Cambia esta URI por la URI de tu base de datos MongoDB
-    const dbName = 'Proyecto_Merida'; // Cambia esto por el nombre de tu base de datos
-  
-    const client = new MongoClient(uri);
-  
-    try {
-        await client.connect();
-        const database = client.db(dbName);
-        const collection = database.collection('Eventos');
-        const updateResult = await collection.updateOne(
-            { titulo: event.titulo }, // Criterio de búsqueda: título del evento
-            { $setOnInsert: event }, // Solo establece estos valores si se va a insertar
-            { upsert: true } // Inserta un nuevo documento si no se encuentra ninguno con el título
-        );
 
-        if (updateResult.upsertedCount > 0) {
-            newEvents.push(event);
-            console.log("Evento insertado:", event.titulo);
-        } else if (updateResult.matchedCount > 0) {
-            console.log("Evento duplicado, no insertado:", event.titulo);
-        }
-    } finally {
-        await client.close();
+async function saveEventToMongoDB(event) {
+
+    await client.connect();
+    const database = client.db(dbName);
+    const collection = database.collection(collectionName);
+    const updateResult = await collection.updateOne(
+        { titulo: event.titulo }, // Criterio de búsqueda: título del evento
+        { $setOnInsert: event }, // Solo establece estos valores si se va a insertar
+        { upsert: true } // Inserta un nuevo documento si no se encuentra ninguno con el título
+    );
+
+    if (updateResult.upsertedCount > 0) {
+        newEvents.push(event);
+        console.log("Evento insertado:", event.titulo);
+    } else if (updateResult.matchedCount > 0) {
+        console.log("Evento duplicado, no insertado:", event.titulo);
     }
+   
 }
 
 // Función principal que gestiona el bucle de las páginas.
@@ -100,7 +99,17 @@ async function fetchEventsFromPages() {
     return newEvents;
 }
 
-//fetchEventsFromPages();
+async function getAllEventsFromMongoDB() {
+    
+    await client.connect();
+    const database = client.db(dbName);
+    const collection = database.collection(collectionName);
+    const events = await collection.find({}).toArray();
+    return events;
+
+}
+
 module.exports = {
-    fetchEventsFromPages
+    fetchEventsFromPages,
+    getAllEventsFromMongoDB
   };
