@@ -91,10 +91,6 @@ async function fetchEventsFromPages() {
         allEvents = allEvents.concat(pageEvents);
     }
 
-    // const insertarDatos = allEvents.forEach(async event => {
-    //     await saveEventToMongoDB(event);
-    // });
-
     const insertarDatosPromesas = allEvents.map(event => saveEventToMongoDB(event));
 
     // Espera a que todas las promesas se resuelvan
