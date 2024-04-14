@@ -53,7 +53,7 @@ async function fetchAndProcessPage(pageNumber) {
             const eventPromises = $('div.tribe-events-calendar-list__event-wrapper.tribe-common-g-col').map(async (index, element) => {
                 let article = $(element).find('article');
 
-                const imagenSrc = article.find('div > a > img').attr('src');
+                const imagenIni = article.find('div > a > img').attr('src');
                 const descripcionBreve = article.find('div.tribe-events-calendar-list__event-description.tribe-common-b2.tribe-common-a11y-hidden p').text().trim();
                 const urlEvent = article.find('a.tribe-events-calendar-list__event-title-link.tribe-common-anchor-thin').attr('href');
 
@@ -76,7 +76,7 @@ async function fetchAndProcessPage(pageNumber) {
                     fecha_inicio = changeFormate(fecha_inicio) || '';
                     fecha_final = changeFormate(fecha_final) || '';
 
-                    return {titulo, imagenSrc, descripcionBreve, image, fecha_inicio, fecha_final, urlEvent, direccion, allParagraphs , utlGooglemaps, categoria};
+                    return {titulo, imagenIni, descripcionBreve, image, fecha_inicio, fecha_final, urlEvent, direccion, allParagraphs , utlGooglemaps, categoria};
                 }
             }).get(); // Convertir a un array real para que Promise.all pueda manejarlo
 
@@ -102,19 +102,23 @@ async function saveEventToMongoDB(event) {
     await client.connect();
     const database = client.db(dbName);
     const collection = database.collection(collectionName);
-    const updateResult = await collection.updateOne(
-        { titulo: event.titulo }, // Criterio de búsqueda: título del evento
-        { $setOnInsert: event }, // Solo establece estos valores si se va a insertar
-        { upsert: true } // Inserta un nuevo documento si no se encuentra ninguno con el título
-    );
+    
+    const existingEvent = await collection.findOne({
+        $and: [
+            { titulo: event.titulo },
+            { fecha_inicio: event.fecha_inicio },
+            { fecha_final: event.fecha_final }
+        ]
+    });
 
-    if (updateResult.upsertedCount > 0) {
-        newEvents.push(event);
-        console.log("Evento insertado:", event.titulo);
-    } else if (updateResult.matchedCount > 0) {
-        console.log("Evento duplicado, no insertado:", event.titulo);
+    if (existingEvent) {
+        console.log("El evento ya existe en la base de datos, no se insertará:", event.titulo);
+        return;
     }
-   
+
+    await collection.insertOne(event);
+    newEvents.push(event);
+    console.log("Evento insertado:", event.titulo);
 }
 
 // Función principal que gestiona el bucle de las páginas.
