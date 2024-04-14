@@ -1,10 +1,12 @@
 const express = require('express')
 const router = express.Router()
-const {fetchEventsFromPages, getAllEventsFromMongoDB} = require("./scraper");
+const {scrapEventsFromPages} = require("./scraper");
+const {getAllEventsDB} = require("./conectDB");
+
 
 router.get('/', async (req, res) => {
     try {
-        var eventos = await fetchEventsFromPages();
+        var eventos = await scrapEventsFromPages();
         res.json(eventos);
     } catch (error) {
         console.error(error);
@@ -14,7 +16,7 @@ router.get('/', async (req, res) => {
 
 router.get('/all', async (req, res) => {
     try {
-        var eventos = await getAllEventsFromMongoDB();
+        var eventos = await getAllEventsDB();
         res.json(eventos);
     } catch (error) {
         console.error(error);

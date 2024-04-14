@@ -9,6 +9,37 @@ const client = new MongoClient(uri);
 
 var newEvents = [];
 
+
+function changeFormate(fecha) {
+    if (fecha) {
+        fecha = fecha.split('@');
+        var fechaPartes = fecha[0].split(' ');
+        var dia = fechaPartes[0];
+        var mes = fechaPartes[1];
+        var hora = fecha[1] ? fecha[1].trim() : '';
+
+        var meses = { 'enero': 0,'febrero': 1, 'marzo': 2, 'abril': 3, 'mayo': 4, 'junio': 5, 'julio': 6,
+            'agosto': 7, 'septiembre': 8, 'octubre': 9, 'noviembre': 10, 'diciembre': 11
+        };
+        
+        var mesNumero = meses[mes.toLowerCase()];
+
+        var fechaObjeto = new Date();
+        fechaObjeto.setDate(parseInt(dia));
+        fechaObjeto.setMonth(mesNumero); 
+        fechaObjeto.setHours(hora ? parseInt(hora.split(':')[0]) : 0);
+        fechaObjeto.setMinutes(hora ? parseInt(hora.split(':')[1]) : 0);
+        fechaObjeto.setSeconds(0);
+        if (hora.includes("pm")) {
+            fechaObjeto.setHours(fechaObjeto.getHours() + 12);
+        }
+
+        return fechaObjeto.toLocaleString();
+
+    }
+}
+
+
 // Esta función se encarga de procesar cada página individual.
 async function fetchAndProcessPage(pageNumber) {
     const website = `https://merida.es/agenda/lista/p%C3%A1gina/${pageNumber}/`;
@@ -32,16 +63,20 @@ async function fetchAndProcessPage(pageNumber) {
 
                     const titulo = eventPage('h1.tribe-events-single-event-title').text().trim();
                     let image = eventPage('.tribe-events-single-event-description.tribe-events-content p a img').attr('src') || eventPage('.tribe-events-single-event-description.tribe-events-content div a img').first().attr('src');
-                    const fecha_inicio = eventPage('h2 span.tribe-event-date-start').text().trim();
-                    const fecha_final = eventPage('h2 span.tribe-event-date-end').text().trim();
+                    let fecha_inicio = eventPage('h2 span.tribe-event-date-start').text().trim();
+                    let fecha_final =  eventPage('h2 span.tribe-event-date-end').text().trim();
                     const direccion = eventPage('div.tribe-events-meta-group.tribe-events-meta-group-venue dl dd.tribe-venue').text().trim();
+                    const utlGooglemaps= eventPage('a.tribe-events-gmap').attr('href') || '';
+                    const categoria= eventPage('dd.tribe-events-event-categories').text().trim()|| '';
 
-                    let allParagraphsText = "";
+                    let allParagraphs = [];
                     eventPage('.tribe-events-single-event-description.tribe-events-content p').each((i, elem) => {
-                      allParagraphsText += $(elem).text().trim();
+                        allParagraphs.push($(elem).text().trim());
                     });
+                    fecha_inicio = changeFormate(fecha_inicio) || '';
+                    fecha_final = changeFormate(fecha_final) || '';
 
-                    return { titulo, imagenSrc, descripcionBreve, image, fecha_inicio, fecha_final, urlEvent, direccion, allParagraphsText};
+                    return {titulo, imagenSrc, descripcionBreve, image, fecha_inicio, fecha_final, urlEvent, direccion, allParagraphs , utlGooglemaps, categoria};
                 }
             }).get(); // Convertir a un array real para que Promise.all pueda manejarlo
 
@@ -83,33 +118,23 @@ async function saveEventToMongoDB(event) {
 }
 
 // Función principal que gestiona el bucle de las páginas.
-async function fetchEventsFromPages() {
+async function scrapEventsFromPages() {
     let allEvents = [];
     for (let i = 1; i <= 3; i++) {
         const pageEvents = await fetchAndProcessPage(i);
         allEvents = allEvents.concat(pageEvents);
     }
 
-    const insertarDatosPromesas = allEvents.map(event => saveEventToMongoDB(event));
+    const insertar = allEvents.map(event => saveEventToMongoDB(event));
 
     // Espera a que todas las promesas se resuelvan
-    await Promise.all(insertarDatosPromesas);
+    await Promise.all(insertar);
 
     console.log("Eventos insertados:", newEvents.length);
     return newEvents;
 }
 
-async function getAllEventsFromMongoDB() {
-    
-    await client.connect();
-    const database = client.db(dbName);
-    const collection = database.collection(collectionName);
-    const events = await collection.find({}).toArray();
-    return events;
-
-}
 
 module.exports = {
-    fetchEventsFromPages,
-    getAllEventsFromMongoDB
+    scrapEventsFromPages
   };
