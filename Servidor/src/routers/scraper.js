@@ -1,10 +1,13 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { MongoClient } = require('mongodb');
 //Datos para conectarse a MongoDB
-const {conectDB, closeDB } = require("./dataBase");
-const collectionName = "eventos";
+const uri = 'mongodb://127.0.0.1:27017';
+const dbName = 'Proyecto_Merida'; 
+const collectionName = 'prueba';
+const client = new MongoClient(uri);
 var newEvents = [];
-let collection; 
+
 
 function changeFormate(fecha) {
     if (fecha) {
@@ -99,6 +102,9 @@ async function fetchAndProcessPage(pageNumber) {
 
 // Obtener el máximo eventId actual al iniciar el script
 async function getMaxEventId() {
+    await client.connect();
+    const database = client.db(dbName);
+    const collection = database.collection(collectionName);
     const result = await collection.findOne({}, { projection: { eventId: 1, _id: 0 }, sort: { eventId: -1 } });
     console.log("Resultado de getMaxEventId:", result);
 
@@ -106,6 +112,10 @@ async function getMaxEventId() {
 }
 
 async function saveEventToMongoDB(event) {
+    
+    await client.connect();
+    const database = client.db(dbName);
+    const collection = database.collection(collectionName);
 
     var maxEventId = await getMaxEventId();
      // Incrementar el valor de eventId
@@ -125,35 +135,28 @@ async function saveEventToMongoDB(event) {
 
     if (existingEvent) {
         console.log("El evento ya existe en la base de datos, no se insertará:", event.titulo);
-    }else{
-         // Insertar el evento en la base de datos y agregarlo a la lista de eventos los cuales serás las notificaciónes
-        await collection.insertOne(event);
-        newEvents.push(event);
-        console.log("Evento insertado:", event.titulo);
+        return;
     }
-    
+
+    // Insertar el evento en la base de datos y agregarlo a la lista de eventos los cuales serás las notificaciónes
+    await collection.insertOne(event);
+    newEvents.push(event);
+    console.log("Evento insertado:", event.titulo);
 }
 
 // Función principal que gestiona el bucle de las páginas.
 async function scrapEventsFromPages() {
     let allEvents = [];
     newEvents = [];
-    try{
-
-        collection = await conectDB(collectionName);
-
-        for (let i = 1; i <= 3; i++) {
-            const pageEvents = await fetchAndProcessPage(i);
-            allEvents = allEvents.concat(pageEvents);
-        }
-
-            for (const event of allEvents) {
-                await saveEventToMongoDB(event);
-            }
-    }finally{
-        await closeDB()
+    for (let i = 1; i <= 3; i++) {
+        const pageEvents = await fetchAndProcessPage(i);
+        allEvents = allEvents.concat(pageEvents);
     }
-    
+
+    for (const event of allEvents) {
+        await saveEventToMongoDB(event);
+    }
+
     console.log("Eventos insertados:", newEvents.length);
     return newEvents;
 }
