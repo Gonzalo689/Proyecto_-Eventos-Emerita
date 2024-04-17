@@ -1,21 +1,22 @@
 const express = require('express')
 const router = express.Router()
-const {scrapEventsFromPages} = require("./scraper");
-const {conectDB, closeDB } = require("./dataBase");
+const {scrapEventsFromPages} = require("../scraper");
+const {conectDB, closeDB } = require("../dataBase");
 //Conexion
 const collectionName = "eventos";
 
-setInterval(async () => {
-    try {
-        const datosObtenidos = await scrapEventsFromPages();
-        console.log("Datos obtenidos:", datosObtenidos);
-        // Aquí puedes realizar operaciones adicionales con los datosObtenidos
-    } catch (error) {
-        console.error("Error al ejecutar scrapEventsFromPages:", error);
-    } finally {
-        await closeDB();
-    }
-}, 3600000);
+
+// setInterval(async () => {
+//     try {
+//         const datosObtenidos = await scrapEventsFromPages();
+//         console.log("Datos obtenidos:", datosObtenidos);
+//         // Aquí puedes realizar operaciones adicionales con los datosObtenidos
+//     } catch (error) {
+//         console.error("Error al ejecutar scrapEventsFromPages:", error);
+//     } finally {
+//         await closeDB();
+//     }
+// }, 3600000);
 
 
 router.get('/scrap', async (req, res) => {

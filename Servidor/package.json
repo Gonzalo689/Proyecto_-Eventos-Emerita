@@ -13,6 +13,7 @@
     "cheerio": "^1.0.0-rc.12",
     "express": "^4.19.2",
     "mongodb": "^6.5.0",
+    "node-cron": "^3.0.3",
     "request": "^2.88.2"
   }
 }
