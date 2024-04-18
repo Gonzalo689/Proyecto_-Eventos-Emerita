@@ -2,7 +2,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 const {conectDB, closeDB } = require("./dataBase");
-const collectionName = 'prueba';
+const collectionName = 'eventos';
 
 var collection;
 
