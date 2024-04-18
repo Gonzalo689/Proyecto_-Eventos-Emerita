@@ -1,34 +1,38 @@
 const express = require('express')
+const cron = require('node-cron');
 const router = express.Router()
 const {scrapEventsFromPages} = require("../scraper");
 const {conectDB, closeDB } = require("../dataBase");
+
+var eventos=[];
+
 //Conexion
 const collectionName = "eventos";
 
-
-// setInterval(async () => {
-//     try {
-//         const datosObtenidos = await scrapEventsFromPages();
-//         console.log("Datos obtenidos:", datosObtenidos);
-//         // Aquí puedes realizar operaciones adicionales con los datosObtenidos
-//     } catch (error) {
-//         console.error("Error al ejecutar scrapEventsFromPages:", error);
-//     } finally {
-//         await closeDB();
-//     }
-// }, 3600000);
-
-
 router.get('/scrap', async (req, res) => {
     try {
-        console.error('Buscando eventos...');
-        var eventos = await scrapEventsFromPages();
         res.json(eventos);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error interno del servidor");
     }
 });
+
+// Programar la tarea para que se ejecute cada hora (en el minuto 0 de cada hora) 
+cron.schedule('0 * * * *', async () => {
+    try {
+        eventos=[]
+        eventos = await scrapEventsFromPages(); 
+    } catch (error) {
+        console.error("Error al obtener eventos:", error);
+    }
+});
+
+process.on('SIGINT', () => {
+    console.log('Deteniendo la ejecución de la tarea programada.');
+    process.exit();
+});
+
 
 router.get('/', async (req, res) => {
     try {
