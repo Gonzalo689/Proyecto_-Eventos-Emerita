@@ -129,7 +129,7 @@ async function saveEventToMongoDB(event) {
 
     if (existingEvent) {
         console.log("El evento ya existe en la base de datos, no se insertará:", event.titulo);
-        return;
+        
     }else{
         // Insertar el evento en la base de datos y agregarlo a la lista de eventos los cuales serás las notificaciónes
         await collection.insertOne(event);
