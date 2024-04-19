@@ -1,7 +1,6 @@
 const { MongoClient} = require('mongodb');
-const uri = 'mongodb://127.0.0.1:27017';
-const dbName = 'Proyecto_Merida'; 
-
+const uri = process.env.DB_URI;
+const dbName = process.env.DB_NAME ;
 let client;
 
 async function conectDB(nombreColeccion) {
