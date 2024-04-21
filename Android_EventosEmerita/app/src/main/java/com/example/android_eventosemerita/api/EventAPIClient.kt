@@ -10,11 +10,15 @@ import com.google.gson.Gson
 import org.json.JSONObject
 
 class EventAPIClient (private val context: Context) {
+    private val devTunnel: String? = "https://x2t55z6x-3000.uks1.devtunnels.ms/"
+
 
     fun getAllEvents(callback: Callback.MyCallback<List<Event>>) {
         // Instantiate the RequestQueue.
         val queue = Volley.newRequestQueue(context)
-        val url = "http://10.0.2.2:3000/eventos/"
+
+        //val url = "http://10.0.2.2:3000/eventos/"
+        val url = devTunnel+"eventos/"
 
         // Request a string response from the provided URL.
         val stringRequest = StringRequest(Request.Method.GET, url,

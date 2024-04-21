@@ -144,6 +144,7 @@ async function saveEventToMongoDB(event) {
 async function scrapEventsFromPages() {
     let allEvents = [];
     newEvents = [];
+    console.log("Cargando eventos nuevos...");
     collection = await conectDB(collectionName);
     for (let i = 1; i <= 3; i++) {
         const pageEvents = await fetchAndProcessPage(i);

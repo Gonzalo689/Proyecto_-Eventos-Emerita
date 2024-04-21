@@ -36,6 +36,7 @@ process.on('SIGINT', () => {
 
 router.get('/', async (req, res) => {
     try {
+        console.log("Buscando todo eventos en la base de datos...");
         const collection = await conectDB(collectionName);
         const events = await collection.find({}).toArray();
         res.json(events);
@@ -48,8 +49,9 @@ router.get('/', async (req, res) => {
 });
 router.get('/:id', async (req, res) => {
     try {
-        const collection = await conectDB(collectionName);
         const eventId = parseInt(req.params.id);
+        console.log("Buscando un evento con id:", eventId);
+        const collection = await conectDB(collectionName);
         const evento = await collection.findOne({ eventId : eventId });
         
         if (evento) {

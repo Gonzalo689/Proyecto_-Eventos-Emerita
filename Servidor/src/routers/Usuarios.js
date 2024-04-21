@@ -7,6 +7,7 @@ const collectionName = "usuarios";
 
 router.post('/', async (req, res) => {
     try {
+        console.log("Creando un nuevo usuario");
         const collection = await conectDB(collectionName);
         const user = req.body; 
         await collection.insertOne(user);
@@ -22,6 +23,8 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
+
+        console.log("Buscando todos los usuarios");
         const collection = await conectDB(collectionName);
         const usuarios = await collection.find({}).toArray();
         console.error('Usuarios encontrados:', usuarios.length);
@@ -36,8 +39,9 @@ router.get('/', async (req, res) => {
 })
 router.get('/:id', async (req, res) => {
     try {
-        const collection = await conectDB(collectionName);
         const userId = parseInt(req.params.id);
+        console.log("Buscando un usuario con id: ", userId);
+        const collection = await conectDB(collectionName);
         console.error(userId);
         const usuario = await collection.findOne({ id : userId });
         

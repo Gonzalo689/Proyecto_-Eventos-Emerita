@@ -5,11 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
 import com.example.android_eventosemerita.api.model.Event
+import com.example.android_eventosemerita.controller.AdapterDest
 import com.example.android_eventosemerita.databinding.FragmentHomeBinding
+import com.squareup.picasso.Picasso
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -43,6 +46,7 @@ class Home : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+        eventAPIClient = EventAPIClient(requireContext())
         return binding.root
     }
 
@@ -59,20 +63,38 @@ class Home : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        eventAPIClient = EventAPIClient(requireContext())
+        eventsAPI()
+
+    }
+
+    fun eventsAPI(){
 
         val callback = object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>) {
                 if (data.isNotEmpty()) {
-                    binding.text.text = data[0].toString() + data[0].toString()
+                    val sublist: List<Event> = if (data.size > 10) {
+                        data.subList(0, 10)
+                    } else {
+                        data
+                    }
+                    val eventsDest: ArrayList<Event> = ArrayList(sublist)
+
+                    recyclerDest(eventsDest)
+
                 }
             }
             override fun onError(errorMsg: String) {
-                binding.text.text = "Error: $errorMsg"
+                println("Error: $errorMsg")
             }
         }
 
         // Llamar a la función para obtener eventos
         eventAPIClient.getAllEvents(callback)
+    }
+    fun recyclerDest(eventsList: ArrayList<Event>){
+        val adapter = AdapterDest(eventsList)
+        binding.recyclerDest.adapter = adapter
+        val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        binding.recyclerDest.layoutManager = layoutManager
     }
 }
