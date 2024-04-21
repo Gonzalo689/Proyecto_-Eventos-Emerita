@@ -3,6 +3,7 @@ const cron = require('node-cron');
 const router = express.Router()
 const {scrapEventsFromPages} = require("../scraper");
 const {conectDB, closeDB } = require("../dataBase");
+const e = require('express');
 
 var eventos=[];
 
@@ -47,6 +48,59 @@ router.get('/', async (req, res) => {
         await closeDB();
     }
 });
+
+
+router.get('/destacados', async (req, res) => {
+    try {
+        // Obteniendo la fecha actual
+        var fechaActual = Date.now();
+
+        console.log("Buscando eventos destacados en la base de datos...");
+        const collection = await conectDB(collectionName);
+
+        const events = await collection.find({ "destacado": true }).toArray();
+
+        // Filtrar los eventos cuya fecha de inicio sea posterior a la fecha actual
+        const eventosFuturos = events.filter(evento => new Date(evento.fecha_inicio) >= fechaActual);
+       
+
+        console.log(eventosFuturos.length, "eventos encontrados");
+        res.json(eventosFuturos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error interno del servidor");
+    } finally {
+        await closeDB();
+    }
+});
+router.get('/:categoria', async (req, res) => {
+    try {
+        // Obteniendo la fecha actual
+        var fechaActual = Date.now();
+
+        console.log("Buscando eventos destacados en la base de datos...");
+        const collection = await conectDB(collectionName);
+
+        const regex = new RegExp(`\\b${req.params.categoria}\\b`, 'i');
+
+        const events = await collection.find({ 
+            "categoria": { $regex: regex } 
+        }).toArray();
+
+        const eventosFuturos = events.filter(evento => new Date(evento.fecha_inicio) >= fechaActual);
+       
+        console.log(eventosFuturos.length, "eventos encontrados");
+
+        res.json(eventosFuturos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error interno del servidor");
+    } finally {
+        await closeDB();
+    }
+});
+
+
 router.get('/:id', async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);

@@ -32,8 +32,14 @@ function changeFormate(fecha) {
         if (hora.includes("pm")) {
             fechaObjeto.setHours(fechaObjeto.getHours() + 12);
         }
+        var fechaFormateada = fechaObjeto.getFullYear() + '-' +
+            ('0' + (fechaObjeto.getMonth() + 1)).slice(-2) + '-' +
+            ('0' + fechaObjeto.getDate()).slice(-2) + ', ' +
+            ('0' + fechaObjeto.getHours()).slice(-2) + ':' +
+            ('0' + fechaObjeto.getMinutes()).slice(-2) + ':' +
+            ('0' + fechaObjeto.getSeconds()).slice(-2);
 
-        return fechaObjeto.toLocaleString();
+        return fechaFormateada;
 
     }
 }

@@ -24,14 +24,20 @@ function changeFormat(fecha) {
             fechaObjeto.setHours(fechaObjeto.getHours() + 12);
         }
 
-        //var formatoDigital = `${fechaObjeto.getDate()}/${fechaObjeto.getMonth() + 1}/${fechaObjeto.getFullYear()}, ${fechaObjeto.getHours()}:${fechaObjeto.getMinutes()}`;
-        var formatoDigital = fechaObjeto.toLocaleString();
+        var fechaFormateada = fechaObjeto.getFullYear() + '-' +
+            ('0' + (fechaObjeto.getMonth() + 1)).slice(-2) + '-' +
+            ('0' + fechaObjeto.getDate()).slice(-2) + ', ' +
+            ('0' + fechaObjeto.getHours()).slice(-2) + ':' +
+            ('0' + fechaObjeto.getMinutes()).slice(-2) + ':' +
+            ('0' + fechaObjeto.getSeconds()).slice(-2);
 
-        console.log(formatoDigital);
+        console.log(fechaFormateada);
+        
+        return fechaFormateada;
     }
 }
 
 
-changeFormat("11 abril @ 12:30 pm")
-changeFormat("12 abril")
+changeFormat("11 noviembre @ 12:30 pm")
+changeFormat("12 noviembre")
 changeFormat("")
