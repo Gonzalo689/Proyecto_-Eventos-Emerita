@@ -49,6 +49,28 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/past', async (req, res) => {
+    try {
+        console.log("Eventos pasados");
+        var fechaActual = Date.now();
+        const collection = await conectDB(collectionName);
+        const events = await collection.find({}).toArray();
+
+        const eventosPasados = events.filter(evento => {
+            const fechaComparar = evento.fecha_final ? new Date(evento.fecha_final) : new Date(evento.fecha_inicio);
+            return fechaComparar < fechaActual;
+        });
+
+        console.log(eventosPasados.length, "eventos encontrados");
+        res.json(eventosPasados);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error interno del servidor");
+    } finally {
+        await closeDB();
+    }
+});
+
 
 router.get('/destacados', async (req, res) => {
     try {
@@ -60,9 +82,10 @@ router.get('/destacados', async (req, res) => {
 
         const events = await collection.find({ "destacado": true }).toArray();
 
-        // Filtrar los eventos cuya fecha de inicio sea posterior a la fecha actual
-        const eventosFuturos = events.filter(evento => new Date(evento.fecha_inicio) >= fechaActual);
-       
+        const eventosFuturos = events.filter(evento => {
+            const fechaComparar = evento.fecha_final ? new Date(evento.fecha_final) : new Date(evento.fecha_inicio);
+            return fechaComparar >= fechaActual;
+        });
 
         console.log(eventosFuturos.length, "eventos encontrados");
         res.json(eventosFuturos);
