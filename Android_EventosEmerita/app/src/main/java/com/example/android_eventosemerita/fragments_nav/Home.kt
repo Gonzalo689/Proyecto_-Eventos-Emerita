@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.android_eventosemerita.MainActivity
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
@@ -64,7 +65,6 @@ class Home : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         eventsAPI()
-
     }
 
     fun eventsAPI(){
@@ -92,9 +92,11 @@ class Home : Fragment() {
         eventAPIClient.getAllEvents(callback)
     }
     fun recyclerDest(eventsList: ArrayList<Event>){
-        val adapter = AdapterDest(eventsList)
+        val mainActivity = requireActivity() as MainActivity
+        val adapter = AdapterDest(eventsList, mainActivity)
         binding.recyclerDest.adapter = adapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerDest.layoutManager = layoutManager
     }
+
 }
