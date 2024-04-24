@@ -10,14 +10,13 @@ import com.google.gson.Gson
 import org.json.JSONObject
 
 class EventAPIClient (private val context: Context) {
-    private val devTunnel: String? = "https://x2t55z6x-3000.uks1.devtunnels.ms/"
+    private val url: String? = "https://x2t55z6x-3000.uks1.devtunnels.ms/"
 
 
-    fun getAllEvents(callback: Callback.MyCallback<List<Event>>) {
-        // Instantiate the RequestQueue.
+    fun getEventsDest(callback: Callback.MyCallback<List<Event>>) {
         val queue = Volley.newRequestQueue(context)
 
-        val url = devTunnel + "eventos/destacados"
+        val url = url + "eventos/destacados"
 
         // Request a string response from the provided URL.
         val stringRequest = StringRequest(Request.Method.GET, url,
@@ -27,6 +26,43 @@ class EventAPIClient (private val context: Context) {
             },
             { error ->
                 // Handle errors
+                val errorString = error.toString()
+                callback.onError(errorString)
+            })
+
+
+        queue.add(stringRequest)
+    }
+    fun getEventCategory(category:String, callback: Callback.MyCallback<List<Event>>) {
+        val queue = Volley.newRequestQueue(context)
+
+        val url = url + "eventos/" + category
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                val responseObject = Gson().fromJson(response, Array<Event>::class.java).toList()
+                callback.onSuccess(responseObject)
+            },
+            { error ->
+                // Handle errors
+                val errorString = error.toString()
+                callback.onError(errorString)
+            })
+
+
+        queue.add(stringRequest)
+    }
+    fun getAllEvents(callback: Callback.MyCallback<List<Event>>) {
+        val queue = Volley.newRequestQueue(context)
+
+        val url = url + "eventos/"
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                val responseObject = Gson().fromJson(response, Array<Event>::class.java).toList()
+                callback.onSuccess(responseObject)
+            },
+            { error ->
                 val errorString = error.toString()
                 callback.onError(errorString)
             })

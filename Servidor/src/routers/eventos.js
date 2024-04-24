@@ -3,7 +3,6 @@ const cron = require('node-cron');
 const router = express.Router()
 const {scrapEventsFromPages} = require("../scraper");
 const {conectDB, closeDB } = require("../dataBase");
-const e = require('express');
 
 var eventos=[];
 
@@ -38,9 +37,14 @@ process.on('SIGINT', () => {
 router.get('/', async (req, res) => {
     try {
         console.log("Buscando todo eventos en la base de datos...");
+        var fechaActual = Date.now();
         const collection = await conectDB(collectionName);
         const events = await collection.find({}).toArray();
-        res.json(events);
+        const eventosFuturos = events.filter(evento => {
+            const fechaComparar = evento.fecha_final ? new Date(evento.fecha_final) : new Date(evento.fecha_inicio);
+            return fechaComparar >= fechaActual;
+        });
+        res.json(eventosFuturos);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error interno del servidor");
@@ -124,12 +128,12 @@ router.get('/:categoria', async (req, res) => {
 });
 
 
-router.get('/:id', async (req, res) => {
+router.get('/id/:id', async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);
         console.log("Buscando un evento con id:", eventId);
         const collection = await conectDB(collectionName);
-        const evento = await collection.findOne({ eventId : eventId });
+        const evento = await collection.findOne({ "eventId" : eventId });
         
         if (evento) {
             console.error('Evento encontrado:', evento);
