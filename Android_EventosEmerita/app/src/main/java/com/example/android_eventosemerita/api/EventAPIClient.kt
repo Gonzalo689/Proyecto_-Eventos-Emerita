@@ -18,7 +18,7 @@ class EventAPIClient (private val context: Context) {
 
         val stringRequest = StringRequest(Request.Method.GET, url,
             { response ->
-                callback.onSuccess("true")
+                callback.onSuccess(response)
             },
             { error ->
                 val errorString = error.toString()

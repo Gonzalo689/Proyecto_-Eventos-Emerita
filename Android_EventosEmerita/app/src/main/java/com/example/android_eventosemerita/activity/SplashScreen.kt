@@ -29,9 +29,10 @@ class SplashScreen : AppCompatActivity() {
     private fun makeApiCall() {
         val callback = object : Callback.MyCallback<String> {
             override fun onSuccess(data: String) {
-                if (data.isNotEmpty()) {
-                    println("correcto")
+                if (data.isNotEmpty() && data.equals("conect")) {
                     navigateToMain()
+                }else{
+                    Handler(mainLooper).postDelayed({ makeApiCall() }, 2000)
                 }
             }
 
