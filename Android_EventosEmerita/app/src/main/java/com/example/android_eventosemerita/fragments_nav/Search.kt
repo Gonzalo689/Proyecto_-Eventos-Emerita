@@ -12,7 +12,6 @@ import com.example.android_eventosemerita.api.EventAPIClient
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.databinding.FragmentSearchBinding
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.android_eventosemerita.MainActivity
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.api.model.Category
 import com.example.android_eventosemerita.controller.search.AdapterCategory

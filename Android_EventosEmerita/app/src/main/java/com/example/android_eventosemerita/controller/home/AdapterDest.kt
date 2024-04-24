@@ -3,7 +3,7 @@ package com.example.android_eventosemerita.controller.home
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android_eventosemerita.MainActivity
+import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.databinding.FeedDestBinding
 import com.example.android_eventosemerita.fragments_nav.FragmentEvent

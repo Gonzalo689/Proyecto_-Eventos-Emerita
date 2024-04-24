@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.android_eventosemerita.MainActivity
+import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
 import com.example.android_eventosemerita.api.model.Event

@@ -5,11 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.android_eventosemerita.MainActivity
-import com.example.android_eventosemerita.R
+import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.databinding.FragmentEventBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.squareup.picasso.Picasso
 
 private const val ARG_EVENT = "event"
