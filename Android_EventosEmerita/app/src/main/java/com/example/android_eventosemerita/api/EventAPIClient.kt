@@ -13,6 +13,21 @@ class EventAPIClient (private val context: Context) {
     private val url: String? = "https://x2t55z6x-3000.uks1.devtunnels.ms/"
 
 
+    fun getConexion(callback: Callback.MyCallback<String>) {
+        val queue = Volley.newRequestQueue(context)
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                callback.onSuccess("true")
+            },
+            { error ->
+                val errorString = error.toString()
+                callback.onError(errorString)
+            })
+
+
+        queue.add(stringRequest)
+    }
     fun getEventsDest(callback: Callback.MyCallback<List<Event>>) {
         val queue = Volley.newRequestQueue(context)
 
