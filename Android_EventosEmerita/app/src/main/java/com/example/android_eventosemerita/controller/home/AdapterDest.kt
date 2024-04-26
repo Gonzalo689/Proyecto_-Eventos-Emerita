@@ -40,7 +40,7 @@ class AdapterDest (private val events: ArrayList<Event>,private val mainActivity
 
             binding.layautDest.setOnClickListener {
                 val fragmentEvent = FragmentEvent.newInstance(event)
-                mainActivity.loadFragment(fragmentEvent)
+                mainActivity.loadFragment(fragmentEvent,true)
                 mainActivity.setBottomNavVisibility(true)
             }
         }
