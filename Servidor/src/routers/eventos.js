@@ -11,6 +11,7 @@ const collectionName = "eventos";
 
 router.get('/scrap', async (req, res) => {
     try {
+        console.log("Nuevos eventos", eventos.length);
         res.json(eventos);
     } catch (error) {
         console.error(error);
@@ -40,11 +41,8 @@ router.get('/', async (req, res) => {
         var fechaActual = Date.now();
         const collection = await conectDB(collectionName);
         const events = await collection.find({}).toArray();
-        const eventosFuturos = events.filter(evento => {
-            const fechaComparar = evento.fecha_final ? new Date(evento.fecha_final) : new Date(evento.fecha_inicio);
-            return fechaComparar >= fechaActual;
-        });
-        res.json(eventosFuturos);
+        console.log("Eventos encontrados: ",events.length)
+        res.json(events);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error interno del servidor");

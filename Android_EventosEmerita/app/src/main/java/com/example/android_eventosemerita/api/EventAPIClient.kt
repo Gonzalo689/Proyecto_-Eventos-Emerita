@@ -7,6 +7,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.android_eventosemerita.api.model.Event
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import org.json.JSONObject
 
 class EventAPIClient (private val context: Context) {
@@ -76,6 +77,28 @@ class EventAPIClient (private val context: Context) {
             { response ->
                 val responseObject = Gson().fromJson(response, Array<Event>::class.java).toList()
                 callback.onSuccess(responseObject)
+            },
+            { error ->
+                val errorString = error.toString()
+                callback.onError(errorString)
+            })
+
+
+        queue.add(stringRequest)
+    }
+    fun getNotify(callback: Callback.MyCallback<Event>) {
+        val queue = Volley.newRequestQueue(context)
+
+        val url = url + "eventos/id/5"
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                try {
+                    val event = Gson().fromJson(response, Event::class.java)
+                    callback.onSuccess(event)
+                } catch (e: JsonSyntaxException) {
+                    callback.onError("Error parsing JSON")
+                }
             },
             { error ->
                 val errorString = error.toString()

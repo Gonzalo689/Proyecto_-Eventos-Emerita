@@ -19,8 +19,8 @@ class FragmentEvent : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            event = it.getSerializable(ARG_EVENT) as Event
+        arguments?.let { args ->
+            event = args.getSerializable(ARG_EVENT) as? Event
         }
     }
 
