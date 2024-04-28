@@ -18,15 +18,17 @@ import com.example.android_eventosemerita.databinding.ActivitySignInBinding
 class SignIn : AppCompatActivity() {
     companion object{
         const val REMEMBER = "remenber"
+        const val USER_ID = "userId"
 
         fun validateEmail(email: String): Boolean {
             return email.let { Patterns.EMAIL_ADDRESS.matcher(it).matches() }
         }
 
-        fun remenberUser(context:Context) {
+        fun remenberUser(context:Context, user:Int) {
             val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
             val editor = preferences.edit()
             editor.putBoolean(REMEMBER, true)
+            editor.putInt(USER_ID, user)
             editor.apply()
         }
     }
@@ -51,8 +53,6 @@ class SignIn : AppCompatActivity() {
                 logUser(this)
             }
         })
-
-
         binding.buttonTextRegister.setOnClickListener(View.OnClickListener {
             startSignUp()
         })
@@ -60,7 +60,6 @@ class SignIn : AppCompatActivity() {
     }
     private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("User", userRoot)
         startActivity(intent)
         finish()
     }
@@ -104,7 +103,7 @@ class SignIn : AppCompatActivity() {
         val callback = object : Callback.MyCallback<User> {
             override fun onSuccess(data: User) {
                 userRoot = data
-                remenberUser(context)
+                remenberUser(context, data.id)
                 startMainActivity()
             }
             override fun onError(errorMsg: String) {
@@ -115,22 +114,6 @@ class SignIn : AppCompatActivity() {
         userAPIClient.loginUser(email, pass ,callback)
     }
 
-
-
-
-    private fun getUser(){
-        val callback = object : Callback.MyCallback<User> {
-            override fun onSuccess(data: User) {
-                binding.textEE.text = data.nombre
-            }
-
-            override fun onError(errorMsg: String) {
-                binding.textEE.text = "todo mal"
-                println("Error: $errorMsg")
-            }
-        }
-        userAPIClient.getUserById(1,callback)
-    }
 
 
     private fun updateUser(){

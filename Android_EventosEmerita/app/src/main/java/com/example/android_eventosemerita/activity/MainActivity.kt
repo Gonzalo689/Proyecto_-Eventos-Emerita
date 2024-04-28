@@ -20,11 +20,15 @@ import com.example.android_eventosemerita.login.SignIn.Companion.REMEMBER
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
+import com.example.android_eventosemerita.api.UserAPIClient
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.databinding.ActivityMainBinding
 import com.example.android_eventosemerita.fragments_nav.Home
 import com.example.android_eventosemerita.fragments_nav.Search
+import com.example.android_eventosemerita.login.SignIn
+import com.example.android_eventosemerita.login.SignIn.Companion.USER_ID
+import com.example.android_eventosemerita.login.SignUp
 import java.io.Serializable
 import java.util.Calendar
 
@@ -32,20 +36,23 @@ import java.util.Calendar
 class MainActivity : AppCompatActivity() {
     companion object{
         const val CHANNEL_ID= "myChannel"
-        lateinit var userRoot: User
+        var userRoot: User? = null
     }
     private lateinit var binding: ActivityMainBinding
     private var isBottomNavVisible = false
     private lateinit var eventAPIClient: EventAPIClient
+    private lateinit var userAPIClient: UserAPIClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         eventAPIClient = EventAPIClient(applicationContext)
+        userAPIClient = UserAPIClient(applicationContext)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        userRoot = intent.getSerializableExtra("User") as User
-        println("Mainactivuty : " + userRoot.nombre)
+        getUser()
+
+
 
         hideNavKeyboard()
 
@@ -53,15 +60,33 @@ class MainActivity : AppCompatActivity() {
 
         setupBottomNavigationView()
 
-        //Funciona
-        val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
-        val editor = preferences.edit()
-        editor.putBoolean(REMEMBER, false)
-        editor.apply()
 
         //funciona
         createChannel()
         //newEvent(false)
+    }
+    private fun getUser(){
+        val callback = object : Callback.MyCallback<User> {
+            override fun onSuccess(data: User) {
+                userRoot = data
+            }
+
+            override fun onError(errorMsg: String) {
+                println("Error: $errorMsg")
+            }
+        }
+        val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
+        val id = preferences.getInt(USER_ID, 0)
+        if(id == 0){
+            val intent = Intent(this, SignIn::class.java)
+            startActivity(intent)
+            finish()
+        }else{
+            userAPIClient.getUserById(id,callback)
+        }
+
+
+
     }
 
     private fun newEvent(bool: Boolean){

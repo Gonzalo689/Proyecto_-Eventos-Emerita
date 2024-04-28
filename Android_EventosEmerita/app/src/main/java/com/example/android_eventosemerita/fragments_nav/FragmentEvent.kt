@@ -45,7 +45,6 @@ class FragmentEvent : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.titleBorder.text = event?.titulo ?: "Nada"
         binding.title.text = event?.titulo ?: "Nada"
         Picasso.get().load(event?.imagenIni).into(binding.imageEvent)
 

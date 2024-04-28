@@ -9,6 +9,8 @@ import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
 import com.example.android_eventosemerita.databinding.ActivitySplashScreenBinding
 import com.example.android_eventosemerita.login.SignIn
+import com.example.android_eventosemerita.login.SignIn.Companion.REMEMBER
+import com.example.android_eventosemerita.login.SignIn.Companion.USER_ID
 
 
 class SplashScreen : AppCompatActivity() {
@@ -23,6 +25,12 @@ class SplashScreen : AppCompatActivity() {
 
         eventAPIClient = EventAPIClient(this)
         makeApiCall()
+
+//        val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
+//        val editor = preferences.edit()
+//        editor.putBoolean(REMEMBER, false)
+//        editor.putInt(USER_ID, 0)
+//        editor.apply()
 
     }
 

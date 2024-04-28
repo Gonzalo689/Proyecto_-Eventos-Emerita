@@ -33,6 +33,7 @@ class SignUp : AppCompatActivity() {
     private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("User", userRoot)
+
         startActivity(intent)
         finish()
     }
@@ -83,7 +84,7 @@ class SignUp : AppCompatActivity() {
         val callback = object : Callback.MyCallback<User> {
             override fun onSuccess(data: User) {
                 userRoot = data
-                SignIn.remenberUser(context)
+                SignIn.remenberUser(context,data.id)
                 startMainActivity()
             }
 
