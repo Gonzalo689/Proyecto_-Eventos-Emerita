@@ -7,8 +7,8 @@ import android.os.Handler
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
-import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.databinding.ActivitySplashScreenBinding
+import com.example.android_eventosemerita.login.SignIn
 
 
 class SplashScreen : AppCompatActivity() {
@@ -32,7 +32,7 @@ class SplashScreen : AppCompatActivity() {
                 if (data.isNotEmpty() && data.equals("conect")) {
                     navigateToMain()
                 }else{
-                    Handler(mainLooper).postDelayed({ makeApiCall() }, 2000)
+                    Handler(mainLooper).postDelayed({ makeApiCall()}, 2000)
                 }
             }
 
@@ -44,7 +44,7 @@ class SplashScreen : AppCompatActivity() {
     }
 
     private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, SignIn::class.java)
         startActivity(intent)
         finish()
     }

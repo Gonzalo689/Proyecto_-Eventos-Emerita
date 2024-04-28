@@ -5,22 +5,6 @@ const {conectDB, closeDB } = require("../dataBase");
 //Conexion
 const collectionName = "usuarios";
 
-router.post('/', async (req, res) => {
-    try {
-        console.log("Creando un nuevo usuario");
-        const collection = await conectDB(collectionName);
-        const user = req.body; 
-        await collection.insertOne(user);
-        console.error('Usuario creado:', user);
-        res.status(200).send("usuario creado");
-    } catch (error) {
-        console.error('Error al crear usuario:', error);
-        res.status(500).send("Error interno del servidor");
-    }finally {
-        await closeDB();
-    }
-});
-
 router.get('/', async (req, res) => {
     try {
 
@@ -59,10 +43,88 @@ router.get('/:id', async (req, res) => {
         await closeDB();
     }
 })
+router.put('/:id', async (req, res) => {
+    try {
+        const userId = parseInt(req.params.id);
+        console.log("Actualizando email del usuario con id:", userId);
+        const collection = await conectDB(collectionName);
+        
+        const updateFields  = req.body;
 
+        const updatedUser = await collection.findOneAndUpdate(
+            { id: userId },
+            { $set: updateFields },
+            { returnOriginal: false } // Para obtener el documento actualizado
+        );
 
-router.get('/', (req, res) => {
-    res.send('Hello World!')
+        if (updatedUser) {
+            console.log('Email actualizado con éxito:', updatedUser);
+            res.status(200).json(updatedUser);
+        } else {
+            console.error('Usuario no encontrado');
+            res.status(404).send('Usuario no encontrado');
+        }
+    } catch (error) {
+        console.error("Error al actualizar email del usuario:", error);
+        res.status(500).send("Error al actualizar email del usuario");
+    } finally {
+        await closeDB();
+    }
 })
+async function getMaxUserId(collection) {
+    const result = await collection.findOne({}, { projection: { id: 1, _id: 0 }, sort: { id: -1 } });
+    console.log("Resultado de getMaxEventId:", result);
+
+    return result ? result.id : 0;
+}
+router.post('/', async (req, res) => {
+    try {
+        console.log("Creando un nuevo usuario");
+        const collection = await conectDB(collectionName);
+        
+        const newUser = req.body;
+        var id = await getMaxUserId(collection)
+        id++;
+        console.log("id: ", id);
+        
+        newUser.id = id;
+        newUser.eventsLikeList = [];
+        await collection.insertOne(newUser);
+
+        console.log('Usuario creado con éxito:', newUser);
+        res.status(200).json(newUser); 
+    } catch (error) {
+        console.error("Error al crear usuario:", error);
+        res.status(500).send("Error al crear usuario");
+    } finally {
+        await closeDB();
+    }
+})
+router.post('/checkUser', async (req, res) => {
+    try {
+        console.log("Comprobando usuario");
+        const collection = await conectDB(collectionName);
+
+        const { email, password } = req.body;
+        
+        const user = await collection.findOne({ email: email, password: password });
+
+        if (user) {
+            console.log('Usuario logeado con exito:', user);
+            res.status(200).json(user); 
+        }else{
+            console.error('Usuario no encontrado');
+            res.status(404).send('Usuario no encontrado');
+        }
+
+        
+    } catch (error) {
+        console.error("Error al crear usuario:", error);
+        res.status(500).send("Error al crear usuario");
+    } finally {
+        await closeDB();
+    }
+});
+
 
 module.exports = router

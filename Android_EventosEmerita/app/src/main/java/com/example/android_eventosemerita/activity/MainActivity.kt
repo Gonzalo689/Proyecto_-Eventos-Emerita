@@ -11,14 +11,17 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.android_eventosemerita.notify.AlarmNotification
 import com.example.android_eventosemerita.notify.AlarmNotification.Companion.NOTIFICATION_ID
+import com.example.android_eventosemerita.login.SignIn.Companion.REMEMBER
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
 import com.example.android_eventosemerita.api.model.Event
+import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.databinding.ActivityMainBinding
 import com.example.android_eventosemerita.fragments_nav.Home
 import com.example.android_eventosemerita.fragments_nav.Search
@@ -29,6 +32,7 @@ import java.util.Calendar
 class MainActivity : AppCompatActivity() {
     companion object{
         const val CHANNEL_ID= "myChannel"
+        lateinit var userRoot: User
     }
     private lateinit var binding: ActivityMainBinding
     private var isBottomNavVisible = false
@@ -40,7 +44,8 @@ class MainActivity : AppCompatActivity() {
         eventAPIClient = EventAPIClient(applicationContext)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        userRoot = intent.getSerializableExtra("User") as User
+        println("Mainactivuty : " + userRoot.nombre)
 
         hideNavKeyboard()
 
@@ -48,19 +53,22 @@ class MainActivity : AppCompatActivity() {
 
         setupBottomNavigationView()
 
+        //Funciona
+        val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
+        val editor = preferences.edit()
+        editor.putBoolean(REMEMBER, false)
+        editor.apply()
 
         //funciona
-//        createChannel()
-//        newEvent()
+        createChannel()
+        //newEvent(false)
     }
 
-    private fun newEvent(){
+    private fun newEvent(bool: Boolean){
         val callback = object : Callback.MyCallback<Event> {
             override fun onSuccess(data: Event) {
-                println("Bien2")
                 if (data != null) {
-                    println("Bien")
-                    sheduleNotification(data)
+                    sheduleNotification(data,bool)
                 }
             }
             override fun onError(errorMsg: String) {
@@ -72,7 +80,7 @@ class MainActivity : AppCompatActivity() {
 
 
     @SuppressLint("ScheduleExactAlarm")
-    private fun sheduleNotification(event: Event){
+    private fun sheduleNotification(event: Event, bool: Boolean){
         val bundle = Bundle().apply {
             putSerializable("events", event as Serializable)
         }
@@ -85,25 +93,29 @@ class MainActivity : AppCompatActivity() {
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-//        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//        alarmManager.setExact(
-//            AlarmManager.RTC_WAKEUP,
-//            Calendar.getInstance().timeInMillis+10000, pendingIntent )
 
         val calendar = Calendar.getInstance().apply {
-            set(2024, Calendar.APRIL, 26, /*hora*/ 17, /*minuto*/ 52, /*segundo*/ 0)
+            set(2024, Calendar.APRIL, 27, /*hora*/ 9, /*minuto*/ 40, /*segundo*/ 0)
         }
-
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        // Programa la alarma para la fecha específica
-        alarmManager.setExact(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            pendingIntent
-        )
+        if (bool){
+            // Programa la alarma para la fecha específica
+            alarmManager.setExact(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                pendingIntent
+            )
+        }else{
+            // Eliminar notificación
+            alarmManager.cancel(pendingIntent)
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancel(NOTIFICATION_ID)
+        }
 
 
     }
+
+
     private fun createChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             var channel = NotificationChannel(

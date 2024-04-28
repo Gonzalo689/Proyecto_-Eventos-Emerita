@@ -21,7 +21,6 @@ class AlarmNotification:BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent?) {
 
-            // Obtener la lista de eventos del intent
         val events = intent?.getSerializableExtra("events") as? Event
         events?.let {
             createNotification(context, it)
@@ -31,7 +30,6 @@ class AlarmNotification:BroadcastReceiver() {
 
 
     private fun createNotification(context:Context, event:Event){
-
         val intent = Intent(context, SplashScreen::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }

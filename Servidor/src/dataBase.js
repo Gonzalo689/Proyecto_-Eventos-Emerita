@@ -25,7 +25,6 @@ async function closeDB() {
         }
     } catch (error) {
         console.error('Error al cerrar la conexión con la base de datos:', error);
-        throw error;
     }
 }
 
