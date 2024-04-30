@@ -5,6 +5,7 @@ const {conectDB, closeDB } = require("../dataBase");
 //Conexion
 const collectionName = "usuarios";
 
+// Encontrar todos los usuarios
 router.get('/', async (req, res) => {
     try {
 
@@ -21,6 +22,7 @@ router.get('/', async (req, res) => {
     }
     
 })
+// Encontrar el usuario con el id dado
 router.get('/:id', async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
@@ -43,6 +45,7 @@ router.get('/:id', async (req, res) => {
         await closeDB();
     }
 })
+// Actualizar email y nombre
 router.put('/:id', async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
@@ -71,12 +74,14 @@ router.put('/:id', async (req, res) => {
         await closeDB();
     }
 })
+// Obtener el máximo userId actual 
 async function getMaxUserId(collection) {
     const result = await collection.findOne({}, { projection: { id: 1, _id: 0 }, sort: { id: -1 } });
     console.log("Resultado de getMaxEventId:", result);
 
     return result ? result.id : 0;
 }
+// Crear un usuario nuevo
 router.post('/', async (req, res) => {
     try {
         console.log("Creando un nuevo usuario");
@@ -100,6 +105,7 @@ router.post('/', async (req, res) => {
         await closeDB();
     }
 })
+// Comprobar si el usuario existe
 router.post('/checkUser', async (req, res) => {
     try {
         console.log("Comprobando usuario");

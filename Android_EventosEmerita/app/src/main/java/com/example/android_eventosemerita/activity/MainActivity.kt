@@ -24,6 +24,7 @@ import com.example.android_eventosemerita.api.UserAPIClient
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.databinding.ActivityMainBinding
+import com.example.android_eventosemerita.fragments_nav.Favorite
 import com.example.android_eventosemerita.fragments_nav.Home
 import com.example.android_eventosemerita.fragments_nav.Search
 import com.example.android_eventosemerita.login.SignIn
@@ -88,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
 
     }
-
+    // notif
     private fun newEvent(bool: Boolean){
         val callback = object : Callback.MyCallback<Event> {
             override fun onSuccess(data: Event) {
@@ -137,7 +138,6 @@ class MainActivity : AppCompatActivity() {
             notificationManager.cancel(NOTIFICATION_ID)
         }
 
-
     }
 
 
@@ -164,6 +164,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.search -> {
                     loadFragment(Search(),false)
+                    true
+                }
+                R.id.favorite -> {
+                    loadFragment(Favorite(),false)
                     true
                 }
 
@@ -200,5 +204,7 @@ class MainActivity : AppCompatActivity() {
     fun setBottomNavVisibility(visible: Boolean) {
         isBottomNavVisible = visible
     }
+
+
 
 }

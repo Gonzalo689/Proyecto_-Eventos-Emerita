@@ -9,6 +9,7 @@ var eventos=[];
 //Conexion
 const collectionName = "eventos";
 
+// Encontrar todos los eventos nuevos
 router.get('/scrap', async (req, res) => {
     try {
         console.log("Nuevos eventos", eventos.length);
@@ -18,7 +19,6 @@ router.get('/scrap', async (req, res) => {
         res.status(500).send("Error interno del servidor");
     }
 });
-
 // Programar la tarea para que se ejecute cada hora (en el minuto 0 de cada hora) 
 cron.schedule('0 * * * *', async () => {
     try {
@@ -28,13 +28,12 @@ cron.schedule('0 * * * *', async () => {
         console.error("Error al obtener eventos:", error);
     }
 });
-
+// Detener la tarea programada
 process.on('SIGINT', () => {
     console.log('Deteniendo la ejecución de la tarea programada.');
     process.exit();
 });
-
-
+// Encontrar todos los eventos
 router.get('/', async (req, res) => {
     try {
         console.log("Buscando todo eventos en la base de datos...");
@@ -50,7 +49,7 @@ router.get('/', async (req, res) => {
         await closeDB();
     }
 });
-
+// Encontrar eventos pasados
 router.get('/past', async (req, res) => {
     try {
         console.log("Eventos pasados");
@@ -72,8 +71,7 @@ router.get('/past', async (req, res) => {
         await closeDB();
     }
 });
-
-
+// Encontrar eventos destacados
 router.get('/destacados', async (req, res) => {
     try {
         // Obteniendo la fecha actual
@@ -98,6 +96,7 @@ router.get('/destacados', async (req, res) => {
         await closeDB();
     }
 });
+// Encontrar eventos por categoria
 router.get('/:categoria', async (req, res) => {
     try {
         // Obteniendo la fecha actual
@@ -124,8 +123,7 @@ router.get('/:categoria', async (req, res) => {
         await closeDB();
     }
 });
-
-
+// Encontrar evento por id
 router.get('/id/:id', async (req, res) => {
     try {
         const eventId = parseInt(req.params.id);

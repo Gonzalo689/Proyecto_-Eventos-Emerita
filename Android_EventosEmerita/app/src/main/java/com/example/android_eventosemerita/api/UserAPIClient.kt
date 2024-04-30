@@ -14,6 +14,9 @@ import org.json.JSONObject
 class UserAPIClient(private val context: Context) {
     private val url: String? = "https://x2t55z6x-3000.uks1.devtunnels.ms"
 
+    /**
+     * Función que actualiza el nombre y el email
+     */
     fun updateUser(userId: Int,nombre: String, email: String, callback: Callback.MyCallback<User>) {
         val queue = Volley.newRequestQueue(context)
         val url = "$url/usuarios/$userId"
@@ -44,6 +47,10 @@ class UserAPIClient(private val context: Context) {
 
         queue.add(jsonObjectRequest)
     }
+
+    /**
+     * Función que devuelve un usuario con el id dado
+     */
     fun getUserById(userId: Int, callback: Callback.MyCallback<User>) {
         val queue = Volley.newRequestQueue(context)
         val url = "$url/usuarios/$userId"
@@ -64,6 +71,10 @@ class UserAPIClient(private val context: Context) {
 
         queue.add(jsonObjectRequest)
     }
+
+    /**
+     * funcion que comprueba si el usuario existe
+     */
     fun loginUser(email: String, password: String, callback: Callback.MyCallback<User>) {
         val queue = Volley.newRequestQueue(context)
         val url = "$url/usuarios/checkUser"
@@ -95,6 +106,9 @@ class UserAPIClient(private val context: Context) {
         queue.add(jsonObjectRequest)
     }
 
+    /**
+     * Función para crear un usuario
+     */
     fun createUser(name: String, email: String, password: String, callback: Callback.MyCallback<User>) {
         val queue = Volley.newRequestQueue(context)
         val url = "$url/usuarios/"
