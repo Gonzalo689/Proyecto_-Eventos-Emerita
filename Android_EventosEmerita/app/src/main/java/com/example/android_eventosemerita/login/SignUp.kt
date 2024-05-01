@@ -88,7 +88,7 @@ class SignUp : AppCompatActivity() {
                 startMainActivity()
             }
 
-            override fun onError(errorMsg: String) {
+            override fun onError(errorMsg: User?) {
                 println("Error: $errorMsg")
             }
         }

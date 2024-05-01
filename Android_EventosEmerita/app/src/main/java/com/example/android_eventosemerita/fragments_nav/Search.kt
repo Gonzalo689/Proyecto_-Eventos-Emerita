@@ -66,7 +66,7 @@ class Search : Fragment(){
                     allEventsList.addAll(data)
                 }
             }
-            override fun onError(errorMsg: String) {
+            override fun onError(errorMsg:  List<Event>?) {
                 println("Error: $errorMsg")
             }
         }
@@ -81,8 +81,9 @@ class Search : Fragment(){
                     adapter.updateEvents(allEventsList)
                 }
             }
-            override fun onError(errorMsg: String) {
-                println("Error: $errorMsg")
+
+            override fun onError(errorMsg: List<Event>?) {
+
             }
         }
         eventAPIClient.getEventCategory(category,callback)

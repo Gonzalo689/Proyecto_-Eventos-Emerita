@@ -1,9 +1,7 @@
 package com.example.android_eventosemerita.fragments_nav
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
-import android.opengl.Visibility
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,9 +11,12 @@ import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.databinding.FragmentEventBinding
 import com.squareup.picasso.Picasso
-import android.content.pm.PackageManager
-import android.widget.Toast
+import android.location.Geocoder
 import com.example.android_eventosemerita.R
+import com.example.android_eventosemerita.activity.MainActivity.Companion.userRoot
+import com.example.android_eventosemerita.api.Callback
+import com.example.android_eventosemerita.api.UserAPIClient
+import com.example.android_eventosemerita.api.model.User
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -30,6 +31,7 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
     private var event: Event? = null
     private lateinit var binding: FragmentEventBinding
     private lateinit var mMAp : GoogleMap
+    private lateinit var userAPIClient: UserAPIClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +44,7 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        userAPIClient = UserAPIClient(requireContext())
         binding = FragmentEventBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -59,7 +62,7 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
     @SuppressLint("QueryPermissionsNeeded")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        var add_delete = true
         binding.title.text = event?.titulo
         Picasso.get().load(event?.imagenIni).into(binding.imageEvent)
 
@@ -82,9 +85,51 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
                 binding.textDate2.visibility = View.GONE
             }
         }
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
+
+        val callbackLik = object : Callback.MyCallback<Boolean> {
+            override fun onSuccess(data: Boolean){
+                println("good " + data)
+                checkfollow(!data)
+                add_delete = !data
+            }
+
+            override fun onError(errorMsg: Boolean?) {
+            }
+        }
+
+        userAPIClient.isLikedEvent(userRoot!!.id, event!!.eventId,callbackLik)
+
+
+
+        binding.buttonLike.setOnClickListener(View.OnClickListener {
+            val callback = object : Callback.MyCallback<Boolean> {
+                override fun onSuccess(data: Boolean) {
+                    userRoot?.eventsLikeList!!.add(event!!.eventId)
+                    add_delete = !add_delete
+                    checkfollow(add_delete)
+                }
+
+                override fun onError(errorMsg: Boolean?) {
+                }
+            }
+
+            userAPIClient.updateUserList(userRoot!!.id, event!!.eventId,add_delete,callback)
+
+
+        })
+
+
+    }
+    fun checkfollow(like:Boolean){
+        if (like){
+            binding.buttonLike.setBackgroundColor(Color.GREEN)
+        }else{
+            binding.buttonLike.setBackgroundColor(Color.RED)
+        }
 
     }
     fun stringFecha(date:String):String{
@@ -117,13 +162,30 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
     }
 
     override fun onMapReady(p0: GoogleMap) {
-        this.mMAp = p0
+        mMAp = p0
         mMAp.setOnMapClickListener(this)
         mMAp.setOnMapLongClickListener(this)
+        var location =  LatLng(38.9179933, -6.3429062)
 
-        val location = LatLng(38.9247773, -6.3402905)
-        mMAp.addMarker(MarkerOptions().position(location).title("mmm"))
+        val googleMap = event?.utlGooglemaps
+
+        val addressEncoded: String?
+        if (googleMap!=null) {
+            addressEncoded = googleMap.split("&q=")[1]
+
+            val geocoder = Geocoder(requireContext())
+            val locationList = geocoder.getFromLocationName(addressEncoded, 1)
+
+            if (locationList?.isNotEmpty() == true) {
+                val latitude = locationList[0].latitude
+                val longitude = locationList[0].longitude
+                location = LatLng(latitude, longitude)
+
+            }
+        }
+        mMAp.addMarker(MarkerOptions().position(location).title("Mérida"))
         mMAp.moveCamera(CameraUpdateFactory.newLatLng(location))
+
     }
 
     override fun onMapClick(p0: LatLng) {
@@ -133,7 +195,6 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
     override fun onMapLongClick(p0: LatLng) {
 
     }
-
 
 }
 

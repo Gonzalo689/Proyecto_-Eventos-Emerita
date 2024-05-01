@@ -11,12 +11,10 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.android_eventosemerita.notify.AlarmNotification
 import com.example.android_eventosemerita.notify.AlarmNotification.Companion.NOTIFICATION_ID
-import com.example.android_eventosemerita.login.SignIn.Companion.REMEMBER
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
@@ -29,7 +27,6 @@ import com.example.android_eventosemerita.fragments_nav.Home
 import com.example.android_eventosemerita.fragments_nav.Search
 import com.example.android_eventosemerita.login.SignIn
 import com.example.android_eventosemerita.login.SignIn.Companion.USER_ID
-import com.example.android_eventosemerita.login.SignUp
 import java.io.Serializable
 import java.util.Calendar
 
@@ -72,8 +69,8 @@ class MainActivity : AppCompatActivity() {
                 userRoot = data
             }
 
-            override fun onError(errorMsg: String) {
-                println("Error: $errorMsg")
+            override fun onError(errorMsg: User?) {
+                
             }
         }
         val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
@@ -97,7 +94,7 @@ class MainActivity : AppCompatActivity() {
                     sheduleNotification(data,bool)
                 }
             }
-            override fun onError(errorMsg: String) {
+            override fun onError(errorMsg: Event?) {
                 println("Error: $errorMsg")
             }
         }

@@ -7,9 +7,9 @@ import android.os.Handler
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
+import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.databinding.ActivitySplashScreenBinding
 import com.example.android_eventosemerita.login.SignIn
-import com.example.android_eventosemerita.login.SignIn.Companion.REMEMBER
 import com.example.android_eventosemerita.login.SignIn.Companion.USER_ID
 
 
@@ -26,12 +26,6 @@ class SplashScreen : AppCompatActivity() {
         eventAPIClient = EventAPIClient(this)
         makeApiCall()
 
-//        val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
-//        val editor = preferences.edit()
-//        editor.putBoolean(REMEMBER, false)
-//        editor.putInt(USER_ID, 0)
-//        editor.apply()
-
     }
 
     private fun makeApiCall() {
@@ -44,7 +38,7 @@ class SplashScreen : AppCompatActivity() {
                 }
             }
 
-            override fun onError(errorMsg: String) {
+            override fun onError(errorMsg: String?) {
                 Handler(mainLooper).postDelayed({ makeApiCall() }, 2000)
             }
         }

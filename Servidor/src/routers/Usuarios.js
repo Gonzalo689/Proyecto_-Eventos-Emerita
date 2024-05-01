@@ -45,6 +45,35 @@ router.get('/:id', async (req, res) => {
         await closeDB();
     }
 })
+//BuscarLike
+router.get('/like/:id', async (req, res) => {
+    try {
+        const userId = parseInt(req.params.id);
+        console.log("Actualizand list liked del usuario con id:", userId);
+        const collection = await conectDB(collectionName);
+        
+        const eventId  = parseInt(req.query.eventId);
+        console.log(eventId);
+
+        let find = await collection.findOne(
+            { id: userId, eventsLikeList: { $elemMatch: { $eq: eventId } } }
+            );
+        
+
+        if (find) {
+            console.log('Encontrado', find);
+            res.status(200).json({ isLiked: true });
+        } else {
+            console.error('No se encontro el evento en la lista de eventos favoritos');
+            res.status(200).json({ isLiked: false });
+        }
+    } catch (error) {
+        console.error("Error al actualizar email del usuario:", error);
+        res.status(500).send("Error al actualizar email del usuario");
+    } finally {
+        await closeDB();
+    }
+})
 // Actualizar email y nombre
 router.put('/:id', async (req, res) => {
     try {
@@ -74,6 +103,46 @@ router.put('/:id', async (req, res) => {
         await closeDB();
     }
 })
+// Aculizar Lista Likeds
+router.put('/list/:id', async (req, res) => {
+    try {
+        const userId = parseInt(req.params.id);
+        console.log("Actualizar la lista de like del usuario con id:", userId);
+        const collection = await conectDB(collectionName);
+        
+        const eventId  = req.body.eventId;
+        const addToFavorites = req.body.addToFavorites;
+
+        let updatedUser;
+
+        if (addToFavorites) {
+            updatedUser = await collection.findOneAndUpdate(
+                { id: userId },
+                { $addToSet: { eventsLikeList: eventId } }, 
+                { returnOriginal: false }
+            );
+        } else {
+            updatedUser = await collection.findOneAndUpdate(
+                { id: userId },
+                { $pull: { eventsLikeList: eventId } },
+                { returnOriginal: false }
+            );
+        }
+
+        if (updatedUser) {
+            console.log('Lista de eventos favoritos actualizada con éxito:', updatedUser);
+            res.status(200).json({ isLiked: true });
+        } else {
+            res.status(200).json({ isLiked: false });
+        }
+    } catch (error) {
+        console.error("Error al encontrar el usuario:", error);
+        res.status(500).send("Error al encontrar el usuario");
+    } finally {
+        await closeDB();
+    }
+})
+
 // Obtener el máximo userId actual 
 async function getMaxUserId(collection) {
     const result = await collection.findOne({}, { projection: { id: 1, _id: 0 }, sort: { id: -1 } });

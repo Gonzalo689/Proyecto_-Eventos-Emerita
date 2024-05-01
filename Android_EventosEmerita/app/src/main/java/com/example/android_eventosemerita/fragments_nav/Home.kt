@@ -48,8 +48,8 @@ class Home : Fragment() {
                     recyclerDest(eventsDest)
                 }
             }
-            override fun onError(errorMsg: String) {
-                println("Error: $errorMsg")
+            override fun onError(errorMsg: List<Event>?) {
+
             }
         }
 

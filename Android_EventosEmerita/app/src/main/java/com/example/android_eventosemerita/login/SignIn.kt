@@ -2,11 +2,9 @@ package com.example.android_eventosemerita.login
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.api.Callback
@@ -106,14 +104,14 @@ class SignIn : AppCompatActivity() {
                 remenberUser(context, data.id)
                 startMainActivity()
             }
-            override fun onError(errorMsg: String) {
+            override fun onError(errorMsg: User?) {
                 binding.emailLog.error = "No existe este email con esta contraseña"
                 binding.emailLog.requestFocus()
             }
         }
         userAPIClient.loginUser(email, pass ,callback)
-    }
 
+    }
 
 
     private fun updateUser(){
@@ -122,7 +120,7 @@ class SignIn : AppCompatActivity() {
                 binding.textEE.text = data.nombre
             }
 
-            override fun onError(errorMsg: String) {
+            override fun onError(errorMsg: User?) {
                 binding.emailLog.error = "No existe este email con esta contraseña"
                 binding.emailLog.requestFocus()
             }

@@ -23,11 +23,10 @@ class UserAPIClient(private val context: Context) {
 
         val userData = JSONObject()
         try {
-            userData.put("id", userId)
             userData.put("nombre", nombre)
             userData.put("email", email)
         } catch (e: JSONException) {
-            callback.onError("Error creating JSON")
+            callback.onError(null)
             return
         }
 
@@ -37,13 +36,76 @@ class UserAPIClient(private val context: Context) {
                     val user = Gson().fromJson(response.toString(), User::class.java)
                     callback.onSuccess(user)
                 } catch (e: JsonSyntaxException) {
-                    callback.onError("Error parsing JSON")
+                    callback.onError(null)
                 }
             },
             { error ->
-                val errorString = error.toString()
-                callback.onError(errorString)
+                callback.onError(null)
             })
+
+        queue.add(jsonObjectRequest)
+    }
+
+    /**
+     * Modifica la lista de like
+     */
+    fun updateUserList(userId: Int, eventId: Int, addToFavorites: Boolean, callback: Callback.MyCallback<Boolean>) {
+        val queue = Volley.newRequestQueue(context)
+        val url = "$url/usuarios/list/$userId"
+
+        val userData = JSONObject()
+        try {
+            userData.put("eventId", eventId)
+            userData.put("addToFavorites", addToFavorites)
+        } catch (e: JSONException) {
+            callback.onError(false)
+            return
+        }
+
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.PUT, url, userData,
+            { response ->
+                try {
+                    val isLiked = response.getBoolean("isLiked")
+                    callback.onSuccess(isLiked)
+                } catch (e: JsonSyntaxException) {
+                    callback.onError(false)
+                }
+            },
+            { error ->
+                callback.onError(false)
+            })
+
+
+        queue.add(jsonObjectRequest)
+    }
+    /**
+     * Encuentra si el evento tiene un like por el usuario
+     */
+    fun isLikedEvent(userId: Int, eventId: Int,callback: Callback.MyCallback<Boolean>) {
+        val queue = Volley.newRequestQueue(context)
+        val url = "$url/usuarios/like/$userId?eventId=$eventId"
+
+        val userData = JSONObject()
+        try {
+            userData.put("eventId", eventId)
+        } catch (e: JSONException) {
+            callback.onError(null)
+            return
+        }
+
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
+            { response ->
+                try {
+                    val isLiked = response.getBoolean("isLiked")
+                    callback.onSuccess(isLiked)
+                } catch (e: JSONException) {
+                    callback.onError(null)
+                }
+            },
+            { error ->
+                callback.onError(null)
+            })
+
 
         queue.add(jsonObjectRequest)
     }
@@ -61,12 +123,12 @@ class UserAPIClient(private val context: Context) {
                     val user = Gson().fromJson(response.toString(), User::class.java)
                     callback.onSuccess(user)
                 } catch (e: JsonSyntaxException) {
-                    callback.onError("Error parsing JSON")
+                    callback.onError(null)
                 }
             },
             { error ->
                 val errorString = error.toString()
-                callback.onError(errorString)
+                callback.onError(null)
             })
 
         queue.add(jsonObjectRequest)
@@ -85,7 +147,7 @@ class UserAPIClient(private val context: Context) {
             credentials.put("email", email)
             credentials.put("password", passwordHash)
         } catch (e: JSONException) {
-            callback.onError("Error creating JSON")
+            callback.onError(null)
             return
         }
 
@@ -95,12 +157,11 @@ class UserAPIClient(private val context: Context) {
                     val user = Gson().fromJson(response.toString(), User::class.java)
                     callback.onSuccess(user)
                 } catch (e: JsonSyntaxException) {
-                    callback.onError("Error parsing JSON")
+                    callback.onError(null)
                 }
             },
             { error ->
-                val errorString = error.toString()
-                callback.onError(errorString)
+                callback.onError(null)
             })
 
         queue.add(jsonObjectRequest)
@@ -123,7 +184,7 @@ class UserAPIClient(private val context: Context) {
             userData.put("password", passwordHash)
             userData.put("eventsLikeList", eventsLikeList)
         } catch (e: JSONException) {
-            callback.onError("Error creating JSON")
+            callback.onError(null)
             return
         }
 
@@ -133,7 +194,7 @@ class UserAPIClient(private val context: Context) {
                     val user = Gson().fromJson(response.toString(), User::class.java)
                     callback.onSuccess(user)
                 } catch (e: JsonSyntaxException) {
-                    callback.onError("Error parsing JSON")
+                    callback.onError(null)
                 }
             },
             { error ->
@@ -141,7 +202,7 @@ class UserAPIClient(private val context: Context) {
                 if (error.networkResponse != null && error.networkResponse.data != null) {
                     errorMsg = String(error.networkResponse.data)
                 }
-                callback.onError(errorMsg)
+                callback.onError(null)
             })
 
         queue.add(jsonObjectRequest)

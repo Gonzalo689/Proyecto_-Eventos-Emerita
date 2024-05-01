@@ -2,13 +2,11 @@ package com.example.android_eventosemerita.api
 
 import android.content.Context
 import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.android_eventosemerita.api.model.Event
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import org.json.JSONObject
 
 class EventAPIClient (private val context: Context) {
     private val url: String? = "https://x2t55z6x-3000.uks1.devtunnels.ms/"
@@ -42,8 +40,7 @@ class EventAPIClient (private val context: Context) {
             },
             { error ->
                 // Handle errors
-                val errorString = error.toString()
-                callback.onError(errorString)
+                callback.onError(null)
             })
 
 
@@ -62,7 +59,7 @@ class EventAPIClient (private val context: Context) {
             { error ->
                 // Handle errors
                 val errorString = error.toString()
-                callback.onError(errorString)
+                callback.onError(null)
             })
 
 
@@ -80,7 +77,7 @@ class EventAPIClient (private val context: Context) {
             },
             { error ->
                 val errorString = error.toString()
-                callback.onError(errorString)
+                callback.onError(null)
             })
 
 
@@ -97,12 +94,12 @@ class EventAPIClient (private val context: Context) {
                     val event = Gson().fromJson(response, Event::class.java)
                     callback.onSuccess(event)
                 } catch (e: JsonSyntaxException) {
-                    callback.onError("Error parsing JSON")
+                    callback.onError(null)
                 }
             },
             { error ->
                 val errorString = error.toString()
-                callback.onError(errorString)
+                callback.onError(null)
             })
 
 
