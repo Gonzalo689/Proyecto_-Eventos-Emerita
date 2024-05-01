@@ -9,6 +9,8 @@ import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.databinding.FragmentFavoriteBinding
 import com.example.android_eventosemerita.databinding.FragmentProfileBinding
 import com.example.android_eventosemerita.login.SignIn
+import com.example.android_eventosemerita.utils.ImageCircle
+import com.squareup.picasso.Picasso
 
 
 class Profile : Fragment() {
@@ -24,7 +26,10 @@ class Profile : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        Picasso.get()
+            .load(R.drawable.prueba)
+            .transform(ImageCircle())
+            .into(binding.profileimage)
         binding.quitarRemenber.setOnClickListener(View.OnClickListener {
             forgotUser()
         })

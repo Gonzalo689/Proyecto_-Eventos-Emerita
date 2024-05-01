@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         const val CHANNEL_ID= "myChannel"
         var userRoot: User? = null
     }
+    private val DP_KEYBOARD: Int = 200
     private lateinit var binding: ActivityMainBinding
     private var isBottomNavVisible = false
     private lateinit var eventAPIClient: EventAPIClient
@@ -91,9 +92,7 @@ class MainActivity : AppCompatActivity() {
     private fun newEvent(bool: Boolean){
         val callback = object : Callback.MyCallback<Event> {
             override fun onSuccess(data: Event) {
-                if (data != null) {
-                    sheduleNotification(data,bool)
-                }
+                sheduleNotification(data,bool)
             }
             override fun onError(errorMsg: Event?) {
                 println("Error: $errorMsg")
@@ -192,16 +191,16 @@ class MainActivity : AppCompatActivity() {
     private fun hideNavKeyboard(){
         binding.root.getViewTreeObserver().addOnGlobalLayoutListener(OnGlobalLayoutListener {
             val heightDiff: Int = binding.root.getRootView().getHeight() - binding.root.getHeight()
-            if (heightDiff > dpToPx( 200) || isBottomNavVisible) {
+            if (heightDiff > dpToPx() || isBottomNavVisible) {
                 binding.nav.visibility = View.GONE
             } else {
                 binding.nav.visibility = View.VISIBLE
             }
         })
     }
-    private fun dpToPx(dp: Int): Int {
+    private fun dpToPx(): Int {
         val density = resources.displayMetrics.density
-        return (dp * density).toInt()
+        return (DP_KEYBOARD * density).toInt()
     }
     fun setBottomNavVisibility(visible: Boolean) {
         isBottomNavVisible = visible
