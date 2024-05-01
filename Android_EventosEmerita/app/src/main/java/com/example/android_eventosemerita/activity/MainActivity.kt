@@ -24,6 +24,7 @@ import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.databinding.ActivityMainBinding
 import com.example.android_eventosemerita.fragments_nav.Favorite
 import com.example.android_eventosemerita.fragments_nav.Home
+import com.example.android_eventosemerita.fragments_nav.Profile
 import com.example.android_eventosemerita.fragments_nav.Search
 import com.example.android_eventosemerita.login.SignIn
 import com.example.android_eventosemerita.login.SignIn.Companion.USER_ID
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onError(errorMsg: User?) {
-                
+
             }
         }
         val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
@@ -165,6 +166,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.favorite -> {
                     loadFragment(Favorite(),false)
+                    true
+                }
+                R.id.profile -> {
+                    loadFragment(Profile(),false)
                     true
                 }
 

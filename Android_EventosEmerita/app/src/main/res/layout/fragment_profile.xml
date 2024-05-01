@@ -7,8 +7,17 @@
     tools:context=".fragments_nav.Favorite">
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerFavs"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
+    <Button
+        android:id="@+id/quitarRemenber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Quitar recordatorio user" />
+
+
 </LinearLayout>

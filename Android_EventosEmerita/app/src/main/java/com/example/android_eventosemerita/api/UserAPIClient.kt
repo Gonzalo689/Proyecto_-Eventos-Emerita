@@ -4,6 +4,8 @@ import android.content.Context
 import com.android.volley.toolbox.Volley
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
+import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.login.EncryptionUtil
 import com.google.gson.Gson
@@ -202,6 +204,28 @@ class UserAPIClient(private val context: Context) {
                 if (error.networkResponse != null && error.networkResponse.data != null) {
                     errorMsg = String(error.networkResponse.data)
                 }
+                callback.onError(null)
+            })
+
+        queue.add(jsonObjectRequest)
+    }
+    /**
+     * Función que me devuelve la lista de eventos favoritos
+     */
+    fun getFavEventsList(userId: Int, callback: Callback.MyCallback<List<Event>>){
+        val queue = Volley.newRequestQueue(context)
+        val url = "$url/usuarios/likeList/$userId"
+
+        val jsonObjectRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                try {
+                    val eventList = Gson().fromJson(response, Array<Event>::class.java).toList()
+                    callback.onSuccess(eventList)
+                } catch (e: JsonSyntaxException) {
+                    callback.onError(null)
+                }
+            },
+            { error ->
                 callback.onError(null)
             })
 

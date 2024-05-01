@@ -5,6 +5,8 @@ const {conectDB, closeDB } = require("../dataBase");
 //Conexion
 const collectionName = "usuarios";
 
+
+
 // Encontrar todos los usuarios
 router.get('/', async (req, res) => {
     try {
@@ -70,6 +72,47 @@ router.get('/like/:id', async (req, res) => {
     } catch (error) {
         console.error("Error al actualizar email del usuario:", error);
         res.status(500).send("Error al actualizar email del usuario");
+    } finally {
+        await closeDB();
+    }
+})
+
+async function getfavorites (eventsLikeList) {
+    var listlike = [];
+    for (let i = 0; i < eventsLikeList.length; i++) {
+        const collection = await conectDB("eventos");
+        const evento = await collection.findOne({ "eventId" : eventsLikeList[i] });
+        listlike.push(evento);
+    }
+    return listlike;
+}
+//Buscar Lista Like
+router.get('/likeList/:id', async (req, res) => {
+    try {
+        const userId = parseInt(req.params.id);
+        console.log("Actualizand list liked del usuario con id:", userId);
+        const collection = await conectDB(collectionName);
+        
+
+        const user = await collection.findOne({ id: userId });
+        await closeDB();
+        if (user) {
+            const eventsLikeList = user.eventsLikeList || []; 
+            
+            console.log('Evento encontrado en la lista:');
+
+            var listlike = await getfavorites(eventsLikeList);
+            res.status(200).json(listlike);
+
+
+        } else {
+            console.error('Usuario no encontrado');
+            res.status(404).send('Usuario no encontrado');
+        }
+        
+    } catch (error) {
+        console.error("Error al encontrar la lista de eventos favoritos:", error);
+        res.status(500).send("Error al encontrar la lista de eventos favoritos");
     } finally {
         await closeDB();
     }
