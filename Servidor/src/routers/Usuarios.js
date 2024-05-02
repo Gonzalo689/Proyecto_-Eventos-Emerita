@@ -146,7 +146,7 @@ router.put('/:id', async (req, res) => {
         await closeDB();
     }
 })
-// Aculizar Lista Likeds
+// Actulizar Lista Likeds
 router.put('/list/:id', async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
@@ -157,6 +157,7 @@ router.put('/list/:id', async (req, res) => {
         const addToFavorites = req.body.addToFavorites;
 
         let updatedUser;
+        var isAdd ;
 
         if (addToFavorites) {
             updatedUser = await collection.findOneAndUpdate(
@@ -164,19 +165,22 @@ router.put('/list/:id', async (req, res) => {
                 { $addToSet: { eventsLikeList: eventId } }, 
                 { returnOriginal: false }
             );
+            isAdd = true;
         } else {
             updatedUser = await collection.findOneAndUpdate(
                 { id: userId },
                 { $pull: { eventsLikeList: eventId } },
                 { returnOriginal: false }
             );
+            isAdd = false;
         }
-
+        console.log(isAdd);
         if (updatedUser) {
             console.log('Lista de eventos favoritos actualizada con éxito:', updatedUser);
-            res.status(200).json({ isLiked: true });
+            res.status(200).json({ isLiked: isAdd });
         } else {
-            res.status(200).json({ isLiked: false });
+            console.error('Usuario no encontrado');
+            res.status(404).send('Usuario no encontrado');
         }
     } catch (error) {
         console.error("Error al encontrar el usuario:", error);
