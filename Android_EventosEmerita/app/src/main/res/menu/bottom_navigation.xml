@@ -16,10 +16,10 @@
         android:id="@+id/favorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="Nose" />
+        android:title="Favs" />
     <item
         android:id="@+id/profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="Ah" />
+        android:title="Profile" />
 </menu>

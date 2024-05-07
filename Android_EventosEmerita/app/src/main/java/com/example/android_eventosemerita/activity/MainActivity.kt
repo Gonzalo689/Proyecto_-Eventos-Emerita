@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigationView()
 
 
-        //funciona
+        //funciona crear canal
         createChannel()
 
     }
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         val dateSplit = event.fecha_inicio.split(",")[0].split("-")
 
         val year = dateSplit[0].trim().toInt()
-        val month = dateSplit[1].trim().toInt() -1
+        val month = dateSplit[1].trim().toInt()
         val day = dateSplit[2].trim().toInt()
 
         println("$year --- $month ---- $day")

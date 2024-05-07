@@ -4,34 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layautDest"
     android:layout_width="200dp"
-    android:layout_height="200dp"
-    android:layout_marginEnd="20dp"
-    android:layout_marginStart="20dp"
+    android:layout_height="350dp"
+    android:layout_margin="15dp"
     android:orientation="vertical">
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardFav"
+        android:layout_width="195dp"
+        android:layout_height="300dp"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageEvent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:background="@drawable/gradient_overlay"
+            android:scaleType="centerCrop"
+            tools:srcCompat="@tools:sample/avatars" />
+
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/descp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageEvent"
-
-        app:layout_constraintVertical_bias="0.0" />
-
-    <ImageView
-        android:id="@+id/imageEvent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:adjustViewBounds="true"
-        android:background="@drawable/gradient_overlay"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="5dp"
+        android:maxLines="2"
+        android:text="Evento Mu xulo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
-
+        app:layout_constraintTop_toBottomOf="@+id/cardFav" />
 </androidx.constraintlayout.widget.ConstraintLayout>

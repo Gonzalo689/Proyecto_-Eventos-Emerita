@@ -35,8 +35,8 @@ class AdapterDest (private val events: ArrayList<Event>,private val mainActivity
             event.descriptionCompleta.forEach { des ->
                 descriptionC += des.trim()
             }
-            binding.descp.text = descriptionC
-            Picasso.get().load(event.imagenIni).into(binding.imageEvent)
+            binding.descp.text = event.titulo
+            Picasso.get().load(event.image).into(binding.imageEvent)
 
             binding.layautDest.setOnClickListener {
                 val fragmentEvent = FragmentEvent.newInstance(event)

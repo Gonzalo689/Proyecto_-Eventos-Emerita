@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
     }
     
 })
-// Encontrar el usuario con el id dado
+// conseguir el usuario con el id dado
 router.get('/:id', async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
@@ -77,10 +77,11 @@ router.get('/like/:id', async (req, res) => {
     }
 })
 
-async function getfavorites (eventsLikeList) {
+//Conseguir Favoritos
+async function getfavorites (eventsLikeList,collection) {
     var listlike = [];
     for (let i = 0; i < eventsLikeList.length; i++) {
-        const collection = await conectDB("eventos");
+
         const evento = await collection.findOne({ "eventId" : eventsLikeList[i] });
         listlike.push(evento);
     }
@@ -90,8 +91,8 @@ async function getfavorites (eventsLikeList) {
 router.get('/likeList/:id', async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
-        console.log("Actualizand list liked del usuario con id:", userId);
-        const collection = await conectDB(collectionName);
+        console.log("Buscando list liked del usuario con id:", userId);
+        var collection = await conectDB(collectionName);
         
 
         const user = await collection.findOne({ id: userId });
@@ -101,7 +102,8 @@ router.get('/likeList/:id', async (req, res) => {
             
             console.log('Evento encontrado en la lista:');
 
-            var listlike = await getfavorites(eventsLikeList);
+            collection = await conectDB("eventos");
+            var listlike = await getfavorites(eventsLikeList, collection);
             res.status(200).json(listlike);
 
 

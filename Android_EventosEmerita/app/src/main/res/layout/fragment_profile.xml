@@ -24,7 +24,7 @@
         android:id="@+id/quitarRemenber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Quitar recordatorio user" />
+        android:text="Cerrar Sesión" />
 
 
 </LinearLayout>

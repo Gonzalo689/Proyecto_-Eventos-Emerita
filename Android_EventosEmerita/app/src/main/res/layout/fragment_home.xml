@@ -25,11 +25,31 @@
                 android:id="@+id/textInic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Eventos destacados" />
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:textSize="18sp"
+                android:text="Eventos destacados"
+                android:textStyle="bold" />
 
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerDest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:layout_editor_absoluteX="1dp"
+                tools:layout_editor_absoluteY="55dp" />
+
+            <TextView
+                android:id="@+id/textPas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="18sp"
+                android:text="Nuevos eventos"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerNew"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:layout_editor_absoluteX="1dp"

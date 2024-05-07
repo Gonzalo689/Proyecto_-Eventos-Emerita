@@ -36,7 +36,7 @@ class Favorite : Fragment() {
     fun getEventFavs(){
         val callback = object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>){
-                recyclerFavs(data as ArrayList<Event>)
+                recyclerFavs(data.reversed() as ArrayList<Event>)
             }
 
             override fun onError(errorMsg: List<Event>?) {

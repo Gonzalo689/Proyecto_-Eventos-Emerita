@@ -11,6 +11,7 @@ import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.controller.home.AdapterDest
+import com.example.android_eventosemerita.controller.home.AdapterHome
 import com.example.android_eventosemerita.databinding.FragmentHomeBinding
 
 class Home : Fragment() {
@@ -31,11 +32,32 @@ class Home : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        eventsAPI()
+        eventsDestAPI()
+        eventsAllAPI()
+
     }
 
-    fun eventsAPI(){
+    private fun eventsAllAPI() {
+        val callback = object : Callback.MyCallback<List<Event>> {
+            override fun onSuccess(data: List<Event>) {
+                val sublist: List<Event> = if (data.size > 10) {
+                    data.reversed().subList(0, 10)
+                } else {
+                    data.reversed()
+                }
+                val eventsDest: ArrayList<Event> = ArrayList(sublist)
+                recyclerall(eventsDest)
 
+            }
+
+            override fun onError(errorMsg: List<Event>?) {
+
+            }
+        }
+            eventAPIClient.getAllEvents(callback)
+    }
+
+    fun eventsDestAPI(){
         val callback = object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>) {
                 if (data.isNotEmpty()) {
@@ -61,6 +83,13 @@ class Home : Fragment() {
         binding.recyclerDest.adapter = adapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerDest.layoutManager = layoutManager
+    }
+    fun recyclerall(eventsList: ArrayList<Event>){
+        val mainActivity = requireActivity() as MainActivity
+        val adapter = AdapterHome(eventsList,mainActivity)
+        binding.recyclerNew.adapter = adapter
+        val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        binding.recyclerNew.layoutManager = layoutManager
     }
 
 }

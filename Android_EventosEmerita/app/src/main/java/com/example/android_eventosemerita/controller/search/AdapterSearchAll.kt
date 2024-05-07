@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.databinding.FeedSearchAllBinding
+import com.squareup.picasso.Picasso
 
 
 class AdapterSearchAll (private var events: ArrayList<Event>) : RecyclerView.Adapter<AdapterSearchAll.FeedViewAllEvents>() {
@@ -29,7 +30,10 @@ class AdapterSearchAll (private var events: ArrayList<Event>) : RecyclerView.Ada
     inner class FeedViewAllEvents(private val binding: FeedSearchAllBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(event: Event) {
-            binding.textViewSearch.text = event.titulo
+            Picasso.get().load(event.image).into(binding.image)
+            binding.title.text = event.titulo
+            binding.address.text = event.direccion
+            binding.date.text = event.fecha_inicio
         }
 
     }

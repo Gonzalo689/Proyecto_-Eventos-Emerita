@@ -82,13 +82,13 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         }
         binding.textDescription.text = descriptionC
 
-        binding.textDate.text = "Fecha inicial: " + stringFecha(event!!.fecha_inicio)
+        binding.textDate.text = "Fecha inicial: " + event!!.stringFecha(event!!.fecha_inicio)
 
         val finalDate = event?.fecha_final
 
         if (finalDate != null) {
             if (!finalDate.isEmpty()){
-                binding.textDate2.text = "Fecha final: " + stringFecha(finalDate)
+                binding.textDate2.text = "Fecha final: " + event!!.stringFecha(finalDate)
             }else{
                 binding.textDate2.visibility = View.GONE
             }
@@ -119,7 +119,9 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
                     userRoot?.eventsLikeList!!.add(event!!.eventId)
                     isAdd = data
                     checkfollow(isAdd)
-                   // addNotification(isAdd)
+                    println(event!!.checkDate(event!!.fecha_inicio))
+
+                    addNotification(isAdd)
                 }
 
                 override fun onError(errorMsg: Boolean?) {
@@ -133,7 +135,7 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
 
     }
     fun addNotification(isAdd:Boolean){
-        if (checkDate(event!!) == 1){
+        if (event!!.checkDate(event!!.fecha_inicio) == 1){
             if (isAdd){
                 mainActivity.sheduleNotification(event!!)
             }else{
@@ -152,58 +154,7 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         }
 
     }
-    fun checkDate(event: Event):Int {
-        val dateSplit = event.fecha_inicio.split(",")[0].split("-")
 
-        val calendar = Calendar.getInstance()
-        val yearNow = calendar.get(Calendar.YEAR)
-        val monthNow = calendar.get(Calendar.MONTH) + 1
-        val dayNow = calendar.get(Calendar.DAY_OF_MONTH)
-        val yearEvent = dateSplit[0].toInt()
-        val monthEvent = dateSplit[1].toInt()
-        val dayEvent = dateSplit[2].toInt()
-
-        if (yearNow == yearEvent) {
-            if (monthNow == monthEvent) {
-                if (dayNow < dayEvent) {
-                    return 1
-                }
-                if (dayNow == dayEvent){
-                    return 0
-                }
-            }
-            if (monthNow < monthEvent){
-                return 1
-            }
-        }
-        if (yearNow < yearEvent){
-            return 1
-        }
-        return -1
-    }
-
-    fun stringFecha(date:String):String{
-        val dateSplit = date.split(",")[0].split("-")
-        return dateSplit[2] + " de " + nameMonth(dateSplit[1]) + " del " + dateSplit[0]
-    }
-    fun nameMonth(number: String) : String {
-        val monthName = when (number) {
-            "01" -> "Enero"
-            "02" -> "Febrero"
-            "03" -> "Marzo"
-            "04" -> "Abril"
-            "05" -> "Mayo"
-            "06" -> "Junio"
-            "07" -> "Julio"
-            "08" -> "Agosto"
-            "09" -> "Septiembre"
-            "10" -> "Octubre"
-            "11" -> "Noviembre"
-            "12" -> "Diciembre"
-            else -> error("Fallo al recoger el mes")
-        }
-        return monthName
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
