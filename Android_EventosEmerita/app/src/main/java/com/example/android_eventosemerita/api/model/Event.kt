@@ -9,16 +9,18 @@ class Event(
     val descriptionCompleta: List<String>, val utlGooglemaps:String, val categoria:String,
     val destacado:Boolean, val eventId:Int
 ): Serializable {
-    fun checkDate(date: String):Int {
-        val dateSplit = date.split(",")[0].split("-")
+    fun checkDate(dateNow:String):Int {
+        val dateSplitStart = fecha_inicio.split(",")[0].split("-")
 
-        val calendar = Calendar.getInstance()
-        val yearNow = calendar.get(Calendar.YEAR)
-        val monthNow = calendar.get(Calendar.MONTH) + 1
-        val dayNow = calendar.get(Calendar.DAY_OF_MONTH)
-        val yearEvent = dateSplit[0].toInt()
-        val monthEvent = dateSplit[1].toInt()
-        val dayEvent = dateSplit[2].toInt()
+        val datePers = dateNow.split("-")
+
+        val yearNow = datePers[0].toInt()
+        val monthNow = datePers[1].toInt()
+        val dayNow = datePers[2].toInt()
+
+        val yearEvent = dateSplitStart[0].toInt()
+        val monthEvent = dateSplitStart[1].toInt()
+        val dayEvent = dateSplitStart[2].toInt()
 
         if (yearNow == yearEvent) {
             if (monthNow == monthEvent) {
@@ -36,8 +38,21 @@ class Event(
         if (yearNow < yearEvent){
             return 1
         }
+
+        if (fecha_final.isEmpty()){
+            return -1
+        }
+        val dateSplitFinal = fecha_final.split(",")[0].split("-")
+        val yearEventFinal = dateSplitFinal[0].toInt()
+        val monthEventFinal = dateSplitFinal[1].toInt()
+        val dayEventFinal = dateSplitFinal[2].toInt()
+        println("$yearEventFinal-$monthEventFinal-$dayEventFinal")
+        if(yearEventFinal >= yearNow && monthEventFinal >= monthNow && dayEventFinal >= dayNow){
+            return 0
+        }
         return -1
     }
+
     fun stringFecha(date:String):String{
         val dateSplit = date.split(",")[0].split("-")
         return dateSplit[2] + " de " + nameMonth(dateSplit[1]) + " del " + dateSplit[0]

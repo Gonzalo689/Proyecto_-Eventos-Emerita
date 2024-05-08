@@ -1,14 +1,17 @@
 package com.example.android_eventosemerita.controller.search
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.databinding.FeedSearchAllBinding
+import com.example.android_eventosemerita.fragments_nav.FragmentEvent
 import com.squareup.picasso.Picasso
 
 
-class AdapterSearchAll (private var events: ArrayList<Event>) : RecyclerView.Adapter<AdapterSearchAll.FeedViewAllEvents>() {
+class AdapterSearchAll (private var events: ArrayList<Event>, private val mainActivity: MainActivity) : RecyclerView.Adapter<AdapterSearchAll.FeedViewAllEvents>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewAllEvents {
 
@@ -34,6 +37,11 @@ class AdapterSearchAll (private var events: ArrayList<Event>) : RecyclerView.Ada
             binding.title.text = event.titulo
             binding.address.text = event.direccion
             binding.date.text = event.fecha_inicio
+            binding.layautFeedSearch.setOnClickListener(View.OnClickListener {
+                val fragmentEvent = FragmentEvent.newInstance(event)
+                mainActivity.loadFragment(fragmentEvent,true)
+                mainActivity.setBottomNavVisibility(true)
+            })
         }
 
     }

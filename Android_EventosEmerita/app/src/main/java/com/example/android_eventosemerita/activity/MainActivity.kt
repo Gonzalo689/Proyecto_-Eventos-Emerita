@@ -27,6 +27,7 @@ import com.example.android_eventosemerita.fragments_nav.Profile
 import com.example.android_eventosemerita.fragments_nav.Search
 import com.example.android_eventosemerita.login.SignIn
 import com.example.android_eventosemerita.login.SignIn.Companion.USER_ID
+import io.ak1.OnBubbleClickListener
 import java.io.Serializable
 import java.util.Calendar
 
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         loadFragment(Home(),false)
 
-        setupBottomNavigationView()
+        prubaBbuble()
 
 
         //funciona crear canal
@@ -158,27 +159,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupBottomNavigationView() {
-        binding.nav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
+    private fun prubaBbuble(){
+        binding.bubbleTabBar.addBubbleListener { id ->
+            when (id) {
                 R.id.home -> {
-                    loadFragment(Home(),false)
-                    true
+                    loadFragment(Home(), false)
                 }
                 R.id.search -> {
-                    loadFragment(Search(),false)
-                    true
+                    loadFragment(Search(), false)
                 }
                 R.id.favorite -> {
-                    loadFragment(Favorite(),false)
-                    true
+                    loadFragment(Favorite(), false)
                 }
                 R.id.profile -> {
-                    loadFragment(Profile(),false)
-                    true
+                    loadFragment(Profile(), false)
                 }
-
-                else -> false
             }
         }
     }
@@ -198,9 +193,9 @@ class MainActivity : AppCompatActivity() {
         binding.root.getViewTreeObserver().addOnGlobalLayoutListener(OnGlobalLayoutListener {
             val heightDiff: Int = binding.root.getRootView().getHeight() - binding.root.getHeight()
             if (heightDiff > dpToPx() || isBottomNavVisible) {
-                binding.nav.visibility = View.GONE
+                binding.bubbleTabBar.visibility = View.GONE
             } else {
-                binding.nav.visibility = View.VISIBLE
+                binding.bubbleTabBar.visibility = View.VISIBLE
             }
         })
     }

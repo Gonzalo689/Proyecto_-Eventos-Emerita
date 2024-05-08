@@ -119,7 +119,6 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
                     userRoot?.eventsLikeList!!.add(event!!.eventId)
                     isAdd = data
                     checkfollow(isAdd)
-                    println(event!!.checkDate(event!!.fecha_inicio))
 
                     addNotification(isAdd)
                 }
@@ -135,7 +134,13 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
 
     }
     fun addNotification(isAdd:Boolean){
-        if (event!!.checkDate(event!!.fecha_inicio) == 1){
+        val calendar = Calendar.getInstance()
+        val yearNow = calendar.get(Calendar.YEAR)
+        val monthNow = calendar.get(Calendar.MONTH) + 1
+        val dayNow = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datenow= "$yearNow-$monthNow-$dayNow"
+        if (event!!.checkDate(datenow) == 1){
             if (isAdd){
                 mainActivity.sheduleNotification(event!!)
             }else{
@@ -166,7 +171,7 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         mMAp = p0
         mMAp.setOnMapClickListener(this)
         mMAp.setOnMapLongClickListener(this)
-        var location =  LatLng(38.9179933, -6.3429062)
+        var location =  LatLng(38.9179933, -6.3429062) // Localización de Mérida centro
 
         val googleMap = event?.utlGooglemaps
 

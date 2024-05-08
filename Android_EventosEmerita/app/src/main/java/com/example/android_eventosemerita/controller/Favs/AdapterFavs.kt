@@ -13,6 +13,7 @@ import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.databinding.FeedFavsBinding
 import com.example.android_eventosemerita.fragments_nav.FragmentEvent
 import com.squareup.picasso.Picasso
+import java.util.Calendar
 
 class AdapterFavs(private val events: ArrayList<Event>, private val mainActivity: MainActivity) : RecyclerView.Adapter<AdapterFavs.FeedViewFavs>() {
 
@@ -35,6 +36,13 @@ class AdapterFavs(private val events: ArrayList<Event>, private val mainActivity
     inner class FeedViewFavs(private val binding: FeedFavsBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(event: Event) {
+            val calendar = Calendar.getInstance()
+            val yearNow = calendar.get(Calendar.YEAR)
+            val monthNow = calendar.get(Calendar.MONTH) + 1
+            val dayNow = calendar.get(Calendar.DAY_OF_MONTH)
+
+            val datenow= "$yearNow-$monthNow-$dayNow"
+
 
             Picasso.get().load(event.imagenIni).into(binding.imageView)
 
@@ -44,7 +52,7 @@ class AdapterFavs(private val events: ArrayList<Event>, private val mainActivity
             binding.addres.text = event.direccion
 
             var gradientDrawable: Drawable? = null
-            val dateNum = event.checkDate(event.fecha_inicio)
+            val dateNum = event.checkDate(datenow)
             if (dateNum == -1) {
                 gradientDrawable = ContextCompat.getDrawable(mainActivity, R.drawable.card_favs_past)
                 binding.layautInfo.visibility = View.VISIBLE

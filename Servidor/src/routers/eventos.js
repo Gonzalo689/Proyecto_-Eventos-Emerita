@@ -111,11 +111,9 @@ router.get('/:categoria', async (req, res) => {
             "categoria": { $regex: regex } 
         }).toArray();
 
-        const eventosFuturos = events.filter(evento => new Date(evento.fecha_inicio) >= fechaActual);
-       
-        console.log(eventosFuturos.length, "eventos encontrados");
+        console.log(events.length, " eventos encontrados");
 
-        res.json(eventosFuturos);
+        res.json(events);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error interno del servidor");
