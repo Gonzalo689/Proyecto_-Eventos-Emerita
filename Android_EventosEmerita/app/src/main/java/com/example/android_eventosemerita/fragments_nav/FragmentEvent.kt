@@ -25,6 +25,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -72,10 +73,11 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         super.onViewCreated(view, savedInstanceState)
         var isAdd = false
         binding.title.text = event?.titulo
+
         Picasso.get().load(event?.imagenIni).into(binding.imageEvent)
 
         var descriptionC = ""
-        event?.descriptionCompleta?.forEach { des ->
+        event!!.descriptionCompleta.forEach { des ->
             if (!des.trim().isEmpty()){
                 descriptionC += des.trim() + "\n"
             }
@@ -94,13 +96,14 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
             }
         }
 
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
 
+
         val callbackLik = object : Callback.MyCallback<Boolean> {
             override fun onSuccess(data: Boolean){
-                println("good " + data)
                 checkfollow(data)
                 isAdd = data
             }
@@ -174,11 +177,9 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         var location =  LatLng(38.9179933, -6.3429062) // Localización de Mérida centro
 
         val googleMap = event?.utlGooglemaps
-
         val addressEncoded: String?
         if (googleMap!=null) {
             addressEncoded = googleMap.split("&q=")[1]
-
             val geocoder = Geocoder(requireContext())
             val locationList = geocoder.getFromLocationName(addressEncoded, 1)
 
@@ -186,12 +187,10 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
                 val latitude = locationList[0].latitude
                 val longitude = locationList[0].longitude
                 location = LatLng(latitude, longitude)
-
             }
         }
         mMAp.addMarker(MarkerOptions().position(location).title(event!!.titulo))
         mMAp.moveCamera(CameraUpdateFactory.newLatLng(location))
-
 
 
     }

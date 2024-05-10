@@ -78,6 +78,9 @@ class Home : Fragment() {
         eventAPIClient.getEventsDest(callback)
     }
     fun recyclerDest(eventsList: ArrayList<Event>){
+        if (!isAdded) {
+            return
+        }
         val mainActivity = requireActivity() as MainActivity
         val adapter = AdapterDest(eventsList, mainActivity)
         binding.recyclerDest.adapter = adapter
@@ -85,6 +88,9 @@ class Home : Fragment() {
         binding.recyclerDest.layoutManager = layoutManager
     }
     fun recyclerall(eventsList: ArrayList<Event>){
+        if (!isAdded) {
+            return
+        }
         val mainActivity = requireActivity() as MainActivity
         val adapter = AdapterHome(eventsList,mainActivity)
         binding.recyclerNew.adapter = adapter

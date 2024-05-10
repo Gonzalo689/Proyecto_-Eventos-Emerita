@@ -1,15 +1,15 @@
 package com.example.android_eventosemerita.controller.search
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android_eventosemerita.R
+
 import com.example.android_eventosemerita.api.model.Category
 import com.example.android_eventosemerita.databinding.FeedCategoryBinding
 import com.example.android_eventosemerita.fragments_nav.Search
+import com.example.android_eventosemerita.fragments_nav.Search.Companion.categoryPair
 
 class AdapterCategory (private var categories: ArrayList<Category>, private val searchActivity: Search, button: Button) : RecyclerView.Adapter<AdapterCategory.FeedViewCategory>() {
     val button = button
@@ -34,10 +34,10 @@ class AdapterCategory (private var categories: ArrayList<Category>, private val 
             binding.textCategory.text = category.name
             binding.imageCategory.setImageResource(category.image)
             binding.layautCategory.setOnClickListener(View.OnClickListener {
-                searchActivity.EventsCategory(category.busqueda)
+                searchActivity.eventsCategory(category.busqueda)
                 button.visibility = View.VISIBLE
                 button.text = category.name
-
+                categoryPair = Pair(true,category.busqueda)
             })
 
         }

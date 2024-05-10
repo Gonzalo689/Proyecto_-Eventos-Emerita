@@ -83,27 +83,5 @@ class EventAPIClient (private val context: Context) {
 
         queue.add(stringRequest)
     }
-    fun getNotify(callback: Callback.MyCallback<Event>) {
-        val queue = Volley.newRequestQueue(context)
-
-        val url = url + "eventos/id/5"
-
-        val stringRequest = StringRequest(Request.Method.GET, url,
-            { response ->
-                try {
-                    val event = Gson().fromJson(response, Event::class.java)
-                    callback.onSuccess(event)
-                } catch (e: JsonSyntaxException) {
-                    callback.onError(null)
-                }
-            },
-            { error ->
-                val errorString = error.toString()
-                callback.onError(null)
-            })
-
-
-        queue.add(stringRequest)
-    }
 
 }

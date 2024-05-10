@@ -36,10 +36,20 @@ class Favorite : Fragment() {
     fun getEventFavs(){
         val callback = object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>){
-                recyclerFavs(data.reversed() as ArrayList<Event>)
+                if (data.isNotEmpty()){
+                    val reversedList = ArrayList<Event>(data.size)
+                    for (i in data.indices.reversed()) {
+                        reversedList.add(data[i])
+                    }
+                    recyclerFavs(reversedList)
+                }else{
+                    recyclerFavs(ArrayList())
+                }
+
             }
 
             override fun onError(errorMsg: List<Event>?) {
+                recyclerFavs(ArrayList())
             }
         }
 
@@ -47,11 +57,16 @@ class Favorite : Fragment() {
     }
 
     fun recyclerFavs(eventsFavList: ArrayList<Event>){
-        val mainActivity = requireActivity() as MainActivity
-        val adapter = AdapterFavs(eventsFavList, mainActivity)
-        binding.recyclerFavs.adapter = adapter
-        val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.recyclerFavs.layoutManager = layoutManager
+        if (eventsFavList.isNotEmpty()){
+            val mainActivity = requireActivity() as MainActivity
+            val adapter = AdapterFavs(eventsFavList, mainActivity)
+            binding.recyclerFavs.adapter = adapter
+            val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            binding.recyclerFavs.layoutManager = layoutManager
+        }else{
+            binding.recyclerFavs.visibility = View.GONE
+            binding.layautNoEvent.visibility = View.VISIBLE
+        }
     }
 
 

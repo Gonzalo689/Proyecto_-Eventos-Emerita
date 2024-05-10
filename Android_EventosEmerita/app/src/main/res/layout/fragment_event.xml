@@ -8,12 +8,10 @@
     android:orientation="vertical"
     tools:context=".fragments_nav.FragmentEvent">
 
-
-
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:fillViewport="true">
 
         <LinearLayout
@@ -96,13 +94,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="Fecha2"/>
-            <TextView
-                android:id="@+id/google"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Fecha2"/>
 
             <fragment
                 android:id="@+id/mapView"
@@ -116,8 +107,7 @@
                 map:uiZoomGestures="true"
                 map:uiRotateGestures="true"
                 map:uiScrollGestures="true"
-                map:uiTiltGestures="true"
-               />
+                map:uiTiltGestures="true"/>
 
             <Button
                 android:id="@+id/buttonLike"

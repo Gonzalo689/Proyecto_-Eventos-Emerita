@@ -24,12 +24,17 @@ import java.util.Calendar
 
 class Search : Fragment(){
 
+    companion object{
+        var categoryPair = Pair(false,"")
+        var datePair = Pair(false,"")
+    }
     private lateinit var binding: FragmentSearchBinding
     private lateinit var eventAPIClient: EventAPIClient
     private lateinit var adapter: AdapterSearchAll
     private lateinit var adapterCategory: AdapterCategory
     private var allEventsList: ArrayList<Event> = ArrayList()
     private var categories: ArrayList<Category> = ArrayList()
+    private var allEventsListConst: ArrayList<Event> = ArrayList()
 
 
 
@@ -45,6 +50,7 @@ class Search : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        inc()
         chargeCategories()
         adapterCategory()
 
@@ -53,32 +59,67 @@ class Search : Fragment(){
         eventsAPI()
 
         binding.button.setOnClickListener(View.OnClickListener {
-            eventsAPI()
-            binding.searchView.setQuery("", false)
-            filterEvents("")
             binding.button.visibility = View.GONE
+            checkDate()
+            categoryPair = Pair(false,"")
         })
         binding.textCategory.setOnClickListener(View.OnClickListener {
-            binding.recyclerSearch.visibility = View.GONE
             binding.recyclerSearchCategory.visibility = View.VISIBLE
         })
         binding.buttonDate.setOnClickListener(View.OnClickListener {
-            filterEventsDate()
+            intentEventsDate()
         })
         binding.textDate.setOnClickListener(View.OnClickListener {
             binding.textDate.visibility = View.GONE
-            eventsAPI()
-            filterEvents(binding.searchView.query.toString())
+            checkCategory()
+            datePair = Pair(false,"")
         })
+    }
+    private fun inc(){
+        binding.textDate.visibility = View.GONE
+        binding.button.visibility = View.GONE
+        categoryPair = Pair(false,"")
+        datePair = Pair(false,"")
+    }
+    private fun checkDate(){
+        val filter = binding.searchView.query.toString()
+        reloadEvents()
+        if (datePair.first) {
+            filterEventsDate(datePair.second)
+        }else{
+            adapter.updateEvents(allEventsList)
+            if (filter.isEmpty()){
+                filterEvents(binding.searchView.query.toString())
+            }
+        }
+    }
+    private fun checkCategory(){
+        val filter = binding.searchView.query.toString()
+        reloadEvents()
+        if (categoryPair.first) {
+            eventsCategory(categoryPair.second)
+        }else {
+            adapter.updateEvents(allEventsList)
+            if (filter.isEmpty()){
+                filterEvents(binding.searchView.query.toString())
+            }
 
-
+        }
+    }
+    private fun reloadEvents(){
+        allEventsList.clear()
+        allEventsList.addAll(allEventsListConst)
     }
     fun eventsAPI(){
         val callback = object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>) {
                 if (data.isNotEmpty()) {
+                    if(allEventsListConst.isEmpty()){
+                        allEventsListConst.addAll(data)
+                    }
                     allEventsList.clear()
                     allEventsList.addAll(data)
+                    filterEvents(binding.searchView.query.toString())
                 }
             }
             override fun onError(errorMsg:  List<Event>?) {
@@ -87,13 +128,17 @@ class Search : Fragment(){
         }
         eventAPIClient.getAllEvents(callback)
     }
-    fun EventsCategory(category:String){
+    fun eventsCategory(category:String){
         val callback = object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>) {
                 if (data.isNotEmpty()) {
                     allEventsList.clear()
-                    allEventsList.addAll(data.reversed())
-                    adapter.updateEvents(allEventsList)
+                    allEventsList.addAll(data)
+                    filterEvents(binding.searchView.query.toString())
+                    binding.recyclerSearchCategory.visibility = View.GONE
+                    if (datePair.first) {
+                        filterEventsDate(datePair.second)
+                    }
                 }
             }
 
@@ -103,11 +148,6 @@ class Search : Fragment(){
         }
         eventAPIClient.getEventCategory(category,callback)
 
-        binding.recyclerSearchCategory.visibility = View.GONE
-        binding.recyclerSearch.visibility = View.VISIBLE
-
-        //todo, no funciona
-        filterEvents( binding.searchView.query.toString())
 
     }
 
@@ -120,18 +160,14 @@ class Search : Fragment(){
                     filteredEvents.add(event)
                 }
             }
-            filteredEvents.reversed()
         }else{
-            if (!binding.button.isVisible){
-                eventsAPI()
-            }
             filteredEvents = ArrayList(allEventsList)
         }
+        filteredEvents.reversed()
 
         adapter.updateEvents(filteredEvents)
     }
-    private fun filterEventsDate() {
-        val filteredEvents = ArrayList<Event>()
+    private fun intentEventsDate() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
@@ -140,27 +176,32 @@ class Search : Fragment(){
         val datePickerDialog = DatePickerDialog(
             requireContext(),
             { _, selectedYear, selectedMonth, selectedDay ->
-
                 val selectedDate = "$selectedYear-${selectedMonth+1}-$selectedDay"
-                println("Fecha "+selectedDate)
-                binding.recyclerSearchCategory.visibility = View.GONE
-                binding.recyclerSearch.visibility = View.VISIBLE
-                for (event in allEventsList) {
-                    if (event.checkDate(selectedDate) == 0) {
-                        filteredEvents.add(event)
-                    }
-                }
-                filteredEvents.reversed()
-                binding.textDate.text = selectedDate
-                binding.textDate.visibility = View.VISIBLE
-                adapter.updateEvents(filteredEvents)
+                filterEventsDate(selectedDate)
             },
             year,
             month,
             day
         )
         datePickerDialog.show()
+
     }
+
+    private fun filterEventsDate(datePersonalized:String){
+        val filteredEvents = ArrayList<Event>(allEventsList)
+        allEventsList.clear()
+        binding.recyclerSearchCategory.visibility = View.GONE
+        for (event in filteredEvents) {
+            if (event.checkDate(datePersonalized) == 0) {
+                allEventsList.add(event)
+            }
+        }
+        filterEvents(binding.searchView.query.toString())
+        datePair = Pair(true,datePersonalized)
+        binding.textDate.text = datePersonalized
+        binding.textDate.visibility = View.VISIBLE
+    }
+
     private fun adapterAllEvents(){
         val mainActivity = requireActivity() as MainActivity
         adapter = AdapterSearchAll(ArrayList(),mainActivity)
@@ -190,6 +231,7 @@ class Search : Fragment(){
         })
     }
     private fun chargeCategories(){
+        categories.clear()
         categories.add(Category("Benéfico", "Benéfico", R.drawable.beneficial))
         categories.add(Category("Diseño", "Diseño", R.drawable.design))
         categories.add(Category("Carnaval", "Carnaval", R.drawable.carnival))

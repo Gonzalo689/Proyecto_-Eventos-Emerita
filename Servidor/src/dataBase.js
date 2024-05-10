@@ -1,7 +1,7 @@
 const { MongoClient} = require('mongodb');
 const uri = process.env.DB_URI;
 const dbName = process.env.DB_NAME ;
-let client;
+let client = null;
 
 async function conectDB(nombreColeccion) {
     try {
@@ -22,6 +22,8 @@ async function closeDB() {
         if (client) {
             await client.close();
             console.log('Conexión cerrada correctamente');
+        }else{
+            console.log('Conexión no establecida');
         }
     } catch (error) {
         console.error('Error al cerrar la conexión con la base de datos:', error);

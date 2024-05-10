@@ -99,8 +99,6 @@ router.get('/destacados', async (req, res) => {
 // Encontrar eventos por categoria
 router.get('/:categoria', async (req, res) => {
     try {
-        // Obteniendo la fecha actual
-        var fechaActual = Date.now();
 
         console.log("Buscando eventos destacados en la base de datos...");
         const collection = await conectDB(collectionName);

@@ -51,7 +51,7 @@ router.get('/:id', async (req, res) => {
 router.get('/like/:id', async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
-        console.log("Actualizand list liked del usuario con id:", userId);
+        console.log("Buscando like del usuario con id:", userId);
         const collection = await conectDB(collectionName);
         
         const eventId  = parseInt(req.query.eventId);
@@ -63,10 +63,10 @@ router.get('/like/:id', async (req, res) => {
         
 
         if (find) {
-            console.log('Encontrado', find);
+            console.log('tiene like', find);
             res.status(200).json({ isLiked: true });
         } else {
-            console.error('No se encontro el evento en la lista de eventos favoritos');
+            console.error('No tiene like');
             res.status(200).json({ isLiked: false });
         }
     } catch (error) {
@@ -103,7 +103,7 @@ router.get('/likeList/:id', async (req, res) => {
             console.log('Evento encontrado en la lista:');
 
             collection = await conectDB("eventos");
-            var listlike = await getfavorites(eventsLikeList, collection);
+            var listlike = await getfavorites(eventsLikeList, collection) || [];
             res.status(200).json(listlike);
 
 
