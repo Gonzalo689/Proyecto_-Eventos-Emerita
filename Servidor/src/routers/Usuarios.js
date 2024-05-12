@@ -34,7 +34,7 @@ router.get('/:id', async (req, res) => {
         const usuario = await collection.findOne({ id : userId });
         
         if (usuario) {
-            console.error('Usuario encontrado:', usuario);
+            console.error('Usuario encontrado:', usuario.id);
             res.status(200).json(usuario);
         } else {
             console.error('Usuario no encontrado');
@@ -223,6 +223,32 @@ router.post('/', async (req, res) => {
         await closeDB();
     }
 })
+//Actualizar img
+router.put('/img/:id', async (req, res) => {
+    try {
+        const img = req.body.img; // Por ejemplo, si la imagen se envía en formato Base64
+        
+        const userId = parseInt(req.params.id);
+
+        console.log("Actualizando img del usuario con id:", userId);
+        const collection = await conectDB(collectionName);
+        
+        await collection.updateOne(
+            { id: userId  }, 
+            { $set: { profilePicture: img } } 
+        );
+
+        console.log('Imagen de perfil del usuario actualizada con éxito');
+        res.status(200).send("Imagen de perfil del usuario actualizada con éxito");
+    } catch (error) {
+        console.error("Error al actualizar la imagen de perfil del usuario:", error);
+        res.status(500).send("Error al actualizar la imagen de perfil del usuario");
+    } finally {
+        await closeDB();
+    }
+})
+
+
 // Comprobar si el usuario existe
 router.post('/checkUser', async (req, res) => {
     try {

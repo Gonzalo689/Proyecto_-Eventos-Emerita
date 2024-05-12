@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.android_eventosemerita.activity.MainActivity
+import com.example.android_eventosemerita.activity.MainActivity.Companion.userRoot
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
 import com.example.android_eventosemerita.api.model.Event
@@ -31,6 +32,13 @@ class Home : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (userRoot != null){
+            println("hayahay")
+            println("user " + userRoot?.id)
+        }else{
+            println("user " + userRoot?.id)
+        }
 
         eventsDestAPI()
         eventsAllAPI()

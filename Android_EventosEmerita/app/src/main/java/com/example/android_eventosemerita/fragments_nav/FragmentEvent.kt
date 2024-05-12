@@ -1,6 +1,7 @@
 package com.example.android_eventosemerita.fragments_nav
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -35,6 +36,7 @@ private const val ARG_EVENT = "event"
 
 
 class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener,GoogleMap.OnMapLongClickListener {
+
     private var event: Event? = null
     private lateinit var binding: FragmentEventBinding
     private lateinit var mMAp : GoogleMap
@@ -59,7 +61,6 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
     }
 
     companion object {
-
         @JvmStatic
         fun newInstance(event: Event) =
             FragmentEvent().apply {
@@ -67,6 +68,27 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
                     putSerializable(ARG_EVENT, event)
                 }
             }
+        fun addNotification(isAdd:Boolean, event: Event, context: Context){
+            val mainActivity = context as MainActivity
+            val calendar = Calendar.getInstance()
+            val yearNow = calendar.get(Calendar.YEAR)
+            val monthNow = calendar.get(Calendar.MONTH) + 1
+            val dayNow = calendar.get(Calendar.DAY_OF_MONTH)
+            val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
+            val notif = preferences.getBoolean(Profile.NOTIF,true)
+            val datenow= "$yearNow-$monthNow-$dayNow"
+            if (event.checkDate(datenow) == 1 && notif){
+                if (isAdd){
+                    mainActivity.sheduleNotification(event)
+                }else{
+                    mainActivity.cancelNotification(context,event.eventId)
+                }
+            }else{
+                mainActivity.cancelNotification(context,event.eventId)
+            }
+        }
+
+
     }
     @SuppressLint("QueryPermissionsNeeded")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -123,7 +145,7 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
                     isAdd = data
                     checkfollow(isAdd)
 
-                    addNotification(isAdd)
+                    addNotification(isAdd,event!!,requireContext())
                 }
 
                 override fun onError(errorMsg: Boolean?) {
@@ -136,24 +158,25 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
 
 
     }
-    fun addNotification(isAdd:Boolean){
-        val calendar = Calendar.getInstance()
-        val yearNow = calendar.get(Calendar.YEAR)
-        val monthNow = calendar.get(Calendar.MONTH) + 1
-        val dayNow = calendar.get(Calendar.DAY_OF_MONTH)
+//    fun addNotification(isAdd:Boolean, event: Event){
+//        val calendar = Calendar.getInstance()
+//        val yearNow = calendar.get(Calendar.YEAR)
+//        val monthNow = calendar.get(Calendar.MONTH) + 1
+//        val dayNow = calendar.get(Calendar.DAY_OF_MONTH)
+//        val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
+//        val notif = preferences.getBoolean(Profile.NOTIF,true)
+//        val datenow= "$yearNow-$monthNow-$dayNow"
+//        if (event.checkDate(datenow) == 1 && notif){
+//            if (isAdd){
+//                mainActivity.sheduleNotification(event)
+//            }else{
+//                mainActivity.cancelNotification(requireContext(),event.eventId)
+//            }
+//        }else{
+//            mainActivity.cancelNotification(requireContext(),event.eventId)
+//        }
+//    }
 
-        val datenow= "$yearNow-$monthNow-$dayNow"
-        if (event!!.checkDate(datenow) == 1){
-            if (isAdd){
-                mainActivity.sheduleNotification(event!!)
-            }else{
-                mainActivity.cancelNotification(requireContext(),event!!.eventId)
-            }
-        }else{
-            mainActivity.cancelNotification(requireContext(),event!!.eventId)
-        }
-
-    }
     fun checkfollow(like:Boolean){
         if (like){
             binding.buttonLike.setBackgroundColor(Color.RED)
@@ -203,7 +226,7 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
 
     }
 
-
 }
+
 
 

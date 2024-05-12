@@ -1,6 +1,9 @@
 package com.example.android_eventosemerita.api
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import com.android.volley.toolbox.Volley
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
@@ -8,13 +11,19 @@ import com.android.volley.toolbox.StringRequest
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.login.EncryptionUtil
+import com.example.android_eventosemerita.utils.ImageCircle.Companion.lowerQuality
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 
 class UserAPIClient(private val context: Context) {
-    private val url: String? = "https://x2t55z6x-3000.uks1.devtunnels.ms"
+    private val url: String = "https://x2t55z6x-3000.uks1.devtunnels.ms"
+    //private val url: String = "http://10.0.2.2:3000"
 
     /**
      * Función que actualiza el nombre y el email
@@ -121,15 +130,16 @@ class UserAPIClient(private val context: Context) {
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
             { response ->
+                println("Good")
                 try {
                     val user = Gson().fromJson(response.toString(), User::class.java)
                     callback.onSuccess(user)
+
                 } catch (e: JsonSyntaxException) {
                     callback.onError(null)
                 }
             },
             { error ->
-                val errorString = error.toString()
                 callback.onError(null)
             })
 
@@ -185,6 +195,7 @@ class UserAPIClient(private val context: Context) {
             userData.put("email", email)
             userData.put("password", passwordHash)
             userData.put("eventsLikeList", eventsLikeList)
+            userData.put("profilePicture", "")
         } catch (e: JSONException) {
             callback.onError(null)
             return
@@ -230,6 +241,28 @@ class UserAPIClient(private val context: Context) {
     }
 
 
+    fun updateProfilePicture(userId: Int, image: String, callback: Callback.MyCallback<String>) {
+
+        val queue = Volley.newRequestQueue(context)
+        val url = "$url/usuarios/img/$userId"
+
+        val requestBody = JSONObject().apply {
+            put("img", image)
+        }
+
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.PUT, url, requestBody,
+            { _ ->
+                callback.onSuccess("Bien")
+            },
+            { _ ->
+                callback.onError(null)
+            })
+
+
+        queue.add(jsonObjectRequest)
+
+
+    }
 
 
 }

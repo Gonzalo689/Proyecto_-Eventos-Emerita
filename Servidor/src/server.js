@@ -6,7 +6,7 @@ const port = process.env.PORT ;
 const eventosRouter = require('./routers/eventos');
 const usuariosRouter = require('./routers/usuarios');
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true }));
 app.use(bodyParser.json());
 
 
@@ -16,7 +16,10 @@ app.use('/usuarios', usuariosRouter);
 
 
 app.get('/', (req, res) => {
-    res.send('conect')
+    
+    console.log('conect');
+    res.send('conect');
+    
 })
 
 app.listen(port, () => {

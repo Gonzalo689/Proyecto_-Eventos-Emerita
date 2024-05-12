@@ -1,12 +1,28 @@
 package com.example.android_eventosemerita.utils
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.BitmapShader
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Shader
+import android.util.Base64
+import java.io.ByteArrayOutputStream
 
 class ImageCircle : com.squareup.picasso.Transformation {
+    companion object{
+        fun lowerQuality(image: ByteArray?):String {
+            val bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+
+            // Comprimir el Bitmap con la calidad deseada (0 para la calidad más baja y 100 para la calidad más alta)
+            val compressedBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.width / 2, bitmap.height / 2, true)
+
+            // Convertir el Bitmap comprimido a una cadena Base64
+            val outputStream = ByteArrayOutputStream()
+            compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
+            return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
+        }
+    }
     override fun transform(source: Bitmap): Bitmap {
         val size = Math.min(source.width, source.height)
 

@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.android_eventosemerita.notify.AlarmNotification
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
@@ -25,9 +24,9 @@ import com.example.android_eventosemerita.fragments_nav.Favorite
 import com.example.android_eventosemerita.fragments_nav.Home
 import com.example.android_eventosemerita.fragments_nav.Profile
 import com.example.android_eventosemerita.fragments_nav.Search
-import com.example.android_eventosemerita.login.SignIn
 import com.example.android_eventosemerita.login.SignIn.Companion.USER_ID
-import io.ak1.OnBubbleClickListener
+import com.example.android_eventosemerita.login.SignUp
+import com.example.android_eventosemerita.notify.AlarmNotification
 import java.io.Serializable
 import java.util.Calendar
 
@@ -36,7 +35,10 @@ class MainActivity : AppCompatActivity() {
     companion object{
         const val CHANNEL_ID= "myChannel"
         var userRoot: User? = null
+
     }
+
+
     private val DP_KEYBOARD: Int = 200
     private lateinit var binding: ActivityMainBinding
     private var isBottomNavVisible = false
@@ -45,12 +47,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         eventAPIClient = EventAPIClient(applicationContext)
         userAPIClient = UserAPIClient(applicationContext)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         getUser()
+
 
 
 
@@ -64,21 +66,24 @@ class MainActivity : AppCompatActivity() {
         //funciona crear canal
         createChannel()
 
+
     }
+
     private fun getUser(){
         val callback = object : Callback.MyCallback<User> {
             override fun onSuccess(data: User) {
                 userRoot = data
+                println("bien")
             }
 
             override fun onError(errorMsg: User?) {
-
+                println("Mal")
             }
         }
         val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
         val id = preferences.getInt(USER_ID, 0)
         if(id == 0){
-            val intent = Intent(this, SignIn::class.java)
+            val intent = Intent(this, SignUp::class.java)
             startActivity(intent)
             finish()
         }else{
