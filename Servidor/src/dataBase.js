@@ -3,6 +3,7 @@ const uri = process.env.DB_URI;
 const dbName = process.env.DB_NAME ;
 let client = null;
 
+
 async function conectDB(nombreColeccion) {
     try {
         client = await MongoClient.connect(uri);

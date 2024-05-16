@@ -6,7 +6,6 @@ const {conectDB, closeDB } = require("../dataBase");
 const collectionName = "usuarios";
 
 
-
 // Encontrar todos los usuarios
 router.get('/', async (req, res) => {
     try {
@@ -119,7 +118,7 @@ router.get('/likeList/:id', async (req, res) => {
         await closeDB();
     }
 })
-// Actualizar email y nombre
+// Actualizar usuario
 router.put('/:id', async (req, res) => {
     try {
         const userId = parseInt(req.params.id);
@@ -191,7 +190,6 @@ router.put('/list/:id', async (req, res) => {
         await closeDB();
     }
 })
-
 // Obtener el máximo userId actual 
 async function getMaxUserId(collection) {
     const result = await collection.findOne({}, { projection: { id: 1, _id: 0 }, sort: { id: -1 } });
@@ -248,7 +246,6 @@ router.put('/img/:id', async (req, res) => {
     }
 })
 
-
 // Comprobar si el usuario existe
 router.post('/checkUser', async (req, res) => {
     try {
@@ -267,6 +264,31 @@ router.post('/checkUser', async (req, res) => {
             res.status(404).send('Usuario no encontrado');
         }
 
+        
+    } catch (error) {
+        console.error("Error al crear usuario:", error);
+        res.status(500).send("Error al crear usuario");
+    } finally {
+        await closeDB();
+    }
+});
+
+router.get('/email/:email', async (req, res) => {
+    try {
+        console.log("Comprobando si existe la cuenta con email:", req.params.email);
+        const collection = await conectDB(collectionName);
+
+        const { email } = req.params.email;
+        
+        const user = await collection.findOne({ email: email });
+
+        if (user) {
+            console.log('ya existe un usuario con ese email', user.email);
+            res.status(201).json({ isUsed: true });
+        }else{
+            console.error('Email sin uso');
+            res.status(200).json({ isUsed: false });
+        }
         
     } catch (error) {
         console.error("Error al crear usuario:", error);
