@@ -75,7 +75,6 @@ router.get('/like/:id', async (req, res) => {
         await closeDB();
     }
 })
-
 //Conseguir Favoritos
 async function getfavorites (eventsLikeList,collection) {
     var listlike = [];
@@ -245,7 +244,6 @@ router.put('/img/:id', async (req, res) => {
         await closeDB();
     }
 })
-
 // Comprobar si el usuario existe
 router.post('/checkUser', async (req, res) => {
     try {

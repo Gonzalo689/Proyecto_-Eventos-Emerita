@@ -12,7 +12,8 @@
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -114,6 +115,54 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Button" />
+
+
+            <LinearLayout
+                android:id="@+id/logOut"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/color_button"
+                android:elevation="10dp"
+                android:orientation="horizontal"
+                android:padding="10dp">
+                <EditText
+                    android:id="@+id/textMultiLine"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:layout_weight="1"
+                    android:gravity="start|top"
+                    android:inputType="textMultiLine" />
+                <Button
+                    android:id="@+id/buttonComent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="enviar" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/noComents"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="20sp"
+                android:layout_margin="10dp"
+                android:text="Este evento todavia no tiene comentarios." />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerComents"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:nestedScrollingEnabled="false"
+                />
+            <TextView
+                android:id="@+id/allComents"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="Ver todos los comentarios" />
 
         </LinearLayout>
 

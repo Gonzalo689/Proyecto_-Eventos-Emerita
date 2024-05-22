@@ -9,8 +9,9 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 
 class EventAPIClient (private val context: Context) {
-    private val url: String? = "https://x2t55z6x-3000.uks1.devtunnels.ms/"
 
+    //private val url: String = "https://x2t55z6x-3000.uks1.devtunnels.ms"
+    private val url: String = "http://10.0.2.2:3000"
 
     fun getConexion(callback: Callback.MyCallback<String>) {
         val queue = Volley.newRequestQueue(context)
@@ -30,7 +31,7 @@ class EventAPIClient (private val context: Context) {
     fun getEventsDest(callback: Callback.MyCallback<List<Event>>) {
         val queue = Volley.newRequestQueue(context)
 
-        val url = url + "eventos/destacados"
+        val url = "$url/eventos/destacados"
 
         // Request a string response from the provided URL.
         val stringRequest = StringRequest(Request.Method.GET, url,
@@ -49,7 +50,7 @@ class EventAPIClient (private val context: Context) {
     fun getEventCategory(category:String, callback: Callback.MyCallback<List<Event>>) {
         val queue = Volley.newRequestQueue(context)
 
-        val url = url + "eventos/" + category
+        val url = "$url/eventos/$category"
 
         val stringRequest = StringRequest(Request.Method.GET, url,
             { response ->
@@ -68,7 +69,7 @@ class EventAPIClient (private val context: Context) {
     fun getAllEvents(callback: Callback.MyCallback<List<Event>>) {
         val queue = Volley.newRequestQueue(context)
 
-        val url = url + "eventos/"
+        val url = "$url/eventos/"
 
         val stringRequest = StringRequest(Request.Method.GET, url,
             { response ->
@@ -76,12 +77,12 @@ class EventAPIClient (private val context: Context) {
                 callback.onSuccess(responseObject)
             },
             { error ->
-                val errorString = error.toString()
                 callback.onError(null)
             })
 
 
         queue.add(stringRequest)
     }
+
 
 }

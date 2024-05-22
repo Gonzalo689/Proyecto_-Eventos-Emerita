@@ -24,6 +24,29 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/:id', async (req, res) => {
+    try {
+        
+        const eventId = parseInt(req.params.id);
+        console.log("Buscandolos comentarios: ", eventId);
+        const collection = await conectDB(collectionName);
+        const comentarios = await collection.find({ idPost: eventId }).toArray();
+        
+        if (comentarios.length > 0) {
+            console.log('Comentarios encontrados:', comentarios.length);
+            res.status(200).json(comentarios);
+        } else {
+            console.error('No se encontraron comentarios');
+            res.status(404).send('No se encontraron comentarios');
+        }
+    } catch (error) {
+        console.error("Error al encontrar comentarios:", error);
+        res.status(500).send("Error al encontrar comentarios");
+    }finally {
+        await closeDB();
+    }
+})
+
 async function getMaxUserId(collection) {
     const result = await collection.findOne({}, { projection: { id: 1, _id: 0 }, sort: { id: -1 } });
     console.log("Resultado de getMaxEventId:", result);
@@ -55,7 +78,7 @@ router.post('/', async (req, res) => {
 })
 
 
-router.put('/:idComentario/coment', async (req, res) => {
+router.post('/:idComentario/coment', async (req, res) => {
     try {
         console.log("Agregar nuevo comentario a un comentario existente");
         const collection = await conectDB(collectionName);

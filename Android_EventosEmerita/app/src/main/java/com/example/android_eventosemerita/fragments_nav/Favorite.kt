@@ -12,6 +12,7 @@ import com.example.android_eventosemerita.api.UserAPIClient
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.controller.Favs.AdapterFavs
 import com.example.android_eventosemerita.databinding.FragmentFavoriteBinding
+import com.example.android_eventosemerita.utils.UtilsConst.userRoot
 
 
 class Favorite : Fragment() {
@@ -53,10 +54,13 @@ class Favorite : Fragment() {
             }
         }
 
-        userAPIClient.getFavEventsList(MainActivity.userRoot!!.id, callback)
+        userAPIClient.getFavEventsList(userRoot!!.id, callback)
     }
 
     fun recyclerFavs(eventsFavList: ArrayList<Event>){
+        if (!isAdded) {
+            return
+        }
         if (eventsFavList.isNotEmpty()){
             val mainActivity = requireActivity() as MainActivity
             val adapter = AdapterFavs(eventsFavList, mainActivity)

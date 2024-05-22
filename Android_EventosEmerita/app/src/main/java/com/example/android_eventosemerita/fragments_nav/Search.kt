@@ -41,7 +41,7 @@ class Search : Fragment(){
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         eventAPIClient = EventAPIClient(requireContext())
 
@@ -64,9 +64,15 @@ class Search : Fragment(){
             categoryPair = Pair(false,"")
         })
         binding.textCategory.setOnClickListener(View.OnClickListener {
+
             binding.recyclerSearchCategory.visibility = View.VISIBLE
         })
         binding.buttonDate.setOnClickListener(View.OnClickListener {
+            if (datePair.first){
+                binding.textDate.visibility = View.GONE
+                checkCategory()
+                datePair = Pair(false,"")
+            }
             intentEventsDate()
         })
         binding.textDate.setOnClickListener(View.OnClickListener {

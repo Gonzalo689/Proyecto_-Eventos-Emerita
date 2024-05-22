@@ -10,7 +10,6 @@ import com.example.android_eventosemerita.api.EventAPIClient
 import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.databinding.ActivitySplashScreenBinding
 import com.example.android_eventosemerita.login.SignIn
-import com.example.android_eventosemerita.login.SignIn.Companion.USER_ID
 
 
 class SplashScreen : AppCompatActivity() {
@@ -31,7 +30,7 @@ class SplashScreen : AppCompatActivity() {
     private fun makeApiCall() {
         val callback = object : Callback.MyCallback<String> {
             override fun onSuccess(data: String) {
-                if (data.isNotEmpty() && data.equals("conect")) {
+                if (data.isNotEmpty() && data == "conect") {
                     navigateToMain()
                 }else{
                     Handler(mainLooper).postDelayed({ makeApiCall()}, 2000)

@@ -8,9 +8,9 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.example.android_eventosemerita.R
-import com.example.android_eventosemerita.activity.MainActivity.Companion.CHANNEL_ID
 import com.example.android_eventosemerita.activity.SplashScreen
 import com.example.android_eventosemerita.api.model.Event
+import com.example.android_eventosemerita.utils.UtilsConst.CHANNEL_ID
 
 
 class AlarmNotification:BroadcastReceiver() {

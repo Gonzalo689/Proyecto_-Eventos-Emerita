@@ -11,25 +11,14 @@ import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.UserAPIClient
 import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.databinding.ActivitySignInBinding
+import com.example.android_eventosemerita.utils.UtilsConst.REMEMBER
+import com.example.android_eventosemerita.utils.UtilsFun.remenberUser
+import com.example.android_eventosemerita.utils.UtilsFun.validateEmail
+import java.util.Objects
 
 
 class SignIn : AppCompatActivity() {
-    companion object{
-        const val REMEMBER = "remenber"
-        const val USER_ID = "userId"
 
-        fun validateEmail(email: String): Boolean {
-            return email.let { Patterns.EMAIL_ADDRESS.matcher(it).matches() }
-        }
-
-        fun remenberUser(context:Context, user:Int) {
-            val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
-            val editor = preferences.edit()
-            editor.putBoolean(REMEMBER, true)
-            editor.putInt(USER_ID, user)
-            editor.apply()
-        }
-    }
     private lateinit var binding: ActivitySignInBinding
     private lateinit var userAPIClient:UserAPIClient
     private var userRoot: User? = null
@@ -98,7 +87,7 @@ class SignIn : AppCompatActivity() {
         val email = binding.emailLog.text.toString().trim()
         val pass = binding.passwordLog.text.toString().trim()
 
-        val callback = object : Callback.MyCallback<User> {
+        userAPIClient.loginUser(email, pass ,object : Callback.MyCallback<User>{
             override fun onSuccess(data: User) {
                 userRoot = data
                 remenberUser(context, data.id)
@@ -108,26 +97,12 @@ class SignIn : AppCompatActivity() {
                 binding.emailLog.error = "No existe este email con esta contraseña"
                 binding.emailLog.requestFocus()
             }
-        }
-        userAPIClient.loginUser(email, pass ,callback)
+        })
 
     }
 
 
-    private fun updateUser(){
-        val callback = object : Callback.MyCallback<User> {
-            override fun onSuccess(data: User) {
-                binding.textEE.text = data.nombre
-            }
 
-            override fun onError(errorMsg: User?) {
-                binding.emailLog.error = "No existe este email con esta contraseña"
-                binding.emailLog.requestFocus()
-            }
-        }
-        //Cuidado con la contraseña se encripta lo encriptado
-        userAPIClient.updateUser(1,"Admin","Admin",callback)
-    }
 
 
 

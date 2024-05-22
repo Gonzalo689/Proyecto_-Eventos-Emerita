@@ -1,61 +1,22 @@
 package com.example.android_eventosemerita.api
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
 import com.android.volley.toolbox.Volley
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.api.model.User
-import com.example.android_eventosemerita.login.EncryptionUtil
-import com.example.android_eventosemerita.utils.ImageCircle.Companion.lowerQuality
+import com.example.android_eventosemerita.utils.UtilsFun.hash
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.ByteArrayOutputStream
+
 
 class UserAPIClient(private val context: Context) {
-    private val url: String = "https://x2t55z6x-3000.uks1.devtunnels.ms"
-    //private val url: String = "http://10.0.2.2:3000"
-
-    /**
-     * Función que actualiza el nombre y el email
-     */
-    fun updateUser(userId: Int,nombre: String, email: String, callback: Callback.MyCallback<User>) {
-        val queue = Volley.newRequestQueue(context)
-        val url = "$url/usuarios/$userId"
-
-        val userData = JSONObject()
-        try {
-            userData.put("nombre", nombre)
-            userData.put("email", email)
-        } catch (e: JSONException) {
-            callback.onError(null)
-            return
-        }
-
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.PUT, url, userData,
-            { response ->
-                try {
-                    val user = Gson().fromJson(response.toString(), User::class.java)
-                    callback.onSuccess(user)
-                } catch (e: JsonSyntaxException) {
-                    callback.onError(null)
-                }
-            },
-            { error ->
-                callback.onError(null)
-            })
-
-        queue.add(jsonObjectRequest)
-    }
+    //private val url: String = "https://x2t55z6x-3000.uks1.devtunnels.ms"
+    private val url: String = "http://10.0.2.2:3000"
 
     /**
      * Modifica la lista de like
@@ -96,13 +57,7 @@ class UserAPIClient(private val context: Context) {
         val queue = Volley.newRequestQueue(context)
         val url = "$url/usuarios/like/$userId?eventId=$eventId"
 
-        val userData = JSONObject()
-        try {
-            userData.put("eventId", eventId)
-        } catch (e: JSONException) {
-            callback.onError(null)
-            return
-        }
+
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
             { response ->
@@ -130,7 +85,6 @@ class UserAPIClient(private val context: Context) {
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
             { response ->
-                println("Good")
                 try {
                     val user = Gson().fromJson(response.toString(), User::class.java)
                     callback.onSuccess(user)
@@ -154,7 +108,7 @@ class UserAPIClient(private val context: Context) {
         val url = "$url/usuarios/checkUser"
 
         val credentials = JSONObject()
-        val passwordHash = EncryptionUtil.hash(password)
+        val passwordHash = hash(password)
         try {
             credentials.put("email", email)
             credentials.put("password", passwordHash)
@@ -187,7 +141,7 @@ class UserAPIClient(private val context: Context) {
         val url = "$url/usuarios/"
 
         val userData = JSONObject()
-        val passwordHash = EncryptionUtil.hash(password)
+        val passwordHash = hash(password)
         val eventsLikeList = ArrayList<String>()
         try {
             userData.put("id", 0)
@@ -211,7 +165,6 @@ class UserAPIClient(private val context: Context) {
                 }
             },
             { error ->
-                print(error)
                 callback.onError(null)
             })
 
@@ -261,7 +214,64 @@ class UserAPIClient(private val context: Context) {
 
         queue.add(jsonObjectRequest)
 
+    }
+    /**
+     * Función que actualiza el nombre , el email y contraseña
+     */
+    fun updateUser(userId: Int,nombre: String, email: String,password: String, callback: Callback.MyCallback<User>) {
+        val queue = Volley.newRequestQueue(context)
+        val url = "$url/usuarios/$userId"
 
+        val userData = JSONObject()
+        try {
+            userData.put("nombre", nombre)
+            userData.put("email", email)
+            if (password.isNotEmpty()){
+                userData.put("password", hash(password))
+            }
+
+        } catch (e: JSONException) {
+            callback.onError(null)
+            return
+        }
+
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.PUT, url, userData,
+            { response ->
+                try {
+                    val user = Gson().fromJson(response.toString(), User::class.java)
+                    callback.onSuccess(user)
+                } catch (e: JsonSyntaxException) {
+                    callback.onError(null)
+                }
+            },
+            { error ->
+                callback.onError(null)
+            })
+
+        queue.add(jsonObjectRequest)
+    }
+    /**
+     * Función para ver si el email se esta usando
+     */
+    fun isEmailUsed(email: String, callback: Callback.MyCallback<Boolean>) {
+        val queue = Volley.newRequestQueue(context)
+        val url = "$url/usuarios/email/$email"
+
+
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
+            { response ->
+                try {
+                    val isUsed = response.getBoolean("isUsed")
+                    callback.onSuccess(isUsed)
+                } catch (e: JsonSyntaxException) {
+                    callback.onError(true)
+                }
+            },
+            { error ->
+                callback.onError(true)
+            })
+
+        queue.add(jsonObjectRequest)
     }
 
 

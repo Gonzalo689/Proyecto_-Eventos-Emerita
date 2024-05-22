@@ -24,22 +24,18 @@ import com.example.android_eventosemerita.fragments_nav.Favorite
 import com.example.android_eventosemerita.fragments_nav.Home
 import com.example.android_eventosemerita.fragments_nav.Profile
 import com.example.android_eventosemerita.fragments_nav.Search
-import com.example.android_eventosemerita.login.SignIn.Companion.USER_ID
 import com.example.android_eventosemerita.login.SignUp
 import com.example.android_eventosemerita.notify.AlarmNotification
+import com.example.android_eventosemerita.utils.UtilsConst.CHANNEL_ID
+import com.example.android_eventosemerita.utils.UtilsConst.DP_KEYBOARD
+import com.example.android_eventosemerita.utils.UtilsConst.USER_ID
+import com.example.android_eventosemerita.utils.UtilsConst.userRoot
 import java.io.Serializable
 import java.util.Calendar
 
 
 class MainActivity : AppCompatActivity() {
-    companion object{
-        const val CHANNEL_ID= "myChannel"
-        var userRoot: User? = null
 
-    }
-
-
-    private val DP_KEYBOARD: Int = 200
     private lateinit var binding: ActivityMainBinding
     private var isBottomNavVisible = false
     private lateinit var eventAPIClient: EventAPIClient
@@ -51,9 +47,8 @@ class MainActivity : AppCompatActivity() {
         userAPIClient = UserAPIClient(applicationContext)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.bubbleTabBar.visibility = View.GONE
         getUser()
-
-
 
 
         hideNavKeyboard()
@@ -73,11 +68,10 @@ class MainActivity : AppCompatActivity() {
         val callback = object : Callback.MyCallback<User> {
             override fun onSuccess(data: User) {
                 userRoot = data
-                println("bien")
+                binding.bubbleTabBar.visibility = View.VISIBLE
             }
 
             override fun onError(errorMsg: User?) {
-                println("Mal")
             }
         }
         val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
@@ -89,8 +83,6 @@ class MainActivity : AppCompatActivity() {
         }else{
             userAPIClient.getUserById(id,callback)
         }
-
-
 
     }
 
@@ -118,8 +110,18 @@ class MainActivity : AppCompatActivity() {
         )
 
         val calendar = Calendar.getInstance().apply {
-            set(year, month, day, /*hora*/ 10, /*minuto*/ 0, /*segundo*/ 0)
+            // Obtener la hora actual del sistema
+            val horaActual = Calendar.getInstance()
+
+            // Establecer la hora actual en el objeto Calendar
+            set(Calendar.HOUR_OF_DAY, horaActual.get(Calendar.HOUR_OF_DAY))
+            set(Calendar.MINUTE, horaActual.get(Calendar.MINUTE))
+            set(Calendar.SECOND, horaActual.get(Calendar.SECOND))
         }
+//        val calendar = Calendar.getInstance().apply {
+//            set(year, month, day, /*hora*/ 10, /*minuto*/ 0, /*segundo*/ 0)
+//        }
+
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         // Programa la alarma para la fecha específica
@@ -128,8 +130,6 @@ class MainActivity : AppCompatActivity() {
             calendar.timeInMillis,
             pendingIntent
         )
-
-
     }
     fun cancelNotification(context: Context, notificationId: Int) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -152,12 +152,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun createChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            var channel = NotificationChannel(
+            val channel = NotificationChannel(
                 CHANNEL_ID,
-                "mysuperChannel",
+                "Chanel",
                 NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
-                description = "Siii"
+                description = "Chanel for notifications"
             }
             val notificationManager:NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
@@ -195,8 +195,8 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun hideNavKeyboard(){
-        binding.root.getViewTreeObserver().addOnGlobalLayoutListener(OnGlobalLayoutListener {
-            val heightDiff: Int = binding.root.getRootView().getHeight() - binding.root.getHeight()
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener(OnGlobalLayoutListener {
+            val heightDiff: Int = binding.root.rootView.height - binding.root.height
             if (heightDiff > dpToPx() || isBottomNavVisible) {
                 binding.bubbleTabBar.visibility = View.GONE
             } else {

@@ -10,6 +10,8 @@ import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.UserAPIClient
 import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.databinding.ActivitySignUpBinding
+import com.example.android_eventosemerita.utils.UtilsFun.remenberUser
+import com.example.android_eventosemerita.utils.UtilsFun.validateEmail
 
 class SignUp : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
@@ -22,21 +24,28 @@ class SignUp : AppCompatActivity() {
         setContentView(binding.root)
         userAPIClient = UserAPIClient(applicationContext)
 
-
-        binding.buttonRegis.setOnClickListener(View.OnClickListener {
+        binding.buttonRegis.setOnClickListener {
             if (validateText()){
                 createUser(this)
             }
-        })
+        }
+        binding.buttonTextLogin.setOnClickListener{
+            startSingIn()
+        }
 
     }
     private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("User", userRoot)
-
         startActivity(intent)
         finish()
     }
+    private fun startSingIn() {
+        val intent = Intent(this, SignIn::class.java)
+        startActivity(intent)
+        finish()
+    }
+
 
     private fun validateText(): Boolean{
         val name = binding.editTextUsername.text.toString().trim()
@@ -44,7 +53,7 @@ class SignUp : AppCompatActivity() {
         val pass = binding.editTextPassword.text.toString().trim()
         val confirmPass = binding.confirmPassword.text.toString().trim()
 
-        if (name.isEmpty()) {
+        if (name.isEmpty() || name.length >= 4) {
             binding.editTextUsername.error = "El campo del correo electrónico está vacío"
             binding.editTextUsername.requestFocus()
             return false
@@ -59,7 +68,7 @@ class SignUp : AppCompatActivity() {
             binding.editTextPassword.requestFocus()
             return false
         }
-        if (!SignIn.validateEmail(email)){
+        if (!validateEmail(email)){
             binding.editTextEmailRegister.error = "No es un correo válido"
             binding.editTextEmailRegister.requestFocus()
             return false
@@ -77,6 +86,7 @@ class SignUp : AppCompatActivity() {
         return true
     }
 
+
     private fun createUser(context: Context){
         val name = binding.editTextUsername.text.toString().trim()
         val email = binding.editTextEmailRegister.text.toString().trim()
@@ -84,7 +94,7 @@ class SignUp : AppCompatActivity() {
         val callback = object : Callback.MyCallback<User> {
             override fun onSuccess(data: User) {
                 userRoot = data
-                SignIn.remenberUser(context,data.id)
+                remenberUser(context,data.id)
                 startMainActivity()
             }
 

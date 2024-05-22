@@ -46,7 +46,6 @@ class Event(
         val yearEventFinal = dateSplitFinal[0].toInt()
         val monthEventFinal = dateSplitFinal[1].toInt()
         val dayEventFinal = dateSplitFinal[2].toInt()
-        println("$yearEventFinal-$monthEventFinal-$dayEventFinal")
         if(yearEventFinal >= yearNow && monthEventFinal >= monthNow && dayEventFinal >= dayNow){
             return 0
         }
