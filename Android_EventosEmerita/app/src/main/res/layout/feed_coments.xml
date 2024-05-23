@@ -16,11 +16,11 @@
         android:id="@+id/textNameUSer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="@string/name" />
 
     <TextView
         android:id="@+id/textComent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="@string/text_container" />
 </LinearLayout>

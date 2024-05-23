@@ -57,14 +57,16 @@ class Home : Fragment() {
             }
 
             override fun onError(errorMsg: List<Event>?) {
-                if (retryCountAll < maxRetries) {
-                    retryCountAll++
-                    eventAPIClient.getAllEvents(this)
-                } else {
-                    if (isAdded) {
-                        returnToSplash()
-                    }
-                }
+                reloadError(this ,retryCountAll)
+                retryCountAll++
+//                if (retryCountAll < maxRetries) {
+//                    retryCountAll++
+//                    eventAPIClient.getAllEvents(this)
+//                } else {
+//                    if (isAdded) {
+//                        returnToSplash()
+//                    }
+//                }
 
             }
         }
@@ -91,19 +93,31 @@ class Home : Fragment() {
                 }
             }
             override fun onError(errorMsg: List<Event>?) {
-                if (retryCountDest < maxRetries) {
-                    retryCountDest++
-                    eventAPIClient.getEventsDest(this)
-                } else {
-                    if (isAdded) {
-                        returnToSplash()
-                    }
-                }
+                reloadError(this ,retryCountDest)
+                retryCountDest++
+//                if (retryCountDest < maxRetries) {
+//                    retryCountDest++
+//                    eventAPIClient.getEventsDest(this)
+//                } else {
+//                    if (isAdded) {
+//                        returnToSplash()
+//                    }
+//                }
 
             }
         }
 
         eventAPIClient.getEventsDest(callback)
+    }
+    fun reloadError(callback: Callback.MyCallback<List<Event>>, num: Int) {
+        if (num < maxRetries) {
+            eventAPIClient.getEventsDest(callback)
+        } else {
+            if (isAdded) {
+                returnToSplash()
+            }
+        }
+
     }
     fun recyclerDest(eventsList: ArrayList<Event>){
         if (!isAdded) {

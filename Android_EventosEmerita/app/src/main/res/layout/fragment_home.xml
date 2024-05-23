@@ -28,7 +28,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
                 android:textSize="18sp"
-                android:text="Eventos destacados"
+                android:text="@string/featured_events"
                 android:textStyle="bold" />
 
 
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:textSize="18sp"
-                android:text="Nuevos eventos"
+                android:text="@string/new_events"
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView

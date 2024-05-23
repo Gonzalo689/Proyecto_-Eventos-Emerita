@@ -65,6 +65,7 @@ class AdapterComents (private var coments: ArrayList<Coment>, userAPIClient: Use
                 }
 
                 override fun onError(errorMsg: User?) {
+                    userAPIClient.getUserById(coment.idUser, this)
                 }
 
             })

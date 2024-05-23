@@ -41,7 +41,7 @@
                 android:id="@+id/textInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="FINALIZADO"
+                android:text="@string/finalized"
                 android:textColor="@color/white"/>
         </androidx.cardview.widget.CardView>
 
@@ -57,19 +57,19 @@
                 android:layout_margin="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Date" />
+                android:text="@string/title" />
             <TextView
                 android:id="@+id/addres"
                 android:layout_margin="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Date" />
+                android:text="@string/address" />
             <TextView
                 android:id="@+id/date"
                 android:layout_margin="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Titulo" />
+                android:text="@string/initial_date" />
         </LinearLayout>
 
 

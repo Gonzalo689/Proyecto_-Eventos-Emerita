@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Eventos Emerita</string>
+    <string name="title">Title</string>
+    <string name="text_container">Text Container</string>
+    <string name="description">Description</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="name">Name</string>
+    <string name="in_progress">In progress</string>
+    <string name="finalized">Finalized</string>
+    <string name="date">Date</string>
+    <string name="initial_date">Initial date</string>
+    <string name="final_date">Final date</string>
+    <string name="address">Address</string>
+    <string name="comment">comment</string>
+    <string name="no_comment">This event has no comments</string>
+    <string name="all_comment">See all comments</string>
+    <string name="no_events">No events were found</string>
+    <string name="featured_events">Featured events</string>
+    <string name="new_events">New events</string>
+</resources>

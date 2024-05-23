@@ -1,8 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Android_EventosEmerita" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/red_Primary</item>
+        <item name="colorSecondary">@color/yellow_Secundary</item>
+        <item name="android:windowBackground">@drawable/background</item>
     </style>
 
     <style name="Theme.Android_EventosEmerita" parent="Base.Theme.Android_EventosEmerita" />

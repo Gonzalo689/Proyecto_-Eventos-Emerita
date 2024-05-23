@@ -20,7 +20,7 @@
         android:id="@+id/bubbleTabBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFF"
+        android:background="@color/soft_black"
         android:elevation="16dp"
         android:padding="7dp"
         app:bubbletab_horizontal_padding="20dp"

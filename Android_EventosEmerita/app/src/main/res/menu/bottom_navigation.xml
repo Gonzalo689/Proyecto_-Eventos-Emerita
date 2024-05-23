@@ -7,27 +7,27 @@
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_home"
         android:checked="true"
-        android:color="#8BC34A"
-
+        android:color="@color/red_Primary"
         android:title="Home" />
     <item
         android:id="@+id/search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_search"
-        android:color="#673AB7"
+        android:color="@color/red_Primary"
         android:title="Search" />
     <item
         android:id="@+id/favorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_favorite"
+        android:color="@color/red_Primary"
         android:title="Favs" />
     <item
         android:id="@+id/profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_person"
-        android:color="#03A9F4"
+        android:color="@color/red_Primary"
         android:title="Profile" />
 </menu>

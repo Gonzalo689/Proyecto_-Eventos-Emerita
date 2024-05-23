@@ -22,6 +22,6 @@
         android:id="@+id/textCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="@string/text_container"
         android:layout_gravity="center"/>
 </LinearLayout>
