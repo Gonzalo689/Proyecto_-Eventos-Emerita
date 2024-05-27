@@ -6,7 +6,17 @@ const {conectDB, closeDB } = require("../dataBase");
 const collectionName = "comentarios";
 
 function getCurrentDate() {
-    return new Date().toISOString().split('T')[0];
+    const date = new Date();
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses comienzan en 0
+    const day = String(date.getDate()).padStart(2, '0');
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 router.get('/', async (req, res) => {
@@ -76,7 +86,6 @@ router.post('/', async (req, res) => {
         await closeDB();
     }
 })
-
 
 router.post('/:idComentario/coment', async (req, res) => {
     try {
