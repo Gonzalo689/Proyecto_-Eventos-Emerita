@@ -85,6 +85,83 @@ async function getfavorites (eventsLikeList,collection) {
     }
     return listlike;
 }
+async function getRecomends(eventsLikeList, collection) {
+    const currentDate = new Date();
+
+    if (eventsLikeList.length === 0) {
+        return await collection.aggregate([
+            { $match: { 
+                fecha_inicio: { $gt: currentDate.toISOString() } 
+            }},
+            { $sample: { size: 10 } }
+        ]).toArray();
+    } else {
+        const categoryCounts = {};
+        for (let eventId of eventsLikeList) {
+            const event = await collection.findOne({ "eventId": eventId });
+            if (event && event.categoria) {
+                const categories = event.categoria.split(',').map(c => c.trim());
+                categories.forEach(categoria => {
+                    if (!categoryCounts[categoria]) {
+                        categoryCounts[categoria] = 1;
+                    } else {
+                        categoryCounts[categoria]++;
+                    }
+                });
+            }
+        }
+
+        // Encontrar la categoría más usada
+        let mostUsedCategory = null;
+        let maxCount = 0;
+        for (let category in categoryCounts) {
+            if (categoryCounts[category] > maxCount) {
+                mostUsedCategory = category;
+                maxCount = categoryCounts[category];
+            }
+        }
+
+        const regex = new RegExp(`\\b${mostUsedCategory}\\b`, 'i');
+        return await collection.aggregate([
+            { $match: { 
+                categoria: { $regex: regex },
+                fecha_inicio: { $gt: currentDate.toISOString() } // Convertir la fecha actual a ISOString para comparación
+            }},
+            { $sample: { size: 10 } } // Obtener una muestra aleatoria de 10 eventos
+        ]).toArray();
+        
+    }
+}
+
+router.get('/listRecomend/:id', async (req, res) => {
+    try {
+        const userId = parseInt(req.params.id);
+        console.log("Creando una lista de recomendados", userId);
+        var collection = await conectDB(collectionName);
+        
+
+        const user = await collection.findOne({ id: userId });
+        await closeDB();
+        if (user) {
+            const eventsLikeList = user.eventsLikeList || []; 
+            
+            collection = await conectDB("eventos");
+            var listRecomend = await getRecomends(eventsLikeList, collection) || [];
+            res.status(200).json(listRecomend);
+
+
+        } else {
+            console.error('Usuario no encontrado');
+            res.status(404).send('Usuario no encontrado');
+        }
+        
+    } catch (error) {
+        console.error("Error al crear la lista: ", error);
+        res.status(500).send("Error al crear la lista: ", error);
+    } finally {
+        await closeDB();
+    }
+})
 //Buscar Lista Like
 router.get('/likeList/:id', async (req, res) => {
     try {
@@ -276,7 +353,7 @@ router.get('/email/:email', async (req, res) => {
         console.log("Comprobando si existe la cuenta con email:", req.params.email);
         const collection = await conectDB(collectionName);
 
-        const { email } = req.params.email;
+        const email = req.params.email;
         
         const user = await collection.findOne({ email: email });
 

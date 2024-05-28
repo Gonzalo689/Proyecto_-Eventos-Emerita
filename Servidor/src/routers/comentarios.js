@@ -86,39 +86,29 @@ router.post('/', async (req, res) => {
         await closeDB();
     }
 })
-
-router.post('/:idComentario/coment', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
-        console.log("Agregar nuevo comentario a un comentario existente");
+        console.log("Eliminar comentario por ID");
         const collection = await conectDB(collectionName);
-        
-        const idComentario = parseInt(req.params.idComentario);
-        const nuevoComentario = req.body;
-        nuevoComentario.fecha = getCurrentDate();
 
-        // Encontrar el comentario al que se va a agregar el nuevo comentario
-        const comentarioExistente = await collection.findOne({ id: idComentario });
-        if (!comentarioExistente) {
-            return res.status(404).json({ error: "Comentario no encontrado" });
+        const comentId = parseInt(req.params.id);
+        const result = await collection.deleteOne({ id: comentId }); 
+
+        if (result.deletedCount === 0) {
+            console.log(`No se encontró comentario con id: ${comentId}`);
+            res.status(404).send(`No se encontró comentario con id: ${comentId}`);
+        } else {
+            console.log(`Comentario con id ${comentId} eliminado`);
+            res.status(200).send(`Comentario con id ${comentId} eliminado`);
         }
-        
-        var id = comentarioExistente.listComents.length
-        console.log("id: ", id);
-        
-        comentarioExistente.listComents = comentarioExistente.listComents || [];
-        nuevoComentario.id = id;
-        
-        comentarioExistente.listComents.push(nuevoComentario);
-        await collection.updateOne({ id: idComentario }, { $set: { listComents: comentarioExistente.listComents } });
-
-        console.log('Nuevo comentario agregado:', nuevoComentario);
-        res.status(200).json(nuevoComentario);
     } catch (error) {
-        console.error("Error al agregar nuevo comentario:", error);
-        res.status(500).send("Error al agregar nuevo comentario");
+        console.error("Error al eliminar comentario:", error);
+        res.status(500).send("Error al eliminar comentario");
     } finally {
         await closeDB();
     }
 });
+
+
 
 module.exports = router
