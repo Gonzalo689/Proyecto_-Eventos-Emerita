@@ -37,7 +37,6 @@ process.on('SIGINT', () => {
 router.get('/', async (req, res) => {
     try {
         console.log("Buscando todo eventos en la base de datos...");
-        var fechaActual = Date.now();
         const collection = await conectDB(collectionName);
         const events = await collection.find({}).toArray();
         console.log("Eventos encontrados: ",events.length)
@@ -55,12 +54,12 @@ router.get('/past', async (req, res) => {
         console.log("Eventos pasados");
         var fechaActual = Date.now();
         const collection = await conectDB(collectionName);
-        const events = await collection.find({}).toArray();
+        const events = await collection.find({ "destacado": true }).toArray();
 
         const eventosPasados = events.filter(evento => {
             const fechaComparar = evento.fecha_final ? new Date(evento.fecha_final) : new Date(evento.fecha_inicio);
             return fechaComparar < fechaActual;
-        });
+        }).slice(0, 10);
 
         console.log(eventosPasados.length, "eventos encontrados");
         res.json(eventosPasados);
@@ -71,6 +70,44 @@ router.get('/past', async (req, res) => {
         await closeDB();
     }
 });
+router.get('/weekend', async (req, res) => {
+    try {
+        const fechaActual = new Date();
+
+        const diaSemana = fechaActual.getDay();
+        const diasHastaSabado = (6 - diaSemana + 7) % 7; 
+        const diasHastaDomingo = (7 - diaSemana + 7) % 7; 
+
+        const proximoSabado = new Date(fechaActual);
+        proximoSabado.setDate(fechaActual.getDate() + diasHastaSabado);
+        proximoSabado.setHours(0, 0, 0, 0); 
+
+        const proximoDomingo = new Date(fechaActual);
+        proximoDomingo.setDate(fechaActual.getDate() + diasHastaDomingo);
+        proximoDomingo.setHours(23, 59, 59, 999); 
+
+        console.log("Buscando eventos destacados en la base de datos...");
+        const collection = await conectDB(collectionName);
+
+        const events = await collection.find().toArray();
+
+        const eventosFinDeSemana = events.filter(evento => {
+            const fechaInicio = new Date(evento.fecha_inicio);
+            const fechaFinal = evento.fecha_final ? new Date(evento.fecha_final) : fechaInicio;
+
+            return (fechaInicio <= proximoDomingo && fechaFinal >= proximoSabado);
+        }).slice(0, 10);
+
+        console.log(eventosFinDeSemana.length, "eventos encontrados");
+        res.json(eventosFinDeSemana);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error interno del servidor");
+    } finally {
+        await closeDB();
+    }
+});
+
 // Encontrar eventos destacados
 router.get('/destacados', async (req, res) => {
     try {
@@ -85,7 +122,7 @@ router.get('/destacados', async (req, res) => {
         const eventosFuturos = events.filter(evento => {
             const fechaComparar = evento.fecha_final ? new Date(evento.fecha_final) : new Date(evento.fecha_inicio);
             return fechaComparar >= fechaActual;
-        });
+        }).slice(0, 10);
 
         console.log(eventosFuturos.length, "eventos encontrados");
         res.json(eventosFuturos);

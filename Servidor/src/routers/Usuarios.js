@@ -7,22 +7,22 @@ const collectionName = "usuarios";
 
 
 // Encontrar todos los usuarios
-router.get('/', async (req, res) => {
-    try {
+// router.get('/', async (req, res) => {
+//     try {
 
-        console.log("Buscando todos los usuarios");
-        const collection = await conectDB(collectionName);
-        const usuarios = await collection.find({}).toArray();
-        console.error('Usuarios encontrados:', usuarios.length);
-        res.status(200).json(usuarios);;
-    } catch (error) {
-        console.error("Error al crear usuario:", error);
-        res.status(500).send("Error al crear usuario");
-    }finally {
-        await closeDB();
-    }
-    
-})
+//         console.log("Buscando todos los usuarios");
+//         const collection = await conectDB(collectionName);
+//         const usuarios = await collection.find({}).toArray();
+//         console.error('Usuarios encontrados:', usuarios.length);
+//         res.status(200).json(usuarios);
+//     } catch (error) {
+//         console.error("Error al crear usuario:", error);
+//         res.status(500).send("Error al crear usuario");
+//     }finally {
+//         await closeDB();
+//     }
+// })
+
 // conseguir el usuario con el id dado
 router.get('/:id', async (req, res) => {
     try {
@@ -85,6 +85,7 @@ async function getfavorites (eventsLikeList,collection) {
     }
     return listlike;
 }
+
 async function getRecomends(eventsLikeList, collection) {
     const currentDate = new Date();
 
@@ -111,27 +112,37 @@ async function getRecomends(eventsLikeList, collection) {
             }
         }
 
-        // Encontrar la categoría más usada
-        let mostUsedCategory = null;
-        let maxCount = 0;
-        for (let category in categoryCounts) {
-            if (categoryCounts[category] > maxCount) {
-                mostUsedCategory = category;
-                maxCount = categoryCounts[category];
-            }
+        const sortedCategories = Object.keys(categoryCounts).sort((a, b) => categoryCounts[b] - categoryCounts[a]);
+
+        let recommendedEvents = [];
+        for (let category of sortedCategories) {
+            if (recommendedEvents.length >= 10) break;
+            const regex = new RegExp(`\\b${category}\\b`, 'i');
+            const events = await collection.aggregate([
+                { $match: { 
+                    categoria: { $regex: regex },
+                    fecha_inicio: { $gt: currentDate.toISOString() } 
+                }},
+                { $sample: { size: 10 - recommendedEvents.length } }
+            ]).toArray();
+            recommendedEvents.push(...events);
         }
 
-        const regex = new RegExp(`\\b${mostUsedCategory}\\b`, 'i');
-        return await collection.aggregate([
-            { $match: { 
-                categoria: { $regex: regex },
-                fecha_inicio: { $gt: currentDate.toISOString() } // Convertir la fecha actual a ISOString para comparación
-            }},
-            { $sample: { size: 10 } } // Obtener una muestra aleatoria de 10 eventos
-        ]).toArray();
-        
+        // Si no hay suficientes eventos, rellenar con eventos aleatorios
+        if (recommendedEvents.length < 10) {
+            const additionalEvents = await collection.aggregate([
+                { $match: { 
+                    fecha_inicio: { $gt: currentDate.toISOString() } 
+                }},
+                { $sample: { size: 10 - recommendedEvents.length } }
+            ]).toArray();
+            recommendedEvents.push(...additionalEvents);
+        }
+
+        return recommendedEvents;
     }
 }
+
 
 router.get('/listRecomend/:id', async (req, res) => {
     try {
@@ -157,7 +168,7 @@ router.get('/listRecomend/:id', async (req, res) => {
         
     } catch (error) {
         console.error("Error al crear la lista: ", error);
-        res.status(500).send("Error al crear la lista: ", error);
+        res.status(500).send("Error al crear la lista");
     } finally {
         await closeDB();
     }
