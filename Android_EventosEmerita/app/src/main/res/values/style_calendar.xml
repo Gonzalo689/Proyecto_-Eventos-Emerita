@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Define un tema personalizado para el DatePickerDialog -->
+    <style name="CustomDatePickerDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <!-- Personaliza los atributos que desees -->
+        <item name="colorAccent">@color/red_Primary</item>
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:datePickerDialogTheme">@style/CustomDatePickerDialog</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/CustomDialogButton</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/CustomDialogButton</item>
+    </style>
+    <style name="CustomDialogButton" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/red_Primary</item>
+    </style>
+
+    <!-- Define el tema para el DatePicker específico -->
+    <style name="CustomDatePickerDialog" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:headerBackground">@color/red_Primary</item>
+        <item name="android:calendarTextColor">@color/white</item>
+        <item name="android:dayOfWeekBackground">@color/white</item>
+    </style>
+
+</resources>

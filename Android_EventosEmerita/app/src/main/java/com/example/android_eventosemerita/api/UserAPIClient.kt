@@ -192,6 +192,25 @@ class UserAPIClient(private val context: Context) {
 
         queue.add(jsonObjectRequest)
     }
+    fun getRecomendList(userId: Int, callback: Callback.MyCallback<List<Event>>){
+        val queue = Volley.newRequestQueue(context)
+        val url = "$url/usuarios/listRecomend/$userId"
+
+        val jsonObjectRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                try {
+                    val eventList = Gson().fromJson(response, Array<Event>::class.java).toList()
+                    callback.onSuccess(eventList)
+                } catch (e: JsonSyntaxException) {
+                    callback.onError(null)
+                }
+            },
+            { error ->
+                callback.onError(null)
+            })
+
+        queue.add(jsonObjectRequest)
+    }
 
 
     fun updateProfilePicture(userId: Int, image: String, callback: Callback.MyCallback<String>) {

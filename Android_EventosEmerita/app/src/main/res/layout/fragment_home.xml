@@ -13,7 +13,7 @@
         android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023"
+        app:layout_constraintVertical_bias="0.0"
         tools:layout_editor_absoluteX="0dp">
 
         <LinearLayout
@@ -25,17 +25,24 @@
                 android:id="@+id/textInic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="5dp"
-                android:textSize="18sp"
+                android:layout_margin="10dp"
                 android:text="@string/featured_events"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
+
+            <ProgressBar
+                android:id="@+id/progressDest"
+                style="?android:attr/actionBarItemBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminateTint="@color/black" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerDest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 tools:layout_editor_absoluteX="1dp"
                 tools:layout_editor_absoluteY="55dp" />
 
@@ -43,22 +50,98 @@
                 android:id="@+id/textPas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:textSize="18sp"
+                android:layout_margin="10dp"
                 android:text="@string/new_events"
+                android:textSize="18sp"
                 android:textStyle="bold" />
+            <ProgressBar
+                android:id="@+id/progressNew"
+                style="?android:attr/actionBarItemBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminateTint="@color/black" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerNew"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 tools:layout_editor_absoluteX="1dp"
                 tools:layout_editor_absoluteY="55dp" />
+
+            <TextView
+                android:id="@+id/textRecomend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Eventos recomendados"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <ProgressBar
+                android:id="@+id/progressRecomend"
+                style="?android:attr/actionBarItemBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminateTint="@color/black" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerRecomend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                tools:layout_editor_absoluteX="1dp"
+                tools:layout_editor_absoluteY="55dp" />
+
+            <TextView
+                android:id="@+id/textPast"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Eventos pasados destacados"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <ProgressBar
+                android:id="@+id/progressPastDest"
+                style="?android:attr/actionBarItemBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminateTint="@color/black" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerPast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                tools:layout_editor_absoluteX="1dp"
+                tools:layout_editor_absoluteY="55dp" />
+
+            <TextView
+                android:id="@+id/textWeekend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Eventos de este fin de semana"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <ProgressBar
+                android:id="@+id/progressWeekend"
+                style="?android:attr/actionBarItemBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminateTint="@color/black" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerWeekend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                tools:layout_editor_absoluteX="1dp"
+                tools:layout_editor_absoluteY="55dp" />
+
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

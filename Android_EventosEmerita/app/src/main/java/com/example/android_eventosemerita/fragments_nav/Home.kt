@@ -7,21 +7,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.activity.SplashScreen
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
+import com.example.android_eventosemerita.api.UserAPIClient
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.controller.home.AdapterDest
 import com.example.android_eventosemerita.controller.home.AdapterHome
 import com.example.android_eventosemerita.databinding.FragmentHomeBinding
+import com.example.android_eventosemerita.utils.UtilsConst
+import com.example.android_eventosemerita.utils.UtilsConst.userRoot
 
 class Home : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var eventAPIClient: EventAPIClient
+    private lateinit var userAPIClient: UserAPIClient
     private var retryCountAll = 0
     private var retryCountDest = 0
+    private var retryCountRecomend = 0
+    private var retryCountPast = 0
+    private var retryCountWeeend = 0
+
     private val maxRetries = 3
 
     override fun onCreateView(
@@ -29,6 +38,7 @@ class Home : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+        userAPIClient = UserAPIClient(requireContext())
         eventAPIClient = EventAPIClient(requireContext())
         return binding.root
     }
@@ -36,15 +46,25 @@ class Home : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        if (userRoot != null){
+            eventRecomends()
+        }else{
+            binding.recyclerRecomend.visibility = View.GONE
+            binding.textRecomend.visibility = View.GONE
+            binding.progressRecomend.visibility = View.GONE
+        }
         eventsDestAPI()
         eventsAllAPI()
+        //eventRecomends()
+        eventPastDest()
+        eventWeekend()
 
     }
 
     private fun eventsAllAPI() {
-        val callback = object : Callback.MyCallback<List<Event>> {
+        eventAPIClient.getAllEvents(object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>) {
+                binding.progressNew.visibility = View.GONE
                 retryCountAll = 0
                 val sublist: List<Event> = if (data.size > 10) {
                     data.reversed().subList(0, 10)
@@ -52,73 +72,99 @@ class Home : Fragment() {
                     data.reversed()
                 }
                 val eventsDest: ArrayList<Event> = ArrayList(sublist)
-                recyclerall(eventsDest)
+                recyclerall(eventsDest, binding.recyclerNew)
+
 
             }
 
             override fun onError(errorMsg: List<Event>?) {
-                reloadError(this ,retryCountAll)
+                reloadError(retryCountAll, maxRetries) { eventsAllAPI() }
                 retryCountAll++
-//                if (retryCountAll < maxRetries) {
-//                    retryCountAll++
-//                    eventAPIClient.getAllEvents(this)
-//                } else {
-//                    if (isAdded) {
-//                        returnToSplash()
-//                    }
-//                }
 
             }
-        }
-            eventAPIClient.getAllEvents(callback)
+        })
+    }
+    fun eventRecomends(){
+        userAPIClient.getRecomendList(userRoot!!.id, object : Callback.MyCallback<List<Event>> {
+            override fun onSuccess(data: List<Event>){
+                binding.progressRecomend.visibility = View.GONE
+                if (data.isNotEmpty()){
+                    retryCountRecomend = 0
+                    val eventsDest: ArrayList<Event> = ArrayList(data)
+                    recyclerall(eventsDest,binding.recyclerRecomend)
+                }
+            }
+
+            override fun onError(errorMsg: List<Event>?) {
+                reloadError(retryCountRecomend, maxRetries) { eventRecomends() }
+                retryCountRecomend++
+            }
+        })
+    }
+    fun eventPastDest(){
+        eventAPIClient.getEventsDestPast(object : Callback.MyCallback<List<Event>> {
+            override fun onSuccess(data: List<Event>) {
+                binding.progressPastDest.visibility = View.GONE
+                retryCountPast = 0
+                val eventsDest: ArrayList<Event> = ArrayList(data)
+                recyclerall(eventsDest, binding.recyclerPast)
+            }
+
+            override fun onError(errorMsg: List<Event>?) {
+                reloadError(retryCountPast, maxRetries) { eventPastDest() }
+                retryCountPast++
+
+            }
+        })
+    }
+    fun eventWeekend(){
+        eventAPIClient.getWeekend(object : Callback.MyCallback<List<Event>> {
+            override fun onSuccess(data: List<Event>) {
+                binding.progressWeekend.visibility = View.GONE
+                retryCountWeeend = 0
+                val eventsDest: ArrayList<Event> = ArrayList(data)
+                recyclerall(eventsDest, binding.recyclerWeekend)
+
+
+            }
+
+            override fun onError(errorMsg: List<Event>?) {
+                reloadError(retryCountWeeend, maxRetries) { eventWeekend() }
+                retryCountWeeend++
+
+            }
+        })
+    }
+    fun eventsDestAPI(){
+        eventAPIClient.getEventsDest(object : Callback.MyCallback<List<Event>> {
+            override fun onSuccess(data: List<Event>) {
+                binding.progressDest.visibility = View.GONE
+                retryCountDest = 0
+                if (data.isNotEmpty()) {
+                    val eventsDest: ArrayList<Event> = ArrayList(data)
+                    recyclerDest(eventsDest)
+                }
+            }
+            override fun onError(errorMsg: List<Event>?) {
+                reloadError(retryCountDest, maxRetries) { eventsDestAPI() }
+                retryCountDest++
+
+            }
+        })
     }
     fun returnToSplash(){
         val intent = Intent(requireContext(), SplashScreen::class.java)
         startActivity(intent)
         requireActivity().finish()
     }
-
-    fun eventsDestAPI(){
-        val callback = object : Callback.MyCallback<List<Event>> {
-            override fun onSuccess(data: List<Event>) {
-                retryCountDest = 0
-                if (data.isNotEmpty()) {
-                    val sublist: List<Event> = if (data.size > 10) {
-                        data.subList(0, 10)
-                    } else {
-                        data
-                    }
-                    val eventsDest: ArrayList<Event> = ArrayList(sublist)
-                    recyclerDest(eventsDest)
-                }
-            }
-            override fun onError(errorMsg: List<Event>?) {
-                reloadError(this ,retryCountDest)
-                retryCountDest++
-//                if (retryCountDest < maxRetries) {
-//                    retryCountDest++
-//                    eventAPIClient.getEventsDest(this)
-//                } else {
-//                    if (isAdded) {
-//                        returnToSplash()
-//                    }
-//                }
-
-            }
-        }
-
-        eventAPIClient.getEventsDest(callback)
-    }
-    fun reloadError(callback: Callback.MyCallback<List<Event>>, num: Int) {
-        if (num < maxRetries) {
-            eventAPIClient.getEventsDest(callback)
+    fun reloadError(retryCount: Int, maxRetries: Int, callback: () -> Unit) {
+        if (retryCount < maxRetries) {
+            callback()
         } else {
-            if (isAdded) {
-                returnToSplash()
-            }
+            returnToSplash()
         }
-
     }
+
     fun recyclerDest(eventsList: ArrayList<Event>){
         if (!isAdded) {
             return
@@ -129,15 +175,15 @@ class Home : Fragment() {
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerDest.layoutManager = layoutManager
     }
-    fun recyclerall(eventsList: ArrayList<Event>){
+    fun recyclerall(eventsList: ArrayList<Event> , recyclerView: RecyclerView){
         if (!isAdded) {
             return
         }
         val mainActivity = requireActivity() as MainActivity
         val adapter = AdapterHome(eventsList,mainActivity)
-        binding.recyclerNew.adapter = adapter
+        recyclerView.adapter = adapter
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        binding.recyclerNew.layoutManager = layoutManager
+        recyclerView.layoutManager = layoutManager
     }
 
 }

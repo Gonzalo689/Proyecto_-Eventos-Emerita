@@ -2,6 +2,7 @@ package com.example.android_eventosemerita.fragments_nav
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -57,7 +58,10 @@ class Search : Fragment(){
         adapterAllEvents()
         searchQuery()
         eventsAPI()
+        buttons()
 
+    }
+    private fun buttons(){
         binding.button.setOnClickListener(View.OnClickListener {
             binding.button.visibility = View.GONE
             checkDate()
@@ -80,6 +84,7 @@ class Search : Fragment(){
             checkCategory()
             datePair = Pair(false,"")
         })
+
     }
     private fun inc(){
         binding.textDate.visibility = View.GONE
@@ -181,6 +186,7 @@ class Search : Fragment(){
 
         val datePickerDialog = DatePickerDialog(
             requireContext(),
+            R.style.CustomDatePickerDialogTheme,
             { _, selectedYear, selectedMonth, selectedDay ->
                 val selectedDate = "$selectedYear-${selectedMonth+1}-$selectedDay"
                 filterEventsDate(selectedDate)

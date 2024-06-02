@@ -49,29 +49,51 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginTop="80dp"
+
             android:background="@color/white"
             android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="5dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_location" />
+
+                <TextView
+                    android:id="@+id/addres"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/address"
+                    android:textSize="12sp"
+                    android:textStyle="italic" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/title"
-                android:layout_margin="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/title" />
-            <TextView
-                android:id="@+id/addres"
-                android:layout_margin="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/address" />
+                android:layout_marginStart="5dp"
+                android:maxLines="3"
+                android:text="@string/title"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
             <TextView
                 android:id="@+id/date"
-                android:layout_margin="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/initial_date" />
-        </LinearLayout>
+                android:text="@string/initial_date"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="5dp"
+                />
 
+        </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -92,6 +92,11 @@ object UtilsFun {
 
         return jsonObject
     }
+     fun dpToPx(context: Context): Int {
+        val density = context.resources.displayMetrics.density
+        return (UtilsConst.DP_KEYBOARD * density).toInt()
+    }
+
     
 
 }

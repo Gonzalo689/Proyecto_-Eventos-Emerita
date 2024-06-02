@@ -1,5 +1,6 @@
 package com.example.android_eventosemerita.fragments_nav
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import com.example.android_eventosemerita.api.UserAPIClient
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.controller.Favs.AdapterFavs
 import com.example.android_eventosemerita.databinding.FragmentFavoriteBinding
+import com.example.android_eventosemerita.login.SignIn
 import com.example.android_eventosemerita.utils.UtilsConst.userRoot
 
 
@@ -31,7 +33,21 @@ class Favorite : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getEventFavs()
+        if (userRoot != null){
+            getEventFavs()
+        }else{
+            startNoUser()
+        }
+
+    }
+    fun startNoUser(){
+        binding.recyclerFavs.visibility = View.GONE
+        binding.layautNoUser.visibility = View.VISIBLE
+        binding.buttonLog.setOnClickListener{
+            val intent = Intent(requireContext(), SignIn::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
 
     }
     fun getEventFavs(){

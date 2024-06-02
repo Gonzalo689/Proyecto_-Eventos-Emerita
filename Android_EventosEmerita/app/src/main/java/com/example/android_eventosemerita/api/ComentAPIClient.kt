@@ -44,19 +44,36 @@ class ComentAPIClient  (private val context: Context) {
                 try {
 
                     val eventList = Gson().fromJson(response, Array<Coment>::class.java).toList()
-                    println("A")
                     callback.onSuccess(eventList)
                 } catch (e: JsonSyntaxException) {
-                    println("B")
                     callback.onError(null)
                 }
             },
             { error ->
-                println("C")
                 callback.onError(null)
             })
 
         queue.add(jsonObjectRequest)
     }
+    fun deleteComent(id: Int, callback: Callback.MyCallback<String>) {
+        val url = "$url/comentarios/$id"
+        val queue = Volley.newRequestQueue(context)
+
+        val stringRequest = StringRequest(Request.Method.DELETE, url,
+            { response ->
+                try {
+                    callback.onSuccess(response)
+                } catch (e: JsonSyntaxException) {
+                    callback.onError("Error parsing response: ${e.localizedMessage}")
+                }
+            },
+            { error ->
+                val errorMsg = error.message ?: "Unknown error"
+                callback.onError(errorMsg)
+            })
+
+        queue.add(stringRequest)
+    }
+
 
 }

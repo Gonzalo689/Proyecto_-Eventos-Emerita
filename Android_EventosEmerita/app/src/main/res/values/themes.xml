@@ -4,6 +4,9 @@
         <item name="colorPrimary">@color/red_Primary</item>
         <item name="colorSecondary">@color/yellow_Secundary</item>
         <item name="android:windowBackground">@drawable/background</item>
+        <item name="colorControlActivated">@color/black</item> <!-- Color de la línea cuando está en foco -->
+        <item name="colorControlNormal">@color/black</item> <!-- Color de la línea cuando no está en foco -->
+        <item name="colorControlHighlight">@color/red_Primary</item> <!-- Color de la línea al interactuar -->
     </style>
 
     <style name="Theme.Android_EventosEmerita" parent="Base.Theme.Android_EventosEmerita" />

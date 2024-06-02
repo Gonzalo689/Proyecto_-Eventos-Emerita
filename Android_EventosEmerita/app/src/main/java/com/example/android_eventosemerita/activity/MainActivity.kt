@@ -10,9 +10,12 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
@@ -30,8 +33,14 @@ import com.example.android_eventosemerita.utils.UtilsConst.CHANNEL_ID
 import com.example.android_eventosemerita.utils.UtilsConst.DP_KEYBOARD
 import com.example.android_eventosemerita.utils.UtilsConst.USER_ID
 import com.example.android_eventosemerita.utils.UtilsConst.userRoot
+import com.example.android_eventosemerita.utils.UtilsFun.dpToPx
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.Serializable
 import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 
 class MainActivity : AppCompatActivity() {
@@ -48,42 +57,42 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.bubbleTabBar.visibility = View.GONE
-        getUser()
 
-
-        hideNavKeyboard()
-
-        loadFragment(Home(),false)
-
-        prubaBbuble()
-
-
+        lifecycleScope.launch {
+            getUser()
+            loadFragment(Home(),false)
+        }
+        hideIfKeyboardOut()
+        navBbuble()
         //funciona crear canal
         createChannel()
 
 
     }
+    private suspend fun getUser() {
+        return suspendCoroutine { continuation ->
+            val callback = object : Callback.MyCallback<User> {
+                override fun onSuccess(data: User) {
+                    userRoot = data
+                    binding.bubbleTabBar.visibility = View.VISIBLE
+                    continuation.resume(Unit)
+                }
 
-    private fun getUser(){
-        val callback = object : Callback.MyCallback<User> {
-            override fun onSuccess(data: User) {
-                userRoot = data
-                binding.bubbleTabBar.visibility = View.VISIBLE
+                override fun onError(errorMsg: User?) {
+                    continuation.resume(Unit)
+                }
+            }
+            val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
+            val id = preferences.getInt(USER_ID, 0)
+
+            if (id == 0) {
+                userRoot = null
+                continuation.resume(Unit)
+            } else {
+                userAPIClient.getUserById(id, callback)
             }
 
-            override fun onError(errorMsg: User?) {
-            }
         }
-        val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
-        val id = preferences.getInt(USER_ID, 0)
-        if(id == 0){
-            val intent = Intent(this, SignUp::class.java)
-            startActivity(intent)
-            finish()
-        }else{
-            userAPIClient.getUserById(id,callback)
-        }
-
     }
 
     @SuppressLint("ScheduleExactAlarm")
@@ -124,21 +133,20 @@ class MainActivity : AppCompatActivity() {
 
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        // Programa la alarma para la fecha específica
         alarmManager.setExact(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
             pendingIntent
         )
     }
-    fun cancelNotification(context: Context, notificationId: Int) {
+    fun cancelNotification(context: Context, eventId: Int) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(notificationId)
+        notificationManager.cancel(eventId)
         // Cancelar el alarm pendiente
         val intent = Intent(context, AlarmNotification::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            notificationId,
+            eventId,
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
         )
@@ -164,7 +172,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun prubaBbuble(){
+    private fun navBbuble(){
         binding.bubbleTabBar.addBubbleListener { id ->
             when (id) {
                 R.id.home -> {
@@ -194,20 +202,20 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun hideNavKeyboard(){
-        binding.root.viewTreeObserver.addOnGlobalLayoutListener(OnGlobalLayoutListener {
+    fun hideIfKeyboardOut() {
+        val heightDiffThreshold = dpToPx(applicationContext)
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener {
             val heightDiff: Int = binding.root.rootView.height - binding.root.height
-            if (heightDiff > dpToPx() || isBottomNavVisible) {
+
+            if (heightDiff > heightDiffThreshold || isBottomNavVisible) {
                 binding.bubbleTabBar.visibility = View.GONE
             } else {
                 binding.bubbleTabBar.visibility = View.VISIBLE
             }
-        })
+
+        }
     }
-    private fun dpToPx(): Int {
-        val density = resources.displayMetrics.density
-        return (DP_KEYBOARD * density).toInt()
-    }
+
     fun setBottomNavVisibility(visible: Boolean) {
         isBottomNavVisible = visible
     }

@@ -7,165 +7,262 @@
     xmlns:map="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".fragments_nav.FragmentEvent">
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fillViewport="true"
-        >
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <!-- ImageView para mostrar una imagen -->
-                <ImageView
-                    android:id="@+id/imageEvent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:foreground="@drawable/gradient_overlay"
-                    android:scaleType="centerCrop"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:src="@tools:sample/avatars" />
-
-                <!-- TextView para el título con sombra -->
-                <TextView
-                    android:id="@+id/title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title"
-                    android:textColor="@color/white"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:shadowColor="#80000000"
-                    android:shadowDx="2"
-                    android:shadowDy="2"
-                    android:shadowRadius="4"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageEvent"
-                    app:layout_constraintStart_toStartOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <TextView
-                android:id="@+id/textTitleDesc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/description"
-                android:textSize="24sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/textDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/description" />
-
-            <TextView
-                android:id="@+id/textTitleDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
-                android:text="@string/date"
-                android:textSize="24sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/textDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/initial_date"/>
-
-            <TextView
-                android:id="@+id/textDate2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/final_date"/>
-
-            <fragment
-                android:id="@+id/mapView"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                map:cameraZoom="15"
-                map:liteMode="true"
-                map:mapType="normal"
-                map:uiZoomControls="true"
-                map:uiZoomGestures="true"
-                map:uiRotateGestures="true"
-                map:uiScrollGestures="true"
-                map:uiTiltGestures="true"/>
-
-            <Button
-                android:id="@+id/buttonLike"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/text_container" />
-
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            android:layout_marginBottom="45dp">
 
             <LinearLayout
-                android:id="@+id/logOut"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/color_button"
-                android:elevation="10dp"
-                android:orientation="horizontal"
-                android:padding="10dp">
-                <EditText
-                    android:id="@+id/textMultiLine"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:layout_weight="1"
-                    android:gravity="start|top"
-                    android:inputType="textMultiLine" />
-                <Button
-                    android:id="@+id/buttonComent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageEvent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:foreground="@drawable/gradient_overlay"
+                        android:scaleType="centerCrop"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:src="@tools:sample/avatars" />
+
+                    <ImageView
+                        android:id="@+id/back"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:src="@drawable/arrow_back"
+                        app:layout_constraintTop_toTopOf="@id/imageEvent"
+                        app:layout_constraintStart_toStartOf="@id/imageEvent"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        app:tint="@android:color/white"
+                        android:shadowColor="#80000000"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"/>
+
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/title"
+                        android:textColor="@color/white"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:shadowColor="#80000000"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageEvent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/textTitleDesc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/comment" />
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/description"
+                    android:textSize="24sp"
+                    android:textStyle="bold"/>
 
+                <TextView
+                    android:id="@+id/textDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/description"
+                    android:justificationMode="inter_word"
+                    tools:targetApi="o" />
+
+                <View
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/textTitleDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/date"
+                    android:textSize="24sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/textDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/initial_date"/>
+
+                <TextView
+                    android:id="@+id/textDate2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/final_date"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?android:attr/listDivider" />
+                <TextView
+                    android:id="@+id/textCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:text="Categorías"
+                    android:textSize="24sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/categories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="Categorias"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?android:attr/listDivider" />
+
+                <fragment
+                    android:id="@+id/mapView"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    map:cameraZoom="15"
+                    map:liteMode="true"
+                    map:mapType="normal"
+                    map:uiZoomControls="true"
+                    map:uiZoomGestures="true"
+                    map:uiRotateGestures="true"
+                    map:uiScrollGestures="true"
+                    map:uiTiltGestures="true"/>
+
+                <!--
+                <LinearLayout
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/color_button"
+                    android:orientation="horizontal"
+                    android:padding="10dp"
+                    android:elevation="10dp"
+                    android:backgroundTint="@color/red_Primary"
+                    android:layout_gravity="center">
+                    <TextView
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Seguir evento"
+                        android:textColor="@color/white"/>
+
+
+                </LinearLayout>
+                   -->
+                <LinearLayout
+                    android:id="@+id/logOut"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/color_button"
+                    android:elevation="10dp"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+                    <EditText
+                        android:id="@+id/textMultiLine"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:layout_weight="1"
+                        android:gravity="start|top"
+                        android:inputType="textMultiLine" />
+                    <Button
+                        android:id="@+id/buttonComent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/comment" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/noComents"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textSize="20sp"
+                    android:layout_margin="10dp"
+                    android:text="@string/no_comment" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerComents"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:nestedScrollingEnabled="false"
+                    />
+                <TextView
+                    android:id="@+id/allComents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:text="@string/all_comment" />
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/noComents"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textSize="20sp"
-                android:layout_margin="10dp"
-                android:text="@string/no_comment" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerComents"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:nestedScrollingEnabled="false"
-                />
+        </androidx.core.widget.NestedScrollView>
+
+
+        <LinearLayout
+            android:id="@+id/buttonLike"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:elevation="10dp"
+            android:backgroundTint="@color/red_Primary"
+            android:background="@drawable/button_fav"
+            android:gravity="center">
+
             <TextView
-                android:id="@+id/allComents"
+                android:id="@+id/textLike"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:text="@string/all_comment" />
-
+                android:text="Seguir evento"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:textColor="@color/white"/>
         </LinearLayout>
-
-
-    </androidx.core.widget.NestedScrollView>
+    </RelativeLayout>
 </LinearLayout>

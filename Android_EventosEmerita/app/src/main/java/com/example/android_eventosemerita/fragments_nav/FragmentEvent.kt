@@ -1,6 +1,6 @@
 package com.example.android_eventosemerita.fragments_nav
 
-import android.graphics.Color
+import android.content.res.ColorStateList
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,9 +11,16 @@ import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.databinding.FragmentEventBinding
 import com.squareup.picasso.Picasso
 import android.location.Geocoder
-import android.nfc.tech.MifareUltralight.PAGE_SIZE
+import android.view.ViewTreeObserver
+import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.core.widget.NestedScrollView
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.UserAPIClient
@@ -22,6 +29,7 @@ import com.example.android_eventosemerita.api.model.Coment
 import com.example.android_eventosemerita.controller.AdapterComents
 import com.example.android_eventosemerita.utils.UtilsConst.userRoot
 import com.example.android_eventosemerita.utils.UtilsFun.addNotification
+import com.example.android_eventosemerita.utils.UtilsFun.dpToPx
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -78,26 +86,83 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         mapFragment?.getMapAsync(this)
 
         textEvent()
-        buttonLike()
+        if(userRoot!=null){
+            buttonLike()
+        }else{
+            buttonLikeNoRegister()
+        }
+
+        inic()
+
+        buttonBack()
+        getComets()
+        hideIfKeyboardOut()
+    }
+    fun inic(){
         binding.buttonComent.setOnClickListener{
-            createComets()
-            binding.textMultiLine.setText("")
+            if(userRoot==null){
+                Toast.makeText(context, "Registrate para poder comentar", Toast.LENGTH_SHORT).show()
+            }else{
+                createComets()
+                binding.textMultiLine.setText("")
+            }
         }
 
         binding.allComents.setOnClickListener{
             adapterComents.updateComents(listComents as ArrayList<Coment>)
+            binding.allComents.visibility = View.GONE
+        }
+        binding.categories.text = event!!.categoria
+    }
+    fun hideIfKeyboardOut() {
+        if (!isAdded) return // Verificar si el fragmento está adjunto a una actividad
+
+        val heightDiffThreshold = dpToPx(requireContext())
+        val onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+            if (isAdded) {
+                val heightDiff: Int = binding.root.rootView.height - binding.root.height
+                val margin = resources.getDimensionPixelSize(R.dimen.margin)
+                val noMargin = resources.getDimensionPixelSize(R.dimen.no_margin)
+                val layoutParams = binding.nestedScrollView.layoutParams as ViewGroup.MarginLayoutParams
+                if (heightDiff > heightDiffThreshold) {
+                    layoutParams.bottomMargin = noMargin
+                    binding.buttonLike.visibility = View.GONE
+                } else {
+                    layoutParams.bottomMargin = margin
+                    binding.buttonLike.visibility = View.VISIBLE
+                }
+            }
         }
 
-        getComets()
+        // Agregar el listener a la vista raíz del fragmento
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
 
+        // Crear un observer para el ciclo de vida
+        val lifecycleObserver = object : DefaultLifecycleObserver {
+            override fun onDestroy(owner: LifecycleOwner) {
+                binding.root.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalLayoutListener)
+            }
+        }
+
+        viewLifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+    }
+
+
+
+
+    fun buttonBack(){
+        binding.back.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     fun createComets(){
         val text = binding.textMultiLine.text.toString()
         if(text.isNotEmpty()){
-            val comet = Coment(0,text,"2024-4-19",emptyList(), userRoot!!.id,event!!.eventId)
-            comentAPIClient.postComent(comet,object :Callback.MyCallback<Coment>{
+            val coment = Coment(0,text,"",emptyList(), userRoot!!.id,event!!.eventId)
+            comentAPIClient.postComent(coment,object :Callback.MyCallback<Coment>{
                 override fun onSuccess(data: Coment) {
+                    binding.noComents.visibility = View.GONE
                     (listComents as ArrayList).add(0,data)
                     adapterComents.updateOneComent(data)
                     moreEventsVisibility()
@@ -108,15 +173,19 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
             })
         }
     }
+
+
     fun getComets(){
         comentAPIClient.getComets(event!!.eventId,object :Callback.MyCallback<List<Coment>>{
             override fun onSuccess(data: List<Coment>) {
-                if (data.isNotEmpty()){
+                if (data.isNotEmpty()) {
                     binding.noComents.visibility = View.GONE
                     listComents = data.reversed()
                     moreEventsVisibility()
-                    recyclerComents(data.subList(0, 5).reversed() as ArrayList<Coment>)
-                }else{
+                    val subListSize = minOf(listComents.size, 5)
+                    val dataList = ArrayList(listComents.subList(0,subListSize))
+                    recyclerComents(dataList)
+                } else {
                     recyclerComents(ArrayList())
                 }
             }
@@ -139,7 +208,7 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         if (!isAdded) {
             return
         }
-        adapterComents = AdapterComents(comentsList, userAPIClient)
+        adapterComents = AdapterComents(comentsList,binding.noComents)
         binding.recyclerComents.adapter = adapterComents
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.recyclerComents.layoutManager = layoutManager
@@ -147,7 +216,11 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
     }
 
 
-
+    fun buttonLikeNoRegister(){
+        binding.buttonLike.setOnClickListener{
+            Toast.makeText(context, "Registrate para poder seguir el evento", Toast.LENGTH_SHORT).show()
+        }
+    }
     fun buttonLike(){
         var isAdd = false
         userAPIClient.isLikedEvent(userRoot!!.id, event!!.eventId,object : Callback.MyCallback<Boolean> {
@@ -159,6 +232,7 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
             override fun onError(errorMsg: Boolean?) {
             }
         })
+
         binding.buttonLike.setOnClickListener{
             userAPIClient.updateUserList(userRoot!!.id, event!!.eventId,!isAdd,object : Callback.MyCallback<Boolean> {
                 override fun onSuccess(data: Boolean) {
@@ -189,13 +263,15 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         }
         binding.textDescription.text = descriptionC
 
-        binding.textDate.text = "Fecha inicial: " + event!!.stringFecha(event!!.fecha_inicio)
+        val dateStart =requireContext().getString(R.string.initial_date_param, event!!.stringFecha(event!!.fecha_inicio))
+        binding.textDate.text = dateStart
 
         val finalDate = event?.fecha_final
 
         if (finalDate != null) {
             if (!finalDate.isEmpty()){
-                binding.textDate2.text = "Fecha final: " + event!!.stringFecha(finalDate)
+                val dateFinal =requireContext().getString(R.string.initial_date_param, event!!.stringFecha(finalDate))
+                binding.textDate2.text =dateFinal
             }else{
                 binding.textDate2.visibility = View.GONE
             }
@@ -203,10 +279,17 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
     }
 
     fun checkfollow(like:Boolean){
+        val red = requireContext().getColor(R.color.red_Primary)
+        val white = requireContext().getColor(R.color.white)
         if (like){
-            binding.buttonLike.setBackgroundColor(Color.RED)
+            binding.buttonLike.backgroundTintList = ColorStateList.valueOf(white)
+            binding.textLike.setTextColor(red)
+            binding.textLike.text = "Ya sigues a este evento"
         }else{
-            binding.buttonLike.setBackgroundColor(Color.GREEN)
+            binding.buttonLike.backgroundTintList = ColorStateList.valueOf(red)
+            binding.textLike.setTextColor(white)
+
+            binding.textLike.text = "Seguir evento"
         }
 
     }

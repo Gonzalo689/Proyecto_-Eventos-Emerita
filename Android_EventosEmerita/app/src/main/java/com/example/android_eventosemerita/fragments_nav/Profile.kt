@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.android_eventosemerita.R
+import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.activity.SplashScreen
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.UserAPIClient
@@ -71,7 +72,7 @@ class Profile : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
 
-    ): View? {
+    ): View {
         userAPIClient = UserAPIClient(requireContext())
         binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
@@ -79,24 +80,54 @@ class Profile : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.logOut.setOnClickListener(View.OnClickListener {
+        if (userRoot != null){
+            buttons()
+            remenberNotf()
+            editProfie()
+            binding.frameProfile.setOnClickListener{
+
+            }
+        }else{
+            startNoUser()
+        }
+
+    }
+    override fun onResume() {
+        super.onResume()
+        if (galleryOpened) {
+            CoroutineScope(Dispatchers.Main).launch {
+                openAlertDialogAgain()
+            }
+        }
+    }
+    fun startNoUser(){
+        binding.frameProfile.visibility = View.GONE
+        binding.layautNoUser.visibility = View.VISIBLE
+        binding.buttonLog.setOnClickListener{
+            val intent = Intent(requireContext(), SignIn::class.java)
+            startActivity(intent)
+            requireActivity().finish()
+        }
+
+    }
+    private fun buttons(){
+        binding.logOut.setOnClickListener{
             forgotUser()
             returnToSplash()
-
-        })
-
+        }
         binding.switchNotf.setOnClickListener {
             val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
             val editor = preferences.edit()
             if (binding.switchNotf.isChecked){
                 editor.putBoolean(NOTIF, true)
+                binding.iconNotif.setImageResource(R.drawable.ic_notifications_active)
             }else{
                 editor.putBoolean(NOTIF, false)
+                binding.iconNotif.setImageResource(R.drawable.ic_notifications)
             }
             editor.apply()
             getEventFavs()
         }
-
         binding.edit.setOnClickListener {
             if (deployEdit){
                 changeIconDeploy(R.drawable.ic_arrow_up)
@@ -113,17 +144,6 @@ class Profile : Fragment() {
                 updateUser()
             }
         }
-
-        remenberNotf()
-        editProfie()
-    }
-    override fun onResume() {
-        super.onResume()
-        if (galleryOpened) {
-            CoroutineScope(Dispatchers.Main).launch {
-                openAlertDialogAgain()
-            }
-        }
     }
     private fun editProfie(){
         var file: File? = null
@@ -137,24 +157,10 @@ class Profile : Fragment() {
         binding.profileimage.setOnClickListener{
             showFullImageFromCache(file,userRoot!!.profilePicture)
         }
-        //image(userRoot!!.profilePicture, binding.profileimage, requireContext())
         binding.editEmail.hint = userRoot!!.email
         binding.editName.hint = userRoot!!.nombre
 
     }
-//    fun imgFile(file: File, imageView: ImageView){
-//        Picasso.get()
-//            .load(file)
-//            .transform(Image())
-//            .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
-//            .into(imageView)
-//    }
-//    fun imgPred(imageView: ImageView){
-//        Picasso.get()
-//            .load(R.drawable.prueba)
-//            .transform(Image())
-//            .into(imageView)
-//    }
     fun showFullImageFromCache(file: File?, imageString: String) {
         val dialogBuilder = AlertDialog.Builder(requireContext())
         val imageView = ImageView(requireContext())
@@ -173,6 +179,7 @@ class Profile : Fragment() {
             dialog.dismiss()
         }
         dialogBuilder.setNeutralButton("Cancelar") { dialog, which ->
+            editProfie()
             dialog.dismiss()
         }
         dialogBuilder.setNegativeButton("Guardar") { dialog, which ->
@@ -212,12 +219,14 @@ class Profile : Fragment() {
 
     fun updateImage(imageString: String){
         binding.progressBar.visibility = View.VISIBLE
+        binding.darkOverlay.visibility = View.VISIBLE
         userAPIClient.updateProfilePicture(userRoot!!.id, imageString, object : Callback.MyCallback<String> {
         override fun onSuccess(data: String) {
             activity?.runOnUiThread {
                 userRoot!!.profilePicture = imageString
                 val file = decodeBase64ToFile(imageString,requireContext(),NAME_FILE)
                 binding.progressBar.visibility = View.GONE
+                binding.darkOverlay.visibility = View.GONE
                 imgFile(file,binding.profileimage)
             }
         }
@@ -225,28 +234,12 @@ class Profile : Fragment() {
         override fun onError(errorMsg: String?) {
             activity?.runOnUiThread {
                 binding.progressBar.visibility = View.GONE
+                binding.darkOverlay.visibility = View.GONE
             }
         }
     })
     }
 
-//    fun image(img:String, imageView: ImageView , context: Context): File? {
-//        var file :File? = null
-//        if (img.isNotEmpty()){
-//            file = decodeBase64ToFile(img,context)
-//            Picasso.get()
-//                .load(file)
-//                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
-//                .transform(Image())
-//                .into(imageView)
-//        }else{
-//            Picasso.get()
-//                .load(R.drawable.prueba)
-//                .transform(Image())
-//                .into(imageView)
-//        }
-//        return file
-//    }
 
     fun forgotUser(){
         val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -256,7 +249,7 @@ class Profile : Fragment() {
         editor.apply()
     }
     fun returnToSplash(){
-        val intent = Intent(requireContext(), SplashScreen::class.java)
+        val intent = Intent(requireContext(), SignIn::class.java)
         startActivity(intent)
         requireActivity().finish()
     }
@@ -264,6 +257,7 @@ class Profile : Fragment() {
     private fun openGalery(){
         galleryLauncher.launch("image/*")
         binding.progressBar.visibility = View.VISIBLE
+        binding.darkOverlay.visibility = View.VISIBLE
     }
 
     fun openAlertDialogAgain(){
@@ -272,9 +266,9 @@ class Profile : Fragment() {
             val imageString = lowerQuality(byteArray)
             val file = decodeBase64ToFile(imageString,requireContext(),NAME_FILE)
             imgFile(file,binding.profileimage)
-            //val file = image(imageString,binding.profileimage, requireContext())
             showFullImageFromCache(file,imageString)
             binding.progressBar.visibility = View.GONE
+            binding.darkOverlay.visibility = View.GONE
             galleryOpened = false
         }
     }

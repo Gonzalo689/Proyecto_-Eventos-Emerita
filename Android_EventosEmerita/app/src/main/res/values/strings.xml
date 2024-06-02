@@ -11,14 +11,18 @@
     <string name="finalized">Finalizado</string>
     <string name="date">Fecha</string>
     <string name="initial_date">Fecha inicio</string>
+    <string name="initial_date_param">Fecha inicial: %1$s</string>
     <string name="final_date">Fecha final</string>
+    <string name="final_date_param">Fecha final: %1$s</string>
     <string name="address">Dirección</string>
     <string name="comment">Comentar</string>
     <string name="no_comment">Este evento no tiene comentarios</string>
-    <string name="all_comment">Ver todos los comentarios</string>
+    <string name="all_comment">Ver todos los comentarios ⬇⬇</string>
     <string name="no_events">No se encotró ningún evento</string>
     <string name="featured_events">Eventos destacados</string>
     <string name="new_events">Eventos nuevos</string>
+    <string name="notif_title">Recordatorio de evento</string>
+    <string name="notif_text">Hoy empieza un evento</string>
 
 
 </resources>

@@ -33,18 +33,46 @@ class EventAPIClient (private val context: Context) {
 
         val url = "$url/eventos/destacados"
 
-        // Request a string response from the provided URL.
         val stringRequest = StringRequest(Request.Method.GET, url,
             { response ->
                 val responseObject = Gson().fromJson(response, Array<Event>::class.java).toList()
                 callback.onSuccess(responseObject)
             },
             { error ->
-                // Handle errors
                 callback.onError(null)
             })
 
 
+        queue.add(stringRequest)
+    }
+    fun getEventsDestPast(callback: Callback.MyCallback<List<Event>>) {
+        val queue = Volley.newRequestQueue(context)
+
+        val url = "$url/eventos/past"
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                val responseObject = Gson().fromJson(response, Array<Event>::class.java).toList()
+                callback.onSuccess(responseObject)
+            },
+            { error ->
+                callback.onError(null)
+            })
+        queue.add(stringRequest)
+    }
+    fun getWeekend(callback: Callback.MyCallback<List<Event>>) {
+        val queue = Volley.newRequestQueue(context)
+
+        val url = "$url/eventos/weekend"
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                val responseObject = Gson().fromJson(response, Array<Event>::class.java).toList()
+                callback.onSuccess(responseObject)
+            },
+            { error ->
+                callback.onError(null)
+            })
         queue.add(stringRequest)
     }
     fun getEventCategory(category:String, callback: Callback.MyCallback<List<Event>>) {
@@ -58,7 +86,6 @@ class EventAPIClient (private val context: Context) {
                 callback.onSuccess(responseObject)
             },
             { error ->
-                // Handle errors
                 val errorString = error.toString()
                 callback.onError(null)
             })

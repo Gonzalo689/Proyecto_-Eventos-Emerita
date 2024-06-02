@@ -12,12 +12,16 @@
     <string name="finalized">Finalized</string>
     <string name="date">Date</string>
     <string name="initial_date">Initial date</string>
+    <string name="initial_date_param">Initial date: %1$s</string>
     <string name="final_date">Final date</string>
+    <string name="final_date_param">Final date: %1$s</string>
     <string name="address">Address</string>
     <string name="comment">comment</string>
     <string name="no_comment">This event has no comments</string>
-    <string name="all_comment">See all comments</string>
+    <string name="all_comment">See all comments ⬇⬇</string>
     <string name="no_events">No events were found</string>
     <string name="featured_events">Featured events</string>
     <string name="new_events">New events</string>
+    <string name="notif_title">Event reminder</string>
+    <string name="notif_text">An event starts today</string>
 </resources>
