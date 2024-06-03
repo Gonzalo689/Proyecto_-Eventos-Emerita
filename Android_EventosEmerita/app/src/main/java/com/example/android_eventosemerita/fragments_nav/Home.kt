@@ -55,7 +55,6 @@ class Home : Fragment() {
         }
         eventsDestAPI()
         eventsAllAPI()
-        //eventRecomends()
         eventPastDest()
         eventWeekend()
 

@@ -1,5 +1,6 @@
 package com.example.android_eventosemerita.controller.Favs
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
@@ -13,13 +14,14 @@ import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.databinding.FeedFavsBinding
 import com.example.android_eventosemerita.fragments_nav.FragmentEvent
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.NonDisposableHandle.parent
 import java.util.Calendar
 
 class AdapterFavs(private val events: ArrayList<Event>, private val mainActivity: MainActivity) : RecyclerView.Adapter<AdapterFavs.FeedViewFavs>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewFavs {
         val binding = FeedFavsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return FeedViewFavs(binding)
+        return FeedViewFavs(binding, parent.context)
     }
 
     override fun onBindViewHolder(feedHolder: FeedViewFavs, position: Int) {
@@ -33,7 +35,7 @@ class AdapterFavs(private val events: ArrayList<Event>, private val mainActivity
     /**
      * Clase interna FeedViewFavs
      */
-    inner class FeedViewFavs(private val binding: FeedFavsBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class FeedViewFavs(private val binding: FeedFavsBinding, private val context: Context) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(event: Event) {
             val calendar = Calendar.getInstance()
@@ -60,7 +62,7 @@ class AdapterFavs(private val events: ArrayList<Event>, private val mainActivity
             if (dateNum ==0){
                 gradientDrawable = ContextCompat.getDrawable(mainActivity, R.drawable.card_favs_today)
                 binding.layautInfo.visibility = View.VISIBLE
-                binding.textInfo.text = "HOY"
+                binding.textInfo.text = context.getString(R.string.in_progress)
 
             }
 

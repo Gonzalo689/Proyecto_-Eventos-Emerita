@@ -174,15 +174,15 @@ class Profile : Fragment() {
 
         dialogBuilder.setView(imageView)
 
-        dialogBuilder.setPositiveButton("Galery") { dialog, which ->
+        dialogBuilder.setPositiveButton(requireContext().getString(R.string.galery)) { dialog, which ->
             openGalery()
             dialog.dismiss()
         }
-        dialogBuilder.setNeutralButton("Cancelar") { dialog, which ->
+        dialogBuilder.setNeutralButton(requireContext().getString(R.string.cancel)) { dialog, which ->
             editProfie()
             dialog.dismiss()
         }
-        dialogBuilder.setNegativeButton("Guardar") { dialog, which ->
+        dialogBuilder.setNegativeButton(requireContext().getString(R.string.save)) { dialog, which ->
             updateImage(imageString)
             dialog.dismiss()
         }
@@ -287,23 +287,23 @@ class Profile : Fragment() {
         }else{
             val isUsedEmail = isEmailUsed(email)
             if (!UtilsFun.validateEmail(email)){
-                binding.editEmail.error = "No es un correo válido"
+                binding.editEmail.error = requireContext().getString(R.string.error_invalid_email)
                 binding.editEmail.requestFocus()
                 return
             }
             if (isUsedEmail) {
-                binding.editEmail.error = "Ya existe alguien con ese usuario"
+                binding.editEmail.error = requireContext().getString(R.string.error_email_exists)
                 binding.editEmail.requestFocus()
                 return
             }
         }
         if (pass.length in 1..3) {
-            binding.editPass.error = "Contraseña demasiada corta"
+            binding.editPass.error = requireContext().getString(R.string.error_short_password)
             binding.editPass.requestFocus()
             return
         }
         if (confirmPass != pass) {
-            binding.editConfirm.error = "Los campos no coinciden"
+            binding.editConfirm.error = requireContext().getString(R.string.error_password_mismatch)
             binding.editConfirm.requestFocus()
             return
         }
@@ -331,11 +331,11 @@ class Profile : Fragment() {
         userAPIClient.updateUser(userRoot!!.id,name,email,pass, object : Callback.MyCallback<User>{
             override fun onSuccess(data: User) {
                 resetEdit(name,email)
-                Toast.makeText(context, "Usuario Actualizado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, requireContext().getString(R.string.user_updated), Toast.LENGTH_SHORT).show()
             }
 
             override fun onError(errorMsg: User?) {
-                Toast.makeText(context, "No se pudo actualizar el usuario", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, requireContext().getString(R.string.user_update_failed), Toast.LENGTH_SHORT).show()
             }
 
         })

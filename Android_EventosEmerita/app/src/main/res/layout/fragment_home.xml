@@ -74,7 +74,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="Eventos recomendados"
+                android:text="@string/recomend_event"
                 android:textSize="18sp"
                 android:textStyle="bold" />
             <ProgressBar
@@ -97,7 +97,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="Eventos pasados destacados"
+                android:text="@string/past_event"
                 android:textSize="18sp"
                 android:textStyle="bold" />
             <ProgressBar
@@ -120,7 +120,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="Eventos de este fin de semana"
+                android:text="@string/weekend_events"
                 android:textSize="18sp"
                 android:textStyle="bold" />
             <ProgressBar

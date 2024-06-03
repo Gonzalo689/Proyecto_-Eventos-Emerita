@@ -284,12 +284,12 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         if (like){
             binding.buttonLike.backgroundTintList = ColorStateList.valueOf(white)
             binding.textLike.setTextColor(red)
-            binding.textLike.text = "Ya sigues a este evento"
+            binding.textLike.text = requireContext().getText(R.string.following_event)
         }else{
             binding.buttonLike.backgroundTintList = ColorStateList.valueOf(red)
             binding.textLike.setTextColor(white)
 
-            binding.textLike.text = "Seguir evento"
+            binding.textLike.text = requireContext().getText(R.string.follow_event)
         }
 
     }

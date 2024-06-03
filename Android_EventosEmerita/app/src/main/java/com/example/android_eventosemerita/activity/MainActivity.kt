@@ -119,10 +119,8 @@ class MainActivity : AppCompatActivity() {
         )
 
         val calendar = Calendar.getInstance().apply {
-            // Obtener la hora actual del sistema
             val horaActual = Calendar.getInstance()
 
-            // Establecer la hora actual en el objeto Calendar
             set(Calendar.HOUR_OF_DAY, horaActual.get(Calendar.HOUR_OF_DAY))
             set(Calendar.MINUTE, horaActual.get(Calendar.MINUTE))
             set(Calendar.SECOND, horaActual.get(Calendar.SECOND))

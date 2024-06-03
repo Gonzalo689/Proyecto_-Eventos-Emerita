@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.ComentAPIClient
@@ -82,11 +83,12 @@ class AdapterComents (private var coments: ArrayList<Coment>, private val text: 
                 comentAPIClient.deleteComent(coment.id, object :Callback.MyCallback<String>{
                     override fun onSuccess(data: String) {
                         deleteComent(coment)
-                        Toast.makeText(context, "Comentario eliminado exitosamente", Toast.LENGTH_SHORT).show()
+
+                        Toast.makeText(context, context.getString(R.string.coment_deleted), Toast.LENGTH_SHORT).show()
                     }
 
                     override fun onError(errorMsg: String?) {
-                        Toast.makeText(context, "Error al eliminar el comentario: $errorMsg", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, context.getString(R.string.error_coment_deleted), Toast.LENGTH_LONG).show()
                     }
 
                 })
@@ -126,7 +128,7 @@ class AdapterComents (private var coments: ArrayList<Coment>, private val text: 
 
         private fun calculateDateTimeDifference(fecha: String): String {
             // Versiones superiores a version code.0
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                 val commentDateTime = LocalDateTime.parse(fecha, formatter)
@@ -137,14 +139,7 @@ class AdapterComents (private var coments: ArrayList<Coment>, private val text: 
                 val minutes = ChronoUnit.MINUTES.between(commentDateTime, currentDateTime) % 60
                 val seconds = ChronoUnit.SECONDS.between(commentDateTime, currentDateTime) % 60
 
-                println("Fecha: $days -- $hours -- $minutes -- $seconds")
-
-                when {
-                    days > 0 -> "$days days ago"
-                    hours > 0 -> "$hours hours ago"
-                    minutes > 0 -> "$minutes minutes ago"
-                    else -> "$seconds seconds ago"
-                }
+                return getTimeAgoString(days, hours, minutes, seconds)
             } else {
                 val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                 val commentDateTime = formatter.parse(fecha)
@@ -155,14 +150,16 @@ class AdapterComents (private var coments: ArrayList<Coment>, private val text: 
                 val minutes = (diffInMillis / (1000 * 60)) % 60
                 val seconds = (diffInMillis / 1000) % 60
 
-                println("Fecha: $days -- $hours -- $minutes -- $seconds")
+                return getTimeAgoString(days, hours, minutes, seconds)
+            }
 
-                when {
-                    days > 0 -> "$days days ago"
-                    hours > 0 -> "$hours hours ago"
-                    minutes > 0 -> "$minutes minutes ago"
-                    else -> "$seconds seconds ago"
-                }
+        }
+        fun getTimeAgoString(days: Long, hours: Long, minutes: Long, seconds: Long): String {
+            return when {
+                days > 0 -> context.getString(R.string.days_ago, days)
+                hours > 0 -> context.getString(R.string.hours_ago, hours)
+                minutes > 0 -> context.getString(R.string.minutes_ago, minutes)
+                else -> context.getString(R.string.seconds_ago, seconds)
             }
         }
 

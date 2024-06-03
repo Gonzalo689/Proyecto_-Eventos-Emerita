@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Patterns
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.UserAPIClient
@@ -30,8 +31,7 @@ class SignIn : AppCompatActivity() {
         setContentView(binding.root)
         userAPIClient = UserAPIClient(applicationContext)
 
-        val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this)
-        if (preferences.getBoolean(REMEMBER, false)) {
+        binding.startLoggGuest.setOnClickListener{
             startMainActivity()
         }
 
@@ -61,22 +61,22 @@ class SignIn : AppCompatActivity() {
         val pass = binding.passwordLog.text.toString().trim()
 
         if (email.isEmpty()) {
-            binding.emailLog.error = "El campo del correo electrónico está vacío"
+            binding.emailLog.error = getString(R.string.error_empty_email)
             binding.emailLog.requestFocus()
             return false
         }
         if (!validateEmail(email)){
-            binding.emailLog.error = "No es un correo válido"
+            binding.emailLog.error = getString(R.string.error_invalid_email)
             binding.emailLog.requestFocus()
             return false
         }
         if (pass.isEmpty()) {
-            binding.passwordLog.error = "El campo de contraseña está vacío"
+            binding.passwordLog.error = getString(R.string.error_empty_password)
             binding.passwordLog.requestFocus()
             return false
         }
         if (pass.length < 3) {
-            binding.passwordLog.error = "La constraseña no puede ser tan corta"
+            binding.passwordLog.error = getString(R.string.error_short_password)
             binding.passwordLog.requestFocus()
             return false
         }
@@ -94,7 +94,7 @@ class SignIn : AppCompatActivity() {
                 startMainActivity()
             }
             override fun onError(errorMsg: User?) {
-                binding.emailLog.error = "No existe este email con esta contraseña"
+                binding.emailLog.error = getString(R.string.error_invalid_credentials)
                 binding.emailLog.requestFocus()
             }
         })

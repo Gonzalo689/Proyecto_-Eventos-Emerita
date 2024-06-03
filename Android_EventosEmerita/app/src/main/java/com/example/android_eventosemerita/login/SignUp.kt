@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.UserAPIClient
@@ -54,32 +55,32 @@ class SignUp : AppCompatActivity() {
         val confirmPass = binding.confirmPassword.text.toString().trim()
 
         if (name.isEmpty() || name.length >= 4) {
-            binding.editTextUsername.error = "El campo del correo electrónico está vacío"
+            binding.editTextUsername.error = getString(R.string.error_short_name)
             binding.editTextUsername.requestFocus()
             return false
         }
         if (email.isEmpty()) {
-            binding.editTextEmailRegister.error = "El campo del correo electrónico está vacío"
+            binding.editTextEmailRegister.error = getString(R.string.error_empty_email)
             binding.editTextEmailRegister.requestFocus()
             return false
         }
         if (pass.isEmpty()) {
-            binding.editTextPassword.error = "El campo de contraseña está vacío"
+            binding.editTextPassword.error = getString(R.string.error_empty_password)
             binding.editTextPassword.requestFocus()
             return false
         }
         if (!validateEmail(email)){
-            binding.editTextEmailRegister.error = "No es un correo válido"
+            binding.editTextEmailRegister.error = getString(R.string.error_invalid_email)
             binding.editTextEmailRegister.requestFocus()
             return false
         }
         if (pass.length < 3) {
-            binding.editTextPassword.error = "La constraseña no puede ser tan corta"
+            binding.editTextPassword.error = getString(R.string.password)
             binding.editTextPassword.requestFocus()
             return false
         }
         if (!confirmPass.equals(pass)) {
-            binding.confirmPassword.error = "Los campos no coinciden"
+            binding.confirmPassword.error = getString(R.string.error_password_mismatch)
             binding.confirmPassword.requestFocus()
             return false
         }

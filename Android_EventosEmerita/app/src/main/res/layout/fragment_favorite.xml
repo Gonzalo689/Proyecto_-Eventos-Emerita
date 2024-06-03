@@ -35,7 +35,6 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/no_events"
-
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -54,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Para tener una lista de eventos favorito necesitas Logearte!"
+            android:text="@string/needLogFavourite"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -62,7 +61,7 @@
             android:id="@+id/buttonLog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Logearse" />
+            android:text="@string/log_in" />
 
     </LinearLayout>
 </LinearLayout>

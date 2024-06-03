@@ -24,4 +24,66 @@
     <string name="new_events">New events</string>
     <string name="notif_title">Event reminder</string>
     <string name="notif_text">An event starts today</string>
+    <string name="log_in">Log in</string>
+    <string name="log_in_guest">Log in as guest</string>
+    <string name="no_account">You do not have an account?</string>
+    <string name="sign_up_here">Sign up here</string>
+
+    <string name="error_empty_email">The email field is empty</string>
+    <string name="error_invalid_email">This is not a valid email</string>
+    <string name="error_empty_password">The password field is empty</string>
+    <string name="error_short_password">The password is too short</string>
+    <string name="error_short_name">The name is too short</string>
+    <string name="error_invalid_credentials">This email and password combination does not exist</string>
+    <string name="error_email_exists">Someone already exists with that user</string>
+    <string name="error_password_mismatch">Fields do not match</string>
+
+    <string name="sign_up">Sign up</string>
+    <string name="have_account">Do you already have an account?</string>
+    <string name="sign_here">Sign up here</string>
+    <string name="coment_deleted">Comment successfully deleted</string>
+    <string name="error_coment_deleted">Error deleting comment</string>
+    <string name="days_ago">%1$d days ago</string>
+    <string name="hours_ago">%1$d hours ago</string>
+    <string name="minutes_ago">%1$d minutes ago</string>
+    <string name="seconds_ago">%1$d seconds ago</string>
+    <string name="following_event">You are already following this event</string>
+    <string name="follow_event">Follow event</string>
+    <string name="cancel">Cancel</string>
+    <string name="galery">Galery</string>
+    <string name="save">Save</string>
+    <string name="user_updated">User Updated</string>
+    <string name="user_update_failed">Failed to update user</string>
+    <string name="recomend_event">Recommended events</string>
+    <string name="past_event">Featured past events</string>
+    <string name="weekend_events">This weekend events</string>
+    <string name="notifications">Notifications</string>
+    <string name="edit">Edit</string>
+    <string name="commit_changes">Commit changes</string>
+    <string name="sign_off">Sign off</string>
+    <string name="progress">In progress</string>
+
+    <string name="category_beneficial">Beneficial</string>
+    <string name="category_design">Design</string>
+    <string name="category_carnival">Carnival</string>
+    <string name="category_music">Music</string>
+    <string name="category_conference">Conference</string>
+    <string name="category_cinema">Cinema</string>
+    <string name="category_workshops">Workshop</string>
+    <string name="category_emerita_lvdica">Emerita Lvdica</string>
+    <string name="category_dance">Dance</string>
+    <string name="category_sport">Sport</string>
+    <string name="category_childish">Childish</string>
+    <string name="category_leisure">Leisure</string>
+    <string name="category_theater">Theater</string>
+    <string name="category_literature">Literature</string>
+    <string name="categories">Categories</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_favorite">Favorites</string>
+    <string name="menu_profile">Profile</string>
+
+    <string name="needLogFavourite">To have a list of favorite events you need to Login!</string>
+    <string name="needLog">To access a profile you need to Login!</string>
 </resources>

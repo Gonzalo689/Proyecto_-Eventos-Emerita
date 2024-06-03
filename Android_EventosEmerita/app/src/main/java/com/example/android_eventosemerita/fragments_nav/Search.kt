@@ -62,28 +62,28 @@ class Search : Fragment(){
 
     }
     private fun buttons(){
-        binding.button.setOnClickListener(View.OnClickListener {
+        binding.button.setOnClickListener {
             binding.button.visibility = View.GONE
             checkDate()
             categoryPair = Pair(false,"")
-        })
-        binding.textCategory.setOnClickListener(View.OnClickListener {
+        }
+        binding.textCategory.setOnClickListener {
 
             binding.recyclerSearchCategory.visibility = View.VISIBLE
-        })
-        binding.buttonDate.setOnClickListener(View.OnClickListener {
+        }
+        binding.buttonDate.setOnClickListener {
             if (datePair.first){
                 binding.textDate.visibility = View.GONE
                 checkCategory()
                 datePair = Pair(false,"")
             }
             intentEventsDate()
-        })
-        binding.textDate.setOnClickListener(View.OnClickListener {
+        }
+        binding.textDate.setOnClickListener{
             binding.textDate.visibility = View.GONE
             checkCategory()
             datePair = Pair(false,"")
-        })
+        }
 
     }
     private fun inc(){
@@ -244,21 +244,21 @@ class Search : Fragment(){
     }
     private fun chargeCategories(){
         categories.clear()
-        categories.add(Category("Benéfico", "Benéfico", R.drawable.beneficial))
-        categories.add(Category("Diseño", "Diseño", R.drawable.design))
-        categories.add(Category("Carnaval", "Carnaval", R.drawable.carnival))
-        categories.add(Category("Música", "Música", R.drawable.music))
-        categories.add(Category("Conferencia", "Charla-Conferencia", R.drawable.conference))
+        categories.add(Category(requireContext().getString(R.string.category_beneficial), "Benéfico", R.drawable.beneficial))
+        categories.add(Category(requireContext().getString(R.string.category_design), "Diseño", R.drawable.design))
+        categories.add(Category(requireContext().getString(R.string.category_carnival), "Carnaval", R.drawable.carnival))
+        categories.add(Category(requireContext().getString(R.string.category_music), "Música", R.drawable.music))
+        categories.add(Category(requireContext().getString(R.string.category_conference), "Charla-Conferencia", R.drawable.conference))
         //categories.add(Category("Jornada", "Jornadas", R.drawable.prueba))
-        categories.add(Category("Cine", "Cine", R.drawable.cinema))
-        categories.add(Category("Talleres", "Curso-Taller", R.drawable.workshops))
-        categories.add(Category("Emerita Lvdica", "Emerita Lvdica", R.drawable.emerita_lvdica))
-        categories.add(Category("Danza", "Danza", R.drawable.dance))
-        categories.add(Category("Deporte", "Deporte", R.drawable.sport))
-        categories.add(Category("Infantil", "Infantil", R.drawable.childish))
-        categories.add(Category("Ocio", "Ocio", R.drawable.leisure))
-        categories.add(Category("Teatro", "Teatro", R.drawable.theater))
-        categories.add(Category("Literatura", "Literatura", R.drawable.literature))
+        categories.add(Category(requireContext().getString(R.string.category_cinema), "Cine", R.drawable.cinema))
+        categories.add(Category(requireContext().getString(R.string.category_workshops), "Curso-Taller", R.drawable.workshops))
+        categories.add(Category(requireContext().getString(R.string.category_emerita_lvdica), "Emerita Lvdica", R.drawable.emerita_lvdica))
+        categories.add(Category(requireContext().getString(R.string.category_dance), "Danza", R.drawable.dance))
+        categories.add(Category(requireContext().getString(R.string.category_sport), "Deporte", R.drawable.sport))
+        categories.add(Category(requireContext().getString(R.string.category_childish), "Infantil", R.drawable.childish))
+        categories.add(Category(requireContext().getString(R.string.category_leisure), "Ocio", R.drawable.leisure))
+        categories.add(Category(requireContext().getString(R.string.category_theater), "Teatro", R.drawable.theater))
+        categories.add(Category(requireContext().getString(R.string.category_literature), "Literatura", R.drawable.literature))
         //categories.add(Category("Visita Guiada", "Visita Guiada", R.drawable.prueba))
 
     }

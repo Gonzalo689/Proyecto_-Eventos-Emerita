@@ -33,7 +33,7 @@ class AdapterDest (private val events: ArrayList<Event>,private val mainActivity
         fun bind(event: Event) {
             var descriptionC = ""
             event.descriptionCompleta.forEach { des ->
-                descriptionC += des.trim()
+                descriptionC += des.trim() + "\n"
             }
             binding.descp.text = event.titulo
             Picasso.get().load(event.image).into(binding.imageEvent)

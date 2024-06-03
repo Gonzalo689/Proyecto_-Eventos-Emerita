@@ -33,12 +33,12 @@ class AdapterCategory (private var categories: ArrayList<Category>, private val 
 
             binding.textCategory.text = category.name
             binding.imageCategory.setImageResource(category.image)
-            binding.layautCategory.setOnClickListener(View.OnClickListener {
+            binding.layautCategory.setOnClickListener{
                 searchActivity.eventsCategory(category.busqueda)
                 button.visibility = View.VISIBLE
                 button.text = category.name
                 categoryPair = Pair(true,category.busqueda)
-            })
+            }
 
         }
 
