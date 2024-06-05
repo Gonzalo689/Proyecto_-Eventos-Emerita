@@ -17,9 +17,11 @@ import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.controller.home.AdapterDest
 import com.example.android_eventosemerita.controller.home.AdapterHome
 import com.example.android_eventosemerita.databinding.FragmentHomeBinding
-import com.example.android_eventosemerita.utils.UtilsConst
 import com.example.android_eventosemerita.utils.UtilsConst.userRoot
 
+/**
+ * Fragmento para la pantalla de inicio que muestra diferentes listas de eventos.
+ */
 class Home : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
@@ -60,6 +62,9 @@ class Home : Fragment() {
 
     }
 
+    /**
+     * Obtiene y muestra la lista de todos los eventos.
+     */
     private fun eventsAllAPI() {
         eventAPIClient.getAllEvents(object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>) {
@@ -83,6 +88,10 @@ class Home : Fragment() {
             }
         })
     }
+
+    /**
+     * Obtiene y muestra la lista de eventos recomendados para el usuario actual.
+     */
     fun eventRecomends(){
         userAPIClient.getRecomendList(userRoot!!.id, object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>){
@@ -100,6 +109,10 @@ class Home : Fragment() {
             }
         })
     }
+
+    /**
+     * Obtiene y muestra la lista de eventos pasados.
+     */
     fun eventPastDest(){
         eventAPIClient.getEventsDestPast(object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>) {
@@ -116,6 +129,10 @@ class Home : Fragment() {
             }
         })
     }
+
+    /**
+     * Obtiene y muestra la lista de eventos para el fin de semana.
+     */
     fun eventWeekend(){
         eventAPIClient.getWeekend(object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>) {
@@ -134,6 +151,10 @@ class Home : Fragment() {
             }
         })
     }
+
+    /**
+     * Obtiene y muestra la lista de eventos destacados.
+     */
     fun eventsDestAPI(){
         eventAPIClient.getEventsDest(object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>) {
@@ -151,11 +172,19 @@ class Home : Fragment() {
             }
         })
     }
+
+    /**
+     * Regresa a la pantalla de inicio (SplashScreen) si hay un error de carga.
+     */
     fun returnToSplash(){
         val intent = Intent(requireContext(), SplashScreen::class.java)
         startActivity(intent)
         requireActivity().finish()
     }
+
+    /**
+     * Recarga la pantalla o regresa a la pantalla de inicio si se ha intentado cargar varias veces sin éxito.
+     */
     fun reloadError(retryCount: Int, maxRetries: Int, callback: () -> Unit) {
         if (retryCount < maxRetries) {
             callback()
@@ -164,6 +193,9 @@ class Home : Fragment() {
         }
     }
 
+    /**
+     * Configura el RecyclerView para mostrar la lista de eventos destacados.
+     */
     fun recyclerDest(eventsList: ArrayList<Event>){
         if (!isAdded) {
             return
@@ -174,6 +206,10 @@ class Home : Fragment() {
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerDest.layoutManager = layoutManager
     }
+
+    /**
+     * Configura el RecyclerView para cualquier lista en su respectivo recycler.
+     */
     fun recyclerall(eventsList: ArrayList<Event> , recyclerView: RecyclerView){
         if (!isAdded) {
             return

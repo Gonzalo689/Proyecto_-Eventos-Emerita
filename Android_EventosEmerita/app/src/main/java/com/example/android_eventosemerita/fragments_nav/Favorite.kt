@@ -16,12 +16,22 @@ import com.example.android_eventosemerita.databinding.FragmentFavoriteBinding
 import com.example.android_eventosemerita.login.SignIn
 import com.example.android_eventosemerita.utils.UtilsConst.userRoot
 
-
+/**
+ * Fragmento para mostrar la lista de eventos favoritos del usuario.
+ */
 class Favorite : Fragment() {
 
     private lateinit var binding: FragmentFavoriteBinding
     private lateinit var userAPIClient: UserAPIClient
 
+    /**
+     * Se llama para crear la vista asociada al fragmento.
+     *
+     * @param inflater           El LayoutInflater que se utiliza para inflar la vista.
+     * @param container          El ViewGroup donde se debe inflar la vista.
+     * @param savedInstanceState Bundle que contiene el estado previamente guardado del fragmento.
+     * @return La vista asociada al fragmento.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,6 +41,12 @@ class Favorite : Fragment() {
         return binding.root
     }
 
+    /**
+     * Se llama cuando la vista asociada al fragmento ha sido creada.
+     *
+     * @param view               La vista asociada al fragmento.
+     * @param savedInstanceState Bundle que contiene el estado previamente guardado del fragmento.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (userRoot != null){
@@ -40,6 +56,9 @@ class Favorite : Fragment() {
         }
 
     }
+    /**
+     * Inicia la interfaz especial cuando el usuario no ha iniciado sesión.
+     */
     fun startNoUser(){
         binding.recyclerFavs.visibility = View.GONE
         binding.layautNoUser.visibility = View.VISIBLE
@@ -50,6 +69,9 @@ class Favorite : Fragment() {
         }
 
     }
+    /**
+     * Obtiene la lista de eventos favoritos del usuario.
+     */
     fun getEventFavs(){
         val callback = object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>){
@@ -73,6 +95,11 @@ class Favorite : Fragment() {
         userAPIClient.getFavEventsList(userRoot!!.id, callback)
     }
 
+    /**
+     * Muestra la lista de eventos favoritos del usuario en el RecyclerView.
+     *
+     * @param eventsFavList Lista de eventos favoritos del usuario.
+     */
     fun recyclerFavs(eventsFavList: ArrayList<Event>){
         if (!isAdded) {
             return

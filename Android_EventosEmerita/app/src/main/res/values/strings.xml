@@ -59,6 +59,8 @@
     <string name="commit_changes">Confirmar cambios</string>
     <string name="sign_off">Cerrar sesión</string>
 
+    <string name="name_coment"> %1$s • </string>
+
 
     <string name="category_beneficial">Benéfico</string>
     <string name="category_design">Diseño</string>
@@ -82,8 +84,8 @@
     <string name="menu_favorite">Favoritos</string>
     <string name="menu_profile">Perfil</string>
 
-    <string name="needLogFavourite">Para tener una lista de eventos favorito necesitas Loguearte!</string>
-    <string name="needLog">Para acceder un perfil necesitas Loguearte!</string>
+    <string name="needLogFavourite">Para tener una lista de eventos favorito necesitas iniciar sesion!</string>
+    <string name="needLog">Para acceder un perfil necesitas iniciar sesion!</string>
 
 
 </resources>

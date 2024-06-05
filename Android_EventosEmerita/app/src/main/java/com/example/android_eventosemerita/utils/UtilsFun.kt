@@ -1,14 +1,11 @@
 package com.example.android_eventosemerita.utils
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Patterns
 import android.util.Base64
-import android.widget.EditText
 import com.example.android_eventosemerita.activity.MainActivity
-import com.example.android_eventosemerita.activity.SplashScreen
 import com.example.android_eventosemerita.api.model.Coment
 import com.example.android_eventosemerita.api.model.Event
 import java.io.ByteArrayOutputStream
@@ -19,10 +16,27 @@ import org.json.JSONObject
 import java.security.MessageDigest
 import java.util.Calendar
 
+/**
+ * Clase que contiene funciones útiles para la aplicación.
+ */
 object UtilsFun {
+
+    /**
+     * Valida el formato de un correo electrónico.
+     *
+     * @param email Correo electrónico a validar.
+     * @return `true` si el formato es válido, `false` en caso contrario.
+     */
     fun validateEmail(email: String): Boolean {
         return email.let { Patterns.EMAIL_ADDRESS.matcher(it).matches() }
     }
+
+    /**
+     * Guarda el identificador de usuario en las preferencias compartidas.
+     *
+     * @param context Contexto de la aplicación.
+     * @param user Identificador de usuario.
+     */
     fun remenberUser(context: Context, user:Int) {
         val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
         val editor = preferences.edit()
@@ -30,6 +44,13 @@ object UtilsFun {
         editor.putInt(USER_ID, user)
         editor.apply()
     }
+
+    /**
+     * Reduce la calidad de una imagen representada en un arreglo de bytes.
+     *
+     * @param image Arreglo de bytes que representa la imagen.
+     * @return Representación en base64 de la imagen con reducción de calidad.
+     */
     fun lowerQuality(image: ByteArray?):String {
             val bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
 
@@ -39,6 +60,13 @@ object UtilsFun {
             compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
             return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
     }
+
+    /**
+     * Genera un hash SHA-256 de un valor de entrada.
+     *
+     * @param value Valor de entrada para el cual se generará el hash.
+     * @return Hash generado.
+     */
     fun hash(value: String): String? {
         try {
             val digest = MessageDigest.getInstance("SHA-256")
@@ -57,6 +85,14 @@ object UtilsFun {
         }
         return null
     }
+
+    /**
+     * Agrega o cancela una notificación para un evento dependiendo de su fecha y la configuración de notificaciones.
+     *
+     * @param isAdd Indica si se debe agregar (`true`) o cancelar (`false`) la notificación.
+     * @param event Evento para el cual se realizará la acción de notificación.
+     * @param context Contexto de la aplicación.
+     */
     fun addNotification(isAdd:Boolean, event: Event, context: Context){
         val mainActivity = context as MainActivity
         val calendar = Calendar.getInstance()
@@ -76,6 +112,13 @@ object UtilsFun {
             mainActivity.cancelNotification(context,event.eventId)
         }
     }
+
+    /**
+     * Convierte un comentario a formato JSON.
+     *
+     * @param coment Comentario a convertir.
+     * @return Objeto JSON que representa el comentario.
+     */
     fun comentToJson(coment: Coment): JSONObject {
         val jsonObject = JSONObject()
         jsonObject.put("id", coment.id)
@@ -92,6 +135,13 @@ object UtilsFun {
 
         return jsonObject
     }
+
+    /**
+     * Convierte los dp a px para un contexto dado.
+     *
+     * @param context Contexto de la aplicación.
+     * @return Valor en píxeles correspondiente a la conversión de dp a px.
+     */
      fun dpToPx(context: Context): Int {
         val density = context.resources.displayMetrics.density
         return (UtilsConst.DP_KEYBOARD * density).toInt()

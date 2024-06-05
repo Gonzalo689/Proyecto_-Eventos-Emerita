@@ -2,13 +2,11 @@ package com.example.android_eventosemerita.fragments_nav
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.EventAPIClient
@@ -22,9 +20,13 @@ import com.example.android_eventosemerita.controller.search.AdapterCategory
 import com.example.android_eventosemerita.controller.search.AdapterSearchAll
 import java.util.Calendar
 
-
+/**
+ * Fragmento para la funcionalidad de búsqueda.
+ */
 class Search : Fragment(){
-
+    /**
+     * Inicializa las vistas y variables del fragmento.
+     */
     companion object{
         var categoryPair = Pair(false,"")
         var datePair = Pair(false,"")
@@ -61,6 +63,10 @@ class Search : Fragment(){
         buttons()
 
     }
+
+    /**
+     * Configura los listeners para los botones.
+     */
     private fun buttons(){
         binding.button.setOnClickListener {
             binding.button.visibility = View.GONE
@@ -86,12 +92,20 @@ class Search : Fragment(){
         }
 
     }
+    /**
+     * Reinicia las variables y vistas relacionadas con la selección de fecha y categoría.
+     */
     private fun inc(){
         binding.textDate.visibility = View.GONE
         binding.button.visibility = View.GONE
         categoryPair = Pair(false,"")
         datePair = Pair(false,"")
     }
+
+    /**
+     * Verifica si se ha seleccionado una fecha y filtra los eventos en consecuencia.
+     * Si no se ha seleccionado una fecha, se actualizan los eventos con la lista completa de eventos.
+     */
     private fun checkDate(){
         val filter = binding.searchView.query.toString()
         reloadEvents()
@@ -104,6 +118,11 @@ class Search : Fragment(){
             }
         }
     }
+
+    /**
+     * Verifica si se ha seleccionado una categoría y filtra los eventos en consecuencia.
+     * Si no se ha seleccionado una categoría, se actualizan los eventos con la lista completa de eventos.
+     */
     private fun checkCategory(){
         val filter = binding.searchView.query.toString()
         reloadEvents()
@@ -117,10 +136,18 @@ class Search : Fragment(){
 
         }
     }
+
+    /**
+     * Recarga la lista de eventos con la lista completa de eventos.
+     */
     private fun reloadEvents(){
         allEventsList.clear()
         allEventsList.addAll(allEventsListConst)
     }
+
+    /**
+     * Obtiene todos los eventos desde la API y actualiza la lista de eventos.
+     */
     fun eventsAPI(){
         val callback = object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>) {
@@ -139,6 +166,12 @@ class Search : Fragment(){
         }
         eventAPIClient.getAllEvents(callback)
     }
+
+    /**
+     * Obtiene los eventos asociados a una categoría específica desde la API y actualiza la lista de eventos.
+     *
+     * @param category La categoría de la que se desean obtener los eventos.
+     */
     fun eventsCategory(category:String){
         val callback = object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>) {
@@ -162,6 +195,11 @@ class Search : Fragment(){
 
     }
 
+    /**
+     * Filtra los eventos de acuerdo con la consulta de búsqueda proporcionada.
+     *
+     * @param query La consulta de búsqueda para filtrar los eventos.
+     */
     private fun filterEvents(query: String) {
         var filteredEvents = ArrayList<Event>()
         if (!query.isEmpty()){
@@ -178,6 +216,10 @@ class Search : Fragment(){
 
         adapter.updateEvents(filteredEvents)
     }
+
+    /**
+     * Muestra un diálogo de selección de fecha y filtra los eventos según la fecha seleccionada.
+     */
     private fun intentEventsDate() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -199,6 +241,11 @@ class Search : Fragment(){
 
     }
 
+    /**
+     * Filtra los eventos según la fecha personalizada y actualiza la lista de eventos mostrados.
+     *
+     * @param datePersonalized La fecha personalizada en formato "YYYY-MM-DD" para filtrar los eventos.
+     */
     private fun filterEventsDate(datePersonalized:String){
         val filteredEvents = ArrayList<Event>(allEventsList)
         allEventsList.clear()
@@ -214,6 +261,9 @@ class Search : Fragment(){
         binding.textDate.visibility = View.VISIBLE
     }
 
+    /**
+     * Configura el adaptador para mostrar todos los eventos.
+     */
     private fun adapterAllEvents(){
         val mainActivity = requireActivity() as MainActivity
         adapter = AdapterSearchAll(ArrayList(),mainActivity)
@@ -221,6 +271,10 @@ class Search : Fragment(){
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.recyclerSearch.layoutManager = layoutManager
     }
+
+    /**
+     * Configura el adaptador para mostrar las categorías de eventos.
+     */
     private fun adapterCategory(){
         adapterCategory = AdapterCategory(categories , this, binding.button)
         binding.recyclerSearchCategory.adapter = adapterCategory
@@ -228,6 +282,9 @@ class Search : Fragment(){
         binding.recyclerSearchCategory.layoutManager = layoutManager
     }
 
+    /**
+     * Configura la acción a realizar cuando se realice una búsqueda en el SearchView.
+     */
     private fun searchQuery(){
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
             android.widget.SearchView.OnQueryTextListener {
@@ -242,6 +299,10 @@ class Search : Fragment(){
             }
         })
     }
+
+    /**
+     * Carga las categorías disponibles para los eventos y las agrega a la lista de categorías.
+     */
     private fun chargeCategories(){
         categories.clear()
         categories.add(Category(requireContext().getString(R.string.category_beneficial), "Benéfico", R.drawable.beneficial))
@@ -249,7 +310,6 @@ class Search : Fragment(){
         categories.add(Category(requireContext().getString(R.string.category_carnival), "Carnaval", R.drawable.carnival))
         categories.add(Category(requireContext().getString(R.string.category_music), "Música", R.drawable.music))
         categories.add(Category(requireContext().getString(R.string.category_conference), "Charla-Conferencia", R.drawable.conference))
-        //categories.add(Category("Jornada", "Jornadas", R.drawable.prueba))
         categories.add(Category(requireContext().getString(R.string.category_cinema), "Cine", R.drawable.cinema))
         categories.add(Category(requireContext().getString(R.string.category_workshops), "Curso-Taller", R.drawable.workshops))
         categories.add(Category(requireContext().getString(R.string.category_emerita_lvdica), "Emerita Lvdica", R.drawable.emerita_lvdica))
@@ -259,7 +319,6 @@ class Search : Fragment(){
         categories.add(Category(requireContext().getString(R.string.category_leisure), "Ocio", R.drawable.leisure))
         categories.add(Category(requireContext().getString(R.string.category_theater), "Teatro", R.drawable.theater))
         categories.add(Category(requireContext().getString(R.string.category_literature), "Literatura", R.drawable.literature))
-        //categories.add(Category("Visita Guiada", "Visita Guiada", R.drawable.prueba))
 
     }
 

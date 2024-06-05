@@ -1,14 +1,20 @@
 package com.example.android_eventosemerita.api.model
 
 import java.io.Serializable
-import java.util.Calendar
-
+/**
+ * Representa una categoría de eventos.
+ */
 class Event(
     val titulo: String, val imagenIni: String, val descripcionBreve: String, val image: String,
     val fecha_inicio: String, val fecha_final: String, val urlEvent:String, val direccion:String,
     val descriptionCompleta: List<String>, val utlGooglemaps:String, val categoria:String,
     val destacado:Boolean, val eventId:Int
 ): Serializable {
+    /**
+     * Método para verificar si la fecha del evento es anterior a la fecha actual.
+     * @param dateNow Fecha actual en formato de cadena (AAAA-MM-DD).
+     * @return 1 si la fecha del evento es posterior a la fecha actual, 0 si es igual y -1 si es anterior.
+     */
     fun checkDate(dateNow:String):Int {
         val dateSplitStart = fecha_inicio.split(",")[0].split("-")
 
@@ -52,10 +58,26 @@ class Event(
         return -1
     }
 
+    /**
+     * Método para obtener una cadena que representa la fecha en formato legible.
+     * @param date Fecha en formato de cadena (AAAA-MM-DD).
+     * @return La fecha en formato legible (DD de MMMM del AAAA).
+     */
     fun stringFecha(date:String):String{
         val dateSplit = date.split(",")[0].split("-")
-        return dateSplit[2] + " de " + nameMonth(dateSplit[1]) + " del " + dateSplit[0]
+        val dayNum = dateSplit[2][0]
+        var day = dateSplit[2]
+        if (dayNum == '0'){
+            day = dateSplit[2][1].toString()
+        }
+        return day + " de " + nameMonth(dateSplit[1]) + " del " + dateSplit[0]
     }
+
+    /**
+     * Método para obtener el nombre del mes a partir de su número.
+     * @param number Número del mes en formato de cadena (01 para enero, 02 para febrero, etc.).
+     * @return El nombre del mes.
+     */
     fun nameMonth(number: String) : String {
         val monthName = when (number) {
             "01" -> "enero"

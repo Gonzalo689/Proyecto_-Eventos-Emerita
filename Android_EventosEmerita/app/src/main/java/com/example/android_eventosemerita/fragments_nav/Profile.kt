@@ -1,28 +1,21 @@
 package com.example.android_eventosemerita.fragments_nav
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.Context
 import android.widget.ImageView
 import android.content.Intent
-import android.graphics.Bitmap.CompressFormat
-import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.activity.MainActivity
-import com.example.android_eventosemerita.activity.SplashScreen
 import com.example.android_eventosemerita.api.Callback
+import com.example.android_eventosemerita.api.EventAPIClient
 import com.example.android_eventosemerita.api.UserAPIClient
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.api.model.User
@@ -39,17 +32,17 @@ import com.example.android_eventosemerita.utils.UtilsConst.userRoot
 import com.example.android_eventosemerita.utils.UtilsFun
 import com.example.android_eventosemerita.utils.UtilsFun.addNotification
 import com.example.android_eventosemerita.utils.UtilsFun.lowerQuality
-import com.squareup.picasso.MemoryPolicy
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.*
 import kotlin.coroutines.resume
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.io.File
 import kotlin.coroutines.suspendCoroutine
 
 private const val NAME_FILE = "image"
 
+/**
+ * Fragment representing the user profile.
+ */
 class Profile : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
@@ -58,7 +51,7 @@ class Profile : Fragment() {
     private var deployEdit = false
     private var galleryOpened = false
 
-
+    /** Lanzador de resultados de actividad para la galería */
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
             this.uri = it
@@ -67,7 +60,9 @@ class Profile : Fragment() {
         }
     }
 
-
+    /**
+     * Se llama para que el fragmento instancie su vista de interfaz de usuario.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -77,21 +72,26 @@ class Profile : Fragment() {
         binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
-
+    /**
+     * Se llama inmediatamente después de que onCreateView() haya devuelto, pero antes de que se
+     *  haya restaurado algún estado guardado en la vista.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (userRoot != null){
             buttons()
             remenberNotf()
             editProfie()
-            binding.frameProfile.setOnClickListener{
-
-            }
         }else{
             startNoUser()
         }
 
     }
+
+    /**
+     * Se llama cuando el fragmento es visible para el usuario y se está ejecutando activamente para
+     * activar el dialogo
+     */
     override fun onResume() {
         super.onResume()
         if (galleryOpened) {
@@ -100,16 +100,23 @@ class Profile : Fragment() {
             }
         }
     }
+    /**
+     * Oculta la vista del perfil y muestra un mensaje cuando no hay usuario registrado.
+     */
     fun startNoUser(){
-        binding.frameProfile.visibility = View.GONE
+        //binding.frameProfile.visibility = View.GONE
+        imgPred(binding.profileimage)
         binding.layautNoUser.visibility = View.VISIBLE
         binding.buttonLog.setOnClickListener{
             val intent = Intent(requireContext(), SignIn::class.java)
             startActivity(intent)
             requireActivity().finish()
         }
-
     }
+
+    /**
+     * Configura varios listeners para los botones.
+     */
     private fun buttons(){
         binding.logOut.setOnClickListener{
             forgotUser()
@@ -145,6 +152,10 @@ class Profile : Fragment() {
             }
         }
     }
+
+    /**
+     * Actualiza la vista del perfil del usuario con los datos actuales del usuario.
+     */
     private fun editProfie(){
         var file: File? = null
         val imgView = binding.profileimage
@@ -159,8 +170,18 @@ class Profile : Fragment() {
         }
         binding.editEmail.hint = userRoot!!.email
         binding.editName.hint = userRoot!!.nombre
+        binding.progressBar.visibility = View.GONE
+        binding.darkOverlay.visibility = View.GONE
+        galleryOpened = false
 
     }
+
+    /**
+     * Muestra la imagen de perfil en tamaño completo desde la caché.
+     *
+     * @param file Archivo de imagen de perfil
+     * @param imageString Cadena de imagen de perfil codificada en base64
+     */
     fun showFullImageFromCache(file: File?, imageString: String) {
         val dialogBuilder = AlertDialog.Builder(requireContext())
         val imageView = ImageView(requireContext())
@@ -191,17 +212,27 @@ class Profile : Fragment() {
 
     }
 
-
+    /**
+     * Cambia el icono de despliegue en la interfaz de usuario.
+     *
+     * @param ic ID del recurso del icono a mostrar
+     */
     fun changeIconDeploy(ic:Int){
         val newDrawable = ContextCompat.getDrawable(requireContext(), ic)
         binding.editTextArrow.setCompoundDrawablesWithIntrinsicBounds(null,null,newDrawable,null)
 
     }
-
+    /**
+     * Recuerda la configuración de notificaciones del usuario.
+     */
     fun remenberNotf(){
         val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
         binding.switchNotf.isChecked = preferences.getBoolean(NOTIF,true)
     }
+
+    /**
+     * Obtiene la lista de eventos favoritos del usuario y agrega notificaciones para cada evento.
+     */
     fun getEventFavs(){
         userAPIClient.getFavEventsList(userRoot!!.id, object : Callback.MyCallback<List<Event>> {
             override fun onSuccess(data: List<Event>){
@@ -217,30 +248,39 @@ class Profile : Fragment() {
         })
     }
 
+    /**
+     * Actualiza la imagen de perfil del usuario en el servidor y en la vista.
+     *
+     * @param imageString Cadena que representa la nueva imagen de perfil codificada en base64
+     */
     fun updateImage(imageString: String){
         binding.progressBar.visibility = View.VISIBLE
         binding.darkOverlay.visibility = View.VISIBLE
+        val img = userRoot!!.profilePicture
+        userRoot!!.profilePicture = imageString
         userAPIClient.updateProfilePicture(userRoot!!.id, imageString, object : Callback.MyCallback<String> {
-        override fun onSuccess(data: String) {
-            activity?.runOnUiThread {
-                userRoot!!.profilePicture = imageString
-                val file = decodeBase64ToFile(imageString,requireContext(),NAME_FILE)
-                binding.progressBar.visibility = View.GONE
-                binding.darkOverlay.visibility = View.GONE
-                imgFile(file,binding.profileimage)
+            override fun onSuccess(data: String) {
+                activity?.runOnUiThread {
+                    val file = decodeBase64ToFile(imageString,requireContext(),NAME_FILE)
+                    binding.progressBar.visibility = View.GONE
+                    binding.darkOverlay.visibility = View.GONE
+                    imgFile(file,binding.profileimage)
+                }
             }
-        }
 
-        override fun onError(errorMsg: String?) {
-            activity?.runOnUiThread {
-                binding.progressBar.visibility = View.GONE
-                binding.darkOverlay.visibility = View.GONE
+            override fun onError(errorMsg: String?) {
+                activity?.runOnUiThread {
+                    userRoot!!.profilePicture = img
+                    binding.progressBar.visibility = View.GONE
+                    binding.darkOverlay.visibility = View.GONE
+                }
             }
-        }
-    })
+        })
     }
 
-
+    /**
+     * Olvida al usuario iniciado sesión.
+     */
     fun forgotUser(){
         val preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
         val editor = preferences.edit()
@@ -248,38 +288,64 @@ class Profile : Fragment() {
         editor.putInt(USER_ID, 0)
         editor.apply()
     }
+
+    /**
+     * Regresa a la pantalla de inicio de sesión.
+     */
     fun returnToSplash(){
         val intent = Intent(requireContext(), SignIn::class.java)
         startActivity(intent)
         requireActivity().finish()
     }
 
+    /**
+     * Abre la galería para seleccionar una imagen.
+     */
     private fun openGalery(){
         galleryLauncher.launch("image/*")
         binding.progressBar.visibility = View.VISIBLE
         binding.darkOverlay.visibility = View.VISIBLE
     }
 
-    fun openAlertDialogAgain(){
+    /**
+     * Muestra nuevamente el diálogo de alerta para seleccionar una imagen después de regresar de la galería.
+     */
+    fun openAlertDialogAgain() {
         CoroutineScope(Dispatchers.Main).launch {
-            val byteArray = Image.convertToBytes(uri,requireContext())
-            val imageString = lowerQuality(byteArray)
-            val file = decodeBase64ToFile(imageString,requireContext(),NAME_FILE)
-            imgFile(file,binding.profileimage)
-            showFullImageFromCache(file,imageString)
-            binding.progressBar.visibility = View.GONE
-            binding.darkOverlay.visibility = View.GONE
-            galleryOpened = false
+            try {
+                binding.progressBar.visibility = View.VISIBLE
+                binding.darkOverlay.visibility = View.VISIBLE
+
+                withContext(Dispatchers.IO) {
+                    val byteArray = Image.convertToBytes(uri, requireContext())
+                    val imageString = lowerQuality(byteArray)
+                    val file = decodeBase64ToFile(imageString, requireContext(), NAME_FILE)
+
+                    withContext(Dispatchers.Main) {
+                        imgFile(file, binding.profileimage)
+                        showFullImageFromCache(file, imageString)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                binding.progressBar.visibility = View.GONE
+                binding.darkOverlay.visibility = View.GONE
+                galleryOpened = false
+            }
         }
     }
 
+    /**
+     * Actualiza los datos del usuario en el servidor.
+     */
     private suspend fun updateUser(){
         var name = binding.editName.text.toString().trim()
         var email = binding.editEmail.text.toString().trim()
         val pass = binding.editPass.text.toString().trim()
         val confirmPass = binding.editConfirm.text.toString().trim()
 
-        if (name.isEmpty() || name.length < 4) {
+        if (name.isEmpty() || name.length <= 4) {
             name = userRoot!!.nombre
         }
         if (email.isEmpty()) {
@@ -312,6 +378,12 @@ class Profile : Fragment() {
         return
     }
 
+    /**
+     * Verifica si un correo electrónico ya está en uso.
+     *
+     * @param email Correo electrónico a verificar
+     * @return `true` si el correo electrónico está en uso, `false` de lo contrario
+     */
     private suspend fun isEmailUsed(email: String): Boolean {
         return suspendCoroutine { continuation ->
             val callback = object : Callback.MyCallback<Boolean> {
@@ -327,6 +399,13 @@ class Profile : Fragment() {
         }
     }
 
+    /**
+     * Actualiza los datos del usuario en la base de datos.
+     *
+     * @param name Nombre del usuario
+     * @param email Correo electrónico del usuario
+     * @param pass Contraseña del usuario
+     */
     private fun updateUserBD(name:String, email:String, pass:String){
         userAPIClient.updateUser(userRoot!!.id,name,email,pass, object : Callback.MyCallback<User>{
             override fun onSuccess(data: User) {
@@ -340,6 +419,13 @@ class Profile : Fragment() {
 
         })
     }
+
+    /**
+     * Restablece la interfaz de usuario después de la actualización de los datos del usuario.
+     *
+     * @param name Nombre actualizado del usuario
+     * @param email Correo electrónico actualizado del usuario
+     */
     private fun resetEdit(name:String, email: String){
         userRoot!!.email = email
         userRoot!!.nombre = name

@@ -8,18 +8,26 @@ import com.android.volley.toolbox.StringRequest
 import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.utils.UtilsFun.hash
+import com.example.android_eventosemerita.utils.UtilsConst.url
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import org.json.JSONException
 import org.json.JSONObject
 
-
+/**
+ * Cliente para realizar operaciones relacionadas con usuarios utilizando la API.
+ * @property context Contexto de la aplicación.
+ */
 class UserAPIClient(private val context: Context) {
-    //private val url: String = "https://x2t55z6x-3000.uks1.devtunnels.ms"
-    private val url: String = "http://10.0.2.2:3000"
+//    private val url: String = "https://x2t55z6x-3000.uks1.devtunnels.ms"
+//    private val url: String = "http://10.0.2.2:3000"
 
     /**
-     * Modifica la lista de like
+     * Modifica la lista de eventos favoritos de un usuario.
+     * @param userId ID del usuario.
+     * @param eventId ID del evento.
+     * @param addToFavorites Booleano que indica si se agrega o elimina de favoritos.
+     * @param callback Callback para manejar el resultado de la operación.
      */
     fun updateUserList(userId: Int, eventId: Int, addToFavorites: Boolean, callback: Callback.MyCallback<Boolean>) {
         val queue = Volley.newRequestQueue(context)
@@ -51,7 +59,10 @@ class UserAPIClient(private val context: Context) {
         queue.add(jsonObjectRequest)
     }
     /**
-     * Encuentra si el evento tiene un like por el usuario
+     * Verifica si un evento está en la lista de favoritos de un usuario.
+     * @param userId ID del usuario.
+     * @param eventId ID del evento.
+     * @param callback Callback para manejar el resultado de la operación.
      */
     fun isLikedEvent(userId: Int, eventId: Int,callback: Callback.MyCallback<Boolean>) {
         val queue = Volley.newRequestQueue(context)
@@ -77,7 +88,9 @@ class UserAPIClient(private val context: Context) {
     }
 
     /**
-     * Función que devuelve un usuario con el id dado
+     * Obtiene un usuario por su ID.
+     * @param userId ID del usuario.
+     * @param callback Callback para manejar el resultado de la operación.
      */
     fun getUserById(userId: Int, callback: Callback.MyCallback<User>) {
         val queue = Volley.newRequestQueue(context)
@@ -101,7 +114,10 @@ class UserAPIClient(private val context: Context) {
     }
 
     /**
-     * funcion que comprueba si el usuario existe
+     * Autentica a un usuario.
+     * @param email Correo electrónico del usuario.
+     * @param password Contraseña del usuario.
+     * @param callback Callback para manejar el resultado de la operación.
      */
     fun loginUser(email: String, password: String, callback: Callback.MyCallback<User>) {
         val queue = Volley.newRequestQueue(context)
@@ -134,7 +150,11 @@ class UserAPIClient(private val context: Context) {
     }
 
     /**
-     * Función para crear un usuario
+     * Crea un nuevo usuario.
+     * @param name Nombre del usuario.
+     * @param email Correo electrónico del usuario.
+     * @param password Contraseña del usuario.
+     * @param callback Callback para manejar el resultado de la operación.
      */
     fun createUser(name: String, email: String, password: String, callback: Callback.MyCallback<User>) {
         val queue = Volley.newRequestQueue(context)
@@ -171,7 +191,9 @@ class UserAPIClient(private val context: Context) {
         queue.add(jsonObjectRequest)
     }
     /**
-     * Función que me devuelve la lista de eventos favoritos
+     * Obtiene la lista de eventos favoritos de un usuario.
+     * @param userId ID del usuario.
+     * @param callback Callback para manejar el resultado de la operación.
      */
     fun getFavEventsList(userId: Int, callback: Callback.MyCallback<List<Event>>){
         val queue = Volley.newRequestQueue(context)
@@ -192,6 +214,12 @@ class UserAPIClient(private val context: Context) {
 
         queue.add(jsonObjectRequest)
     }
+
+    /**
+     * Obtiene la lista de eventos recomendados para un usuario.
+     * @param userId ID del usuario.
+     * @param callback Callback para manejar el resultado de la operación.
+     */
     fun getRecomendList(userId: Int, callback: Callback.MyCallback<List<Event>>){
         val queue = Volley.newRequestQueue(context)
         val url = "$url/usuarios/listRecomend/$userId"
@@ -212,7 +240,12 @@ class UserAPIClient(private val context: Context) {
         queue.add(jsonObjectRequest)
     }
 
-
+    /**
+     * Actualiza la imagen de perfil de un usuario.
+     * @param userId ID del usuario.
+     * @param image Imagen en formato base64.
+     * @param callback Callback para manejar el resultado de la operación.
+     */
     fun updateProfilePicture(userId: Int, image: String, callback: Callback.MyCallback<String>) {
 
         val queue = Volley.newRequestQueue(context)
@@ -234,8 +267,14 @@ class UserAPIClient(private val context: Context) {
         queue.add(jsonObjectRequest)
 
     }
+
     /**
-     * Función que actualiza el nombre , el email y contraseña
+     * Actualiza el nombre, el email y la contraseña de un usuario.
+     * @param userId ID del usuario.
+     * @param nombre Nuevo nombre del usuario.
+     * @param email Nuevo email del usuario.
+     * @param password Nueva contraseña del usuario.
+     * @param callback Callback para manejar el resultado de la operación.
      */
     fun updateUser(userId: Int,nombre: String, email: String,password: String, callback: Callback.MyCallback<User>) {
         val queue = Volley.newRequestQueue(context)
@@ -269,8 +308,11 @@ class UserAPIClient(private val context: Context) {
 
         queue.add(jsonObjectRequest)
     }
+
     /**
-     * Función para ver si el email se esta usando
+     * Verifica si un email está siendo utilizado por algún usuario registrado.
+     * @param email Email a verificar.
+     * @param callback Callback para manejar el resultado de la operación.
      */
     fun isEmailUsed(email: String, callback: Callback.MyCallback<Boolean>) {
         val queue = Volley.newRequestQueue(context)

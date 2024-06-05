@@ -10,10 +10,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.android_eventosemerita.R
@@ -27,22 +24,22 @@ import com.example.android_eventosemerita.fragments_nav.Favorite
 import com.example.android_eventosemerita.fragments_nav.Home
 import com.example.android_eventosemerita.fragments_nav.Profile
 import com.example.android_eventosemerita.fragments_nav.Search
-import com.example.android_eventosemerita.login.SignUp
 import com.example.android_eventosemerita.notify.AlarmNotification
+import com.example.android_eventosemerita.utils.EventNotification.removeEvent
+import com.example.android_eventosemerita.utils.EventNotification.saveEvent
 import com.example.android_eventosemerita.utils.UtilsConst.CHANNEL_ID
-import com.example.android_eventosemerita.utils.UtilsConst.DP_KEYBOARD
 import com.example.android_eventosemerita.utils.UtilsConst.USER_ID
 import com.example.android_eventosemerita.utils.UtilsConst.userRoot
 import com.example.android_eventosemerita.utils.UtilsFun.dpToPx
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import java.util.Calendar
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-
+/**
+ * Actividad principal que muestra la interfaz de usuario y gestiona la navegación entre fragmentos.
+ */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -50,6 +47,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var eventAPIClient: EventAPIClient
     private lateinit var userAPIClient: UserAPIClient
 
+    /**
+     * Método que se ejecuta cuando se crea la actividad.
+     * @param savedInstanceState Estado guardado de la actividad, si lo hay.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         eventAPIClient = EventAPIClient(applicationContext)
@@ -69,6 +70,9 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+    /**
+     * Método para obtener el usuario actual, si el id es 0 significara que se registraron como invitado.
+     */
     private suspend fun getUser() {
         return suspendCoroutine { continuation ->
             val callback = object : Callback.MyCallback<User> {
@@ -94,6 +98,10 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+    /**
+     * Método para programar una notificación para un evento.
+     * @param event El evento para el que se programará la notificación.
+     */
 
     @SuppressLint("ScheduleExactAlarm")
     fun sheduleNotification(event: Event){
@@ -118,16 +126,17 @@ class MainActivity : AppCompatActivity() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val calendar = Calendar.getInstance().apply {
-            val horaActual = Calendar.getInstance()
-
-            set(Calendar.HOUR_OF_DAY, horaActual.get(Calendar.HOUR_OF_DAY))
-            set(Calendar.MINUTE, horaActual.get(Calendar.MINUTE))
-            set(Calendar.SECOND, horaActual.get(Calendar.SECOND))
-        }
 //        val calendar = Calendar.getInstance().apply {
-//            set(year, month, day, /*hora*/ 10, /*minuto*/ 0, /*segundo*/ 0)
+//            val horaActual = Calendar.getInstance()
+//
+//            set(Calendar.HOUR_OF_DAY, horaActual.get(Calendar.HOUR_OF_DAY))
+//            set(Calendar.MINUTE, horaActual.get(Calendar.MINUTE))
+//            set(Calendar.SECOND, horaActual.get(Calendar.SECOND))
 //        }
+        val calendar = Calendar.getInstance().apply {
+            set(year, month, day, /*hora*/ 10, /*minuto*/ 0, /*segundo*/ 0)
+        }
+
 
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -136,11 +145,18 @@ class MainActivity : AppCompatActivity() {
             calendar.timeInMillis,
             pendingIntent
         )
+        saveEvent(applicationContext, event)
     }
+
+    /**
+     * Método para cancelar una notificación.
+     * @param context El contexto de la aplicación.
+     * @param eventId El ID del evento cuya notificación se cancelará.
+     */
     fun cancelNotification(context: Context, eventId: Int) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(eventId)
-        // Cancelar el alarm pendiente
+
         val intent = Intent(context, AlarmNotification::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -148,14 +164,17 @@ class MainActivity : AppCompatActivity() {
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
         )
-        if (pendingIntent != null) {
+        pendingIntent?.let {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.cancel(pendingIntent)
-            pendingIntent.cancel()
+            alarmManager.cancel(it)
+            it.cancel()
         }
+        removeEvent(context, eventId)
     }
 
-
+    /**
+     * Método para crear un canal de notificación para versiones de Android Oreo (API nivel 26) o superior.
+     */
     private fun createChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val channel = NotificationChannel(
@@ -169,7 +188,9 @@ class MainActivity : AppCompatActivity() {
             notificationManager.createNotificationChannel(channel)
         }
     }
-
+    /**
+     * Método para gestionar la navegación con navigationBar con un estilo de burbujas.
+     */
     private fun navBbuble(){
         binding.bubbleTabBar.addBubbleListener { id ->
             when (id) {
@@ -188,7 +209,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    /**
+     * Método para cargar un fragmento en el contenedor.
+     * @param fragment El fragmento que se cargará.
+     * @param addToBackStack Booleano que indica si se agrega a la pila de retroceso.
+     */
     fun loadFragment(fragment: Fragment, addToBackStack: Boolean) {
         val transaction = supportFragmentManager.beginTransaction()
             .replace(R.id.frameLayout, fragment)
@@ -198,8 +223,9 @@ class MainActivity : AppCompatActivity() {
         }
         transaction.commit()
     }
-
-
+    /**
+     * Método para ocultar la barra de navegación si el teclado está visible.
+     */
     fun hideIfKeyboardOut() {
         val heightDiffThreshold = dpToPx(applicationContext)
         binding.root.viewTreeObserver.addOnGlobalLayoutListener {
@@ -214,6 +240,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Comprobar si esta visile el componente de navegación
+     */
     fun setBottomNavVisibility(visible: Boolean) {
         isBottomNavVisible = visible
     }

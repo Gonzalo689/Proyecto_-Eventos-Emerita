@@ -63,6 +63,8 @@
     <string name="sign_off">Sign off</string>
     <string name="progress">In progress</string>
 
+    <string name="name_coment">%1$s • </string>
+
     <string name="category_beneficial">Beneficial</string>
     <string name="category_design">Design</string>
     <string name="category_carnival">Carnival</string>
@@ -84,6 +86,6 @@
     <string name="menu_favorite">Favorites</string>
     <string name="menu_profile">Profile</string>
 
-    <string name="needLogFavourite">To have a list of favorite events you need to Login!</string>
-    <string name="needLog">To access a profile you need to Login!</string>
+    <string name="needLogFavourite">To have a list of favorite events you need to login!</string>
+    <string name="needLog">To access a profile you need to login!</string>
 </resources>

@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import com.example.android_eventosemerita.R
 import com.example.android_eventosemerita.activity.MainActivity
 import com.example.android_eventosemerita.api.Callback
@@ -14,6 +13,9 @@ import com.example.android_eventosemerita.databinding.ActivitySignUpBinding
 import com.example.android_eventosemerita.utils.UtilsFun.remenberUser
 import com.example.android_eventosemerita.utils.UtilsFun.validateEmail
 
+/**
+ * Actividad para el registro de nuevos usuarios.
+ */
 class SignUp : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpBinding
     private lateinit var userAPIClient: UserAPIClient
@@ -35,26 +37,38 @@ class SignUp : AppCompatActivity() {
         }
 
     }
+
+    /**
+     * Inicia la actividad principal.
+     */
     private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("User", userRoot)
         startActivity(intent)
         finish()
     }
+
+    /**
+     * Inicia la actividad de inicio de sesión.
+     */
     private fun startSingIn() {
         val intent = Intent(this, SignIn::class.java)
         startActivity(intent)
         finish()
     }
 
-
+    /**
+     * Valida los campos de entrada de nombre, correo electrónico y contraseña.
+     *
+     * @return true si los campos son válidos, false de lo contrario.
+     */
     private fun validateText(): Boolean{
         val name = binding.editTextUsername.text.toString().trim()
         val email = binding.editTextEmailRegister.text.toString().trim()
         val pass = binding.editTextPassword.text.toString().trim()
         val confirmPass = binding.confirmPassword.text.toString().trim()
 
-        if (name.isEmpty() || name.length >= 4) {
+        if (name.isEmpty() || name.length <= 4) {
             binding.editTextUsername.error = getString(R.string.error_short_name)
             binding.editTextUsername.requestFocus()
             return false
@@ -75,11 +89,11 @@ class SignUp : AppCompatActivity() {
             return false
         }
         if (pass.length < 3) {
-            binding.editTextPassword.error = getString(R.string.password)
+            binding.editTextPassword.error = getString(R.string.error_short_password)
             binding.editTextPassword.requestFocus()
             return false
         }
-        if (!confirmPass.equals(pass)) {
+        if (confirmPass != pass) {
             binding.confirmPassword.error = getString(R.string.error_password_mismatch)
             binding.confirmPassword.requestFocus()
             return false
@@ -87,7 +101,11 @@ class SignUp : AppCompatActivity() {
         return true
     }
 
-
+    /**
+     * Crea un nuevo usuario.
+     *
+     * @param context El contexto de la aplicación.
+     */
     private fun createUser(context: Context){
         val name = binding.editTextUsername.text.toString().trim()
         val email = binding.editTextEmailRegister.text.toString().trim()

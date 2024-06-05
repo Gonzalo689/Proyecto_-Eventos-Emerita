@@ -3,7 +3,6 @@ package com.example.android_eventosemerita.login
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Patterns
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.android_eventosemerita.R
@@ -12,12 +11,12 @@ import com.example.android_eventosemerita.api.Callback
 import com.example.android_eventosemerita.api.UserAPIClient
 import com.example.android_eventosemerita.api.model.User
 import com.example.android_eventosemerita.databinding.ActivitySignInBinding
-import com.example.android_eventosemerita.utils.UtilsConst.REMEMBER
 import com.example.android_eventosemerita.utils.UtilsFun.remenberUser
 import com.example.android_eventosemerita.utils.UtilsFun.validateEmail
-import java.util.Objects
 
-
+/**
+ * Actividad para el inicio de sesión.
+ */
 class SignIn : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignInBinding
@@ -45,17 +44,30 @@ class SignIn : AppCompatActivity() {
         })
 
     }
+
+    /**
+     * Inicia la actividad principal.
+     */
     private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
     }
+
+    /**
+     * Inicia la actividad de registro.
+     */
     private fun startSignUp() {
         val intent = Intent(this, SignUp::class.java)
         startActivity(intent)
         finish()
     }
 
+    /**
+     * Valida los campos de entrada de correo electrónico y contraseña.
+     *
+     * @return true si los campos son válidos, false de lo contrario.
+     */
     private fun validateText(): Boolean{
         val email = binding.emailLog.text.toString().trim()
         val pass = binding.passwordLog.text.toString().trim()
@@ -83,6 +95,11 @@ class SignIn : AppCompatActivity() {
         return true
     }
 
+    /**
+     * Realiza la autenticación del usuario.
+     *
+     * @param context El contexto de la aplicación.
+     */
     private fun logUser(context: Context){
         val email = binding.emailLog.text.toString().trim()
         val pass = binding.passwordLog.text.toString().trim()

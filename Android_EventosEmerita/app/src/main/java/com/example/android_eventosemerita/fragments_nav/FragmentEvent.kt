@@ -11,6 +11,8 @@ import com.example.android_eventosemerita.api.model.Event
 import com.example.android_eventosemerita.databinding.FragmentEventBinding
 import com.squareup.picasso.Picasso
 import android.location.Geocoder
+import android.location.Location
+import android.util.Log
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -36,10 +38,16 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import java.io.IOException
+import java.net.URLDecoder
 
 
 private const val ARG_EVENT = "event"
 
+
+/**
+ * Fragmento para mostrar los detalles de un evento, incluyendo su ubicación en el mapa y comentarios.
+ */
 class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener,GoogleMap.OnMapLongClickListener {
 
     private var event: Event? = null
@@ -71,6 +79,11 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
     }
 
     companion object {
+        /**
+         * Crea una nueva instancia del fragmento FragmentEvent con el evento proporcionado.
+         * @param event Evento para el cual mostrar los detalles.
+         * @return Instancia del FragmentEvent.
+         */
         @JvmStatic
         fun newInstance(event: Event) =
             FragmentEvent().apply {
@@ -86,18 +99,26 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         mapFragment?.getMapAsync(this)
 
         textEvent()
+        inicNoUser()
+        inic()
+        buttonBack()
+        getComets()
+        hideIfKeyboardOut()
+    }
+    /**
+     * Escoge la funcion de los botones segun este registrado o no
+     */
+    fun inicNoUser(){
         if(userRoot!=null){
             buttonLike()
         }else{
             buttonLikeNoRegister()
         }
-
-        inic()
-
-        buttonBack()
-        getComets()
-        hideIfKeyboardOut()
     }
+
+    /**
+     * Inicializa los componentes y establece los listeners.
+     */
     fun inic(){
         binding.buttonComent.setOnClickListener{
             if(userRoot==null){
@@ -112,8 +133,13 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
             adapterComents.updateComents(listComents as ArrayList<Coment>)
             binding.allComents.visibility = View.GONE
         }
+
         binding.categories.text = event!!.categoria
     }
+
+    /**
+     * Oculta el boton de seguir si el teclado está visible .
+     */
     fun hideIfKeyboardOut() {
         if (!isAdded) return // Verificar si el fragmento está adjunto a una actividad
 
@@ -147,15 +173,18 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         viewLifecycleOwner.lifecycle.addObserver(lifecycleObserver)
     }
 
-
-
-
+    /**
+     * Establece el listener del botón "Volver".
+     */
     fun buttonBack(){
         binding.back.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
     }
 
+    /**
+     * Crea un comentario para el evento actual.
+     */
     fun createComets(){
         val text = binding.textMultiLine.text.toString()
         if(text.isNotEmpty()){
@@ -174,7 +203,9 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         }
     }
 
-
+    /**
+     * Obtiene los comentarios del evento actual.
+     */
     fun getComets(){
         comentAPIClient.getComets(event!!.eventId,object :Callback.MyCallback<List<Coment>>{
             override fun onSuccess(data: List<Coment>) {
@@ -196,6 +227,10 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
 
         })
     }
+
+    /**
+     * Establece la visibilidad del botón "Ver más comentarios".
+     */
     fun moreEventsVisibility(){
         if (listComents.size > 5){
             binding.allComents.visibility = View.VISIBLE
@@ -204,6 +239,9 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         }
     }
 
+    /**
+     * Configura el RecyclerView para mostrar los comentarios.
+     */
     fun recyclerComents(comentsList: ArrayList<Coment>){
         if (!isAdded) {
             return
@@ -215,12 +253,18 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
 
     }
 
-
+    /**
+     * Configura el botón "Seguir evento" cuando el usuario no está registrado.
+     */
     fun buttonLikeNoRegister(){
         binding.buttonLike.setOnClickListener{
             Toast.makeText(context, "Registrate para poder seguir el evento", Toast.LENGTH_SHORT).show()
         }
     }
+
+    /**
+     * Configura el botón "Seguir evento" cuando el usuario está registrado.
+     */
     fun buttonLike(){
         var isAdd = false
         userAPIClient.isLikedEvent(userRoot!!.id, event!!.eventId,object : Callback.MyCallback<Boolean> {
@@ -250,6 +294,10 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         }
 
     }
+
+    /**
+     * Muestra los detalles del evento en la interfaz de usuario.
+     */
     fun textEvent(){
         binding.title.text = event?.titulo
 
@@ -278,6 +326,9 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
         }
     }
 
+    /**
+     * Verifica si el usuario sigue o no el evento y actualiza la interfaz de usuario en consecuencia.
+     */
     fun checkfollow(like:Boolean){
         val red = requireContext().getColor(R.color.red_Primary)
         val white = requireContext().getColor(R.color.white)
@@ -294,36 +345,55 @@ class FragmentEvent : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListen
 
     }
 
+    /**
+     * Al destruir el fragmento el navegador se volvera visible otra vez
+     */
     override fun onDestroyView() {
         super.onDestroyView()
 
         (activity as? MainActivity)?.setBottomNavVisibility(false)
     }
 
+    /**
+     * Carga el mapa con la ubicacion del evento y si no tiene se pondra la ubicación de Mérida por
+     * defecto
+     */
+
     override fun onMapReady(p0: GoogleMap) {
         mMAp = p0
         mMAp.setOnMapClickListener(this)
         mMAp.setOnMapLongClickListener(this)
-        var location =  LatLng(38.9179933, -6.3429062) // Localización de Mérida centro
+        var location = LatLng(38.9179933, -6.3429062) // Localización de Mérida centro
 
         val googleMap = event!!.utlGooglemaps
-        val addressEncoded: String?
         if (googleMap.isNotEmpty()) {
-            addressEncoded = googleMap.split("&q=")[1]
-            val geocoder = Geocoder(requireContext())
-            val locationList = geocoder.getFromLocationName(addressEncoded, 1)
-
-            if (locationList?.isNotEmpty() == true) {
-                val latitude = locationList[0].latitude
-                val longitude = locationList[0].longitude
-                location = LatLng(latitude, longitude)
+            val addressEncoded: String? = googleMap.split("&q=").getOrNull(1)?.split("&")?.get(0)
+            if (addressEncoded != null) {
+                val addressDecoded = URLDecoder.decode(addressEncoded, "UTF-8")
+                val geocoder = Geocoder(requireContext())
+                try {
+                    val locationList = geocoder.getFromLocationName(addressDecoded, 1)
+                    if (locationList?.isNotEmpty() == true) {
+                        val latitude = locationList[0].latitude
+                        val longitude = locationList[0].longitude
+                        location = LatLng(latitude, longitude)
+                    } else {
+                        Log.e("Geocoder", "No se encontraron resultados para la dirección: $addressDecoded")
+                    }
+                } catch (e: IOException) {
+                    Log.e("Geocoder", "Error al obtener la ubicación: ${e.message}")
+                }
+            } else {
+                Log.e("Address", "Dirección no válida o no encontrada en la URL")
             }
         }
+
         mMAp.addMarker(MarkerOptions().position(location).title(event!!.titulo))
-        mMAp.moveCamera(CameraUpdateFactory.newLatLng(location))
-
-
+        mMAp.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
     }
+
+
+
 
     override fun onMapClick(p0: LatLng) {
 

@@ -55,7 +55,8 @@
             android:gravity="center"
             android:text="@string/needLogFavourite"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"/>
 
         <Button
             android:id="@+id/buttonLog"

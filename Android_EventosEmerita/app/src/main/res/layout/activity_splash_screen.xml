@@ -13,6 +13,6 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
-        tools:srcCompat="@drawable/prueba" />
+        tools:srcCompat="@drawable/event_merida" />
 
 </LinearLayout>

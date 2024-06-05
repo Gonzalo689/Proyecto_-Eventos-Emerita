@@ -156,7 +156,6 @@
                     android:text="@string/sign_off" />
             </LinearLayout>
 
-
         </LinearLayout>
 
         <View
@@ -191,7 +190,8 @@
             android:gravity="center"
             android:text="@string/needLog"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"/>
 
         <Button
             android:id="@+id/buttonLog"

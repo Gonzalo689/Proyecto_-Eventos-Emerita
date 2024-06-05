@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:text="@string/featured_events"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
 
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:text="@string/new_events"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
             <ProgressBar
                 android:id="@+id/progressNew"
@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:text="@string/recomend_event"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
             <ProgressBar
                 android:id="@+id/progressRecomend"
@@ -121,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:text="@string/weekend_events"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
             <ProgressBar
                 android:id="@+id/progressWeekend"
