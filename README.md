@@ -34,8 +34,8 @@ La aplicación utiliza las siguientes tecnologías:
 
 ## Manual de Usuario y Manual Técnico
 
-- [Manual de Usuario](./Manual_usuario.pdf)
-- [Manual Técnico](./Manual_técnico.pdf)
+- [Manual de Usuario](./Manual usuario.pdf)
+- [Manual Técnico](./Manual técnico.pdf)
 
 ## Contribuir
 
